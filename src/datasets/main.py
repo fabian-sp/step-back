@@ -1,0 +1,73 @@
+import os
+import torch
+from torch.utils.data import Dataset
+from torch.utils.data import DataLoader
+
+
+from .cifar import get_cifar10
+from .synthetic import get_synthetic_matrix_fac, get_synthetic_linear
+
+class DataClass:
+    def __init__(self, dataset: Dataset, split: str):
+        self.dataset = dataset
+        self.split = split
+
+    def __len__(self):
+        return len(self.dataset)
+
+    def __getitem__(self, index):
+        data, targets = self.dataset[index]
+
+        return {'data': data, 
+                'targets': targets, 
+                'ind': index}
+    
+    
+def get_dataset(config: dict, split: str, seed: int, path: str) -> DataClass:
+    """
+    Main function mapping a dataset name to an instance of DataClass.
+    
+    """
+    
+    assert split in ['train', 'val']
+    
+    kwargs = config['dataset_kwargs']
+    name = config['dataset']
+    
+    #==== all dataset options ======================
+    if name == 'cifar10':
+        ds = get_cifar10(split=split, path=path)
+    
+    elif name == 'synthetic_matrix_fac':
+        assert all([k in kwargs.keys() for k in ['p', 'q', 'n_samples']]), "For synthetic dataset, dimensions and number of samples need to be specified in config['dataset_kwargs]']."
+        ds = get_synthetic_matrix_fac(split=split, seed=seed,
+                                      **kwargs)
+    elif name == 'synthetic_linear':
+        assert all([k in kwargs.keys() for k in ['p', 'n_samples']]), "For synthetic dataset, dimensions and number of samples need to be specified in config['dataset_kwargs]']."
+        
+        if config['loss_func'] in ['logistic']:
+            classify = True
+        else:
+            classify = False
+    
+        ds = get_synthetic_linear(classify=classify, split=split, seed=seed, **kwargs)
+    else:
+        raise KeyError(f"Unknown dataset name {name}.")
+    #===============================================
+    
+    D = DataClass(dataset=ds, split=split)
+    
+    return D
+
+def infer_shapes(D: DataClass):
+    _tmp_dl = DataLoader(D, batch_size=1)   
+    batch = iter(_tmp_dl).next()
+    
+    if len(batch['data'].shape) == 1:
+        input_dim = (batch['data'].shape[0],)    
+    else:
+        input_dim = tuple(batch['data'].shape[1:])
+    
+    return input_dim
+    
+    

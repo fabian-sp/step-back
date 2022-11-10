@@ -1,0 +1,27 @@
+"""
+Test Base class.
+"""
+
+from src.base import Base
+
+
+config = {"dataset": 'synthetic_linear',
+          "dataset_kwargs": {'p': 10, 'n_samples': 100},
+          "model": 'linear',
+          "loss_func": 'logistic',
+          "score_func": 'logistic_accuracy',
+          "opt": {'name': 'sgd', 'lr': 1e-1, 'weight_decay': 0, 'lr_schedule': 'sqrt'},
+          "batch_size": 20,
+          "max_epoch": 10,
+          "run_id": 0}
+
+name = 'test'
+device = 'cpu'
+
+B = Base(name, config, device)
+
+B.config
+
+B.setup()
+B.run()
+B.results

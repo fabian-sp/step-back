@@ -1,7 +1,7 @@
 import torch
 import warnings
 
-from .types import Params, LossClosure, OptFloat
+from ..types import Params, LossClosure, OptFloat
 
 class AdaPolyak(torch.optim.Optimizer):
     def __init__(self, 
