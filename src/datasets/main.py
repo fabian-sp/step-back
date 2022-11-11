@@ -6,6 +6,7 @@ from torch.utils.data import DataLoader
 
 from .cifar import get_cifar10
 from .synthetic import get_synthetic_matrix_fac, get_synthetic_linear
+from .libsvm import LIBSVM_NAME_MAP, get_libsvm
 
 class DataClass:
     def __init__(self, dataset: Dataset, split: str):
@@ -25,8 +26,7 @@ class DataClass:
     
 def get_dataset(config: dict, split: str, seed: int, path: str) -> DataClass:
     """
-    Main function mapping a dataset name to an instance of DataClass.
-    
+    Main function mapping a dataset name to an instance of DataClass.   
     """
     
     assert split in ['train', 'val']
@@ -51,6 +51,10 @@ def get_dataset(config: dict, split: str, seed: int, path: str) -> DataClass:
             classify = False
     
         ds = get_synthetic_linear(classify=classify, split=split, seed=seed, **kwargs)
+    
+    elif name in LIBSVM_NAME_MAP.keys():
+        ds = get_libsvm(split=split, name=name, path=path, **kwargs)
+    
     else:
         raise KeyError(f"Unknown dataset name {name}.")
     #===============================================
@@ -70,10 +74,3 @@ def infer_shapes(D: DataClass):
     
     return input_dim
     
-# mapping libsvm names to download links
-LIBSVM_DOWNLOAD_FN = {"rcv1"       : "rcv1_train.binary.bz2",
-                      "mushrooms"  : "mushrooms",
-                      "a1a"  : "a1a",
-                      "ijcnn"      : "ijcnn1.tr.bz2", 
-                      "breast-cancer": "breast-cancer_scale"
-                      }
