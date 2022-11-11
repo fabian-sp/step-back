@@ -5,11 +5,11 @@ Test Base class.
 from src.base import Base
 
 
-config = {"dataset": 'synthetic_linear',
-          "dataset_kwargs": {'p': 10, 'n_samples': 100},
-          "model": 'linear',
-          "loss_func": 'logistic',
-          "score_func": 'logistic_accuracy',
+config = {"dataset": 'synthetic_matrix_fac',
+          "dataset_kwargs": {'p': 10, 'q': 5, 'n_samples': 100},
+          "model": 'matrix_fac',
+          "loss_func": 'squared',
+          "score_func": 'squared',
           "opt": {'name': 'sgd', 'lr': 1e-1, 'weight_decay': 0, 'lr_schedule': 'sqrt'},
           "batch_size": 20,
           "max_epoch": 10,

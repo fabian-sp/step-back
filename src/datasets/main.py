@@ -71,6 +71,11 @@ def infer_shapes(D: DataClass):
         input_dim = (batch['data'].shape[0],)    
     else:
         input_dim = tuple(batch['data'].shape[1:])
+        
+    if len(batch['targets'].shape) == 1:
+        output_dim = (batch['targets'].shape[0],)    
+    else:
+        output_dim = tuple(batch['targets'].shape[1:])
     
-    return input_dim
+    return input_dim, output_dim
     

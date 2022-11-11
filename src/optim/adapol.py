@@ -50,8 +50,7 @@ class AdaPolyak(torch.optim.Optimizer):
             beta = self.beta
         else:
             beta = 1
-        
-        
+                
         _dot = 0.
         _gamma = 0.
         _norm = 0.
@@ -75,10 +74,8 @@ class AdaPolyak(torch.optim.Optimizer):
         for group in self.param_groups:
             lr = group['lr']
             
-            for p in group['params']:
-                
-                tau = min(lr, t1) # step size
-                
+            for p in group['params']:              
+                tau = min(lr, t1) # step size                
                 p.data.add_(other=p.grad_avg, alpha=-tau)
                 
         ############################################################

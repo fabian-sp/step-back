@@ -1,7 +1,8 @@
 import torch
-from torch import nn
+import warnings
 
-from .basic_models import MLP
+from .basic_models import MLP, MatrixFac
+from .vgg import get_vgg
 
 def get_model(config: dict={}) -> torch.nn.Module:
     """
@@ -10,10 +11,31 @@ def get_model(config: dict={}) -> torch.nn.Module:
     kwargs = config['model_kwargs']
     name = config['model']
     
-    if name == "linear":
-        # here, input_dim should be one-dim
-        assert len(config['_input_dim']) == 1, "For linear models, we expect input dimensionality of length 1."
-        model = MLP(input_size=config['_input_dim'][0], output_size=1, hidden_sizes=[], bias=False, **kwargs)
+    if name == 'linear':
+        assert len(config['_input_dim']) == 1, "Expecting input dimensionality of length 1."
+        
+        input_size = config['_input_dim'][0]
+        model = MLP(input_size=input_size, output_size=1, hidden_sizes=[], bias=False, **kwargs)
+    
+    elif name == 'matrix_fac':
+        assert len(config['_input_dim']) == 1, "Expecting input dimensionality of length 1."
+        assert len(config['_output_dim']) == 1, "Expecting output dimensionality of length 1."
+        
+        input_size = config['_input_dim'][0]
+        output_size = config['_output_dim'][0]
+        
+        if 'rank' not in kwargs.keys():
+            warnings.warn(f'No rank dimension specified. Using max of input and output size, equal to {max(input_size, output_size)}')
+        
+        model = MatrixFac(input_size=input_size, output_size=output_size, rank=kwargs.get('rank', max(input_size, output_size)))
+    
+    elif name in ['vgg11', 'vgg13', 'vgg16', 'vgg19']:
+        
+        if config['dataset'] == 'cifar10':
+            model = get_vgg(name, **kwargs) # batch_norm False by default
+        else:
+            raise KeyError(f"VGG is not implemented yet for dataset {config['dataset']}.")   
+    
     else:
         raise KeyError(f"Unknown model option {name}.")   
     

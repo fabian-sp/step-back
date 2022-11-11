@@ -54,7 +54,7 @@ class Base:
         self.train_set = get_dataset(config=self.config, split='train', seed=self.seed, path=self.data_path)
         self.val_set = get_dataset(config=self.config, split='val', seed=self.run_seed, path=self.data_path)
         
-        self.config['_input_dim'] = infer_shapes(self.train_set)
+        self.config['_input_dim'], self.config['_output_dim'] = infer_shapes(self.train_set)
         
         # construct train loader
         _gen = torch.Generator()
