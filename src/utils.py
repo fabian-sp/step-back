@@ -7,12 +7,42 @@ import torch
 import itertools
 import copy
 
-#%% copied from 
+#%%
 """
 Utility functions for Experiments.
 """
 
-def create_exp_group(exp_config: dict):
+def prepare_config(exp_config: dict) -> dict:
+    """
+    Given an experiment config, we do the following preparations:
+        
+        * Convert n_runs to a list of run_id (integer values)
+        * Convert each element of opt to a list of opt configs.
+    """
+    c = copy.deepcopy(exp_config)
+    
+    c['run_id'] = list(range(c['n_runs']))
+    del c['n_runs']
+    
+    
+    assert isinstance(c['opt'], list), f"The value of 'opt' needs to be a list, but is given as {c['opt']}."
+    
+    all_opt = list()
+    for this_opt in c['opt']:
+        
+        # make every value a list
+        for k in this_opt.keys():
+            if not isinstance(this_opt[k], list):
+                this_opt[k] = [this_opt[k]]
+        
+        # cartesian product
+        all_opt += [dict(zip(this_opt.keys(), v)) for v in itertools.product(*this_opt.values())]
+         
+    c['opt'] = all_opt
+    
+    return c
+
+def create_exp_list(exp_config: dict):
     """
     This function was adapted from: https://github.com/haven-ai/haven-ai/blob/master/haven/haven_utils/exp_utils.py
     
@@ -39,7 +69,7 @@ def create_exp_group(exp_config: dict):
 
     # Create the cartesian product
     exp_list_raw = (
-        dict(zip(exp_config_copy.keys(), values)) for values in itertools.product(*exp_config_copy.values())
+        dict(zip(exp_config_copy.keys(), v)) for v in itertools.product(*exp_config_copy.values())
     )
 
     # Convert into a list
@@ -48,6 +78,9 @@ def create_exp_group(exp_config: dict):
         exp_list += [exp_dict]
 
     return exp_list
+
+
+
 
 #%% 
 """

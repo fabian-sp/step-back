@@ -70,4 +70,10 @@ def infer_shapes(D: DataClass):
     
     return input_dim
     
-    
+# mapping libsvm names to download links
+LIBSVM_DOWNLOAD_FN = {"rcv1"       : "rcv1_train.binary.bz2",
+                      "mushrooms"  : "mushrooms",
+                      "a1a"  : "a1a",
+                      "ijcnn"      : "ijcnn1.tr.bz2", 
+                      "breast-cancer": "breast-cancer_scale"
+                      }

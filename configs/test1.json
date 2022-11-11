@@ -1,0 +1,13 @@
+{
+"dataset": "synthetic_linear",
+"dataset_kwargs": {"p": 10, "n_samples": 100},
+"model": "linear",
+"loss_func": "logistic",
+"score_func": "logistic_accuracy",
+"opt": [{"name": "sgd", "lr": [1e-1,1e-2], "weight_decay": 0, "lr_schedule": "constant"},
+        {"name": "adam", "lr": 1e-3, "weight_decay": 0}
+        ],
+"batch_size": 20,
+"max_epoch": 10,
+"n_runs": 2 
+}

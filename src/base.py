@@ -3,6 +3,7 @@ import numpy as np
 import torch
 import copy
 import time
+import datetime
 
 from torch.utils.data import DataLoader
 
@@ -17,7 +18,11 @@ class Base:
     def __init__(self, name: str, config: dict, device: str):
         self.name = name
         self.config = copy.deepcopy(config)
-        self.device = device
+        
+        if torch.cuda.is_available() and device=='cuda':
+            self.device = torch.device('cuda:0')
+        else:
+            self.device = torch.device('cpu')
         
         self.data_path = 'data/'
         self.seed = 1234567
@@ -82,6 +87,7 @@ class Base:
         return 
     
     def run(self):
+        start_time = str(datetime.datetime.now())
         score_list = []
     
         for epoch in range(self.config['max_epoch']):
@@ -115,8 +121,13 @@ class Base:
                 
                 # Add score_dict to score_list
                 score_list += [score_dict]
-            
+        
+        end_time = str(datetime.datetime.now())
+        
+        # ==== store =====================
         self.results['history'] = copy.deepcopy(score_list)
+        self.results['summary']['start_time'] = start_time
+        self.results['summary']['end_time'] = end_time
         return
 
     def train_epoch(self):

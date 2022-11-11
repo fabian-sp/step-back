@@ -17,7 +17,7 @@ def get_cifar10(split, path):
                                           download=True,
                                           transform=transform_train
                                           )
-    elif split == 'val':
+    else:
         
         transform_val = transforms.Compose([transforms.ToTensor(),
                                             normalize,
