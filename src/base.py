@@ -15,14 +15,14 @@ from .metrics import get_metric_function
 from .utils import l2_norm, grad_norm, ridge_opt_value
 
 class Base:
-    def __init__(self, name: str, config: dict, device: str):
+    def __init__(self, name: str, config: dict, device: str='cpu'):
         self.name = name
         self.config = copy.deepcopy(config)
         
-        if torch.cuda.is_available() and device=='cuda':
-            self.device = torch.device('cuda:0')
-        else:
-            self.device = torch.device('cpu')
+
+        print("CUDA available? ", torch.cuda.is_available())
+        self.device = torch.device(device)
+        print("Using device: ", self.device)
         
         self.data_path = 'data/'
         self.seed = 1234567
@@ -124,6 +124,11 @@ class Base:
                 score_dict['model_norm'] = l2_norm(self.model)        
                 score_dict['grad_norm'] = self.opt.state.get('grad_norm')
                 
+                # Reset 
+                if self.opt.state.get('step_size_list'):
+                    score_dict['step_size_list'] = self.opt.state['step_size_list'].copy()
+                    self.opt.state['step_size_list'] = list()
+                
                 # Add score_dict to score_list
                 score_list += [score_dict]
         
@@ -190,8 +195,8 @@ class Base:
                 # metric takes average over batch ==> multiply with batch size
                 score_dict[_met] += this_metric(out, targets).item() * data.shape[0] 
                 
-            pbar.set_description(f'Validating {dataset.split}.')
-        
+            pbar.set_description(f'Validating {dataset.split}')
+            
         
         for _met in metric_dict.keys():
             # Get from sum to average

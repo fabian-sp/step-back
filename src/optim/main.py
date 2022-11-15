@@ -1,6 +1,8 @@
 import torch
 from torch.optim.lr_scheduler import LambdaLR, StepLR
 
+from .adapol import AdaPolyak
+
 def get_optimizer(opt_config: dict) -> (torch.optim.Optimizer, dict):
     """
     Main function mapping opt configs to an instance of torch.optim.Optimizer and a dict of hyperparameter arguments (lr, weight_decay,..).  
@@ -40,6 +42,12 @@ def get_optimizer(opt_config: dict) -> (torch.optim.Optimizer, dict):
                   'weight_decay': opt_config.get('weight_decay', 0),
                   'betas': opt_config.get('betas', (0.9, 0.999)),
                   'eps': opt_config.get('eps', 1e-8)
+                  }
+    
+    elif name == 'adapol':
+        opt_obj = AdaPolyak
+        hyperp = {'lr': opt_config.get('lr', 1e-3),
+                  'beta': opt_config.get('beta', 0.9)
                   }
         
     else:

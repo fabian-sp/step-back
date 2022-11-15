@@ -33,6 +33,8 @@ class AdaPolyak(torch.optim.Optimizer):
                 p.grad_avg = torch.zeros(p.shape)
                 p.grad_dot_w = 0.
         
+        self.state['step_size_list'] = list() # for storing
+        
         return
         
     def step(self, closure: LossClosure=None) -> OptFloat:
@@ -79,6 +81,7 @@ class AdaPolyak(torch.optim.Optimizer):
                 p.data.add_(other=p.grad_avg, alpha=-tau)
                 
         ############################################################
-        
         self._flag_first_step = True
+        self.state['step_size_list'].append(t1)
+        
         return loss

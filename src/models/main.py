@@ -12,12 +12,24 @@ def get_model(config: dict={}) -> torch.nn.Module:
     kwargs = config['model_kwargs']
     name = config['model']
     
+    #======== Linear model =============
     if name == 'linear':
         assert len(config['_input_dim']) == 1, "Expecting input dimensionality of length 1."
         
         input_size = config['_input_dim'][0]
         model = MLP(input_size=input_size, output_size=1, hidden_sizes=[], bias=False, **kwargs)
     
+    #======== MLP with ReLU =============
+    elif name == 'mlp':
+        assert len(config['_input_dim']) == 1, "Expecting input dimensionality of length 1."
+        input_size = config['_input_dim'][0]
+        
+        assert 'output_size' in config['model_kwargs'].keys(), "Need to specify the dimension of the output. Add in your config \n 'model_kwargs' = {'output_size': }"
+        output_size = config['model_kwargs'] # output of model can be multi-dim, but targets are 1-dim 
+        
+        model = MLP(input_size=input_size, **kwargs)
+    
+    #======== Matrix factorization =============
     elif name == 'matrix_fac':
         assert len(config['_input_dim']) == 1, "Expecting input dimensionality of length 1."
         assert len(config['_output_dim']) == 1, "Expecting output dimensionality of length 1."
@@ -30,6 +42,7 @@ def get_model(config: dict={}) -> torch.nn.Module:
         
         model = MatrixFac(input_size=input_size, output_size=output_size, rank=kwargs.get('rank', max(input_size, output_size)))
     
+    #======== VGG models =============
     elif name in ['vgg11', 'vgg13', 'vgg16', 'vgg19']:
         
         if config['dataset'] == 'cifar10':
@@ -37,6 +50,7 @@ def get_model(config: dict={}) -> torch.nn.Module:
         else:
             raise KeyError(f"Model {name} is not implemented yet for dataset {config['dataset']}.")   
     
+    #======== Resnet =============
     elif name in ['resnet20', 'resnet32', 'resnet44', 'resnet56', 'resnet110', 'resnet1202']:
         
         if config['dataset'] == 'cifar10':

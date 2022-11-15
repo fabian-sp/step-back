@@ -5,6 +5,7 @@ from torch.utils.data import DataLoader
 
 
 from .cifar import get_cifar10
+from .mnist import get_mnist
 from .synthetic import get_synthetic_matrix_fac, get_synthetic_linear
 from .libsvm import LIBSVM_NAME_MAP, get_libsvm
 
@@ -38,6 +39,9 @@ def get_dataset(config: dict, split: str, seed: int, path: str) -> DataClass:
     if name == 'cifar10':
         ds = get_cifar10(split=split, path=path)
     
+    elif name == 'mnist':
+        ds = get_mnist(split=split, path=path, **kwargs)
+        
     elif name == 'synthetic_matrix_fac':
         assert all([k in kwargs.keys() for k in ['p', 'q', 'n_samples']]), "For synthetic dataset, dimensions and number of samples need to be specified in config['dataset_kwargs]']."
         ds = get_synthetic_matrix_fac(split=split, seed=seed,
