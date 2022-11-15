@@ -12,7 +12,7 @@ from .models.main import get_model
 from .optim.main import get_optimizer, get_scheduler
 from .metrics import get_metric_function
 
-from .utils import l2_norm, grad_norm
+from .utils import l2_norm, grad_norm, ridge_opt_value
 
 class Base:
     def __init__(self, name: str, config: dict, device: str):
@@ -80,9 +80,14 @@ class Base:
         self.sched = get_scheduler(self.config['opt'], self.opt)
         
         #============ Results ==============
+        opt_val = self._compute_opt_value()
+        
         self.results = {'config': self.config,
                         'history': {},
                         'summary': {}}
+        
+        if opt_val is not None:
+            self.results['summary']['opt_val'] = opt_val
         
         return 
     
@@ -196,6 +201,23 @@ class Base:
         
         return score_dict
 
+
+    def _compute_opt_value(self):
+        """
+        For linear model, the problem is convex and we can compute the optimal value
+        """
+        if self.config['model'] == 'linear':
+            if self.config['loss_func'] == 'squared':
+                opt_val = ridge_opt_value(X=self.train_set.dataset.tensors[0].detach().numpy(),
+                                          y=self.train_set.dataset.tensors[1].detach().numpy(),
+                                          lmbda = self.config['opt'].get('weight_decay', 0)
+                                          )
+            elif self.config['loss_func'] == 'logistic':
+                opt_val = 1
+        else:
+            opt_val = None
+            
+        return opt_val
     
     
 

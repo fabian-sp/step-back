@@ -6,7 +6,7 @@ import math
 """
 VGG architectures for CIFAR-10
 
-See https://github.com/chengyangfu/pytorch-vgg-cifar10/blob/master/vgg.py
+Adapted from https://github.com/chengyangfu/pytorch-vgg-cifar10/blob/master/vgg.py
 """
 
 class VGG_CIFAR10(nn.Module):
@@ -62,7 +62,7 @@ cfg = {
 }
 
 
-def get_vgg(name, batch_norm=False):
+def get_cifar10_vgg(name, batch_norm=False):
     if name == 'vgg11':
         m = VGG_CIFAR10(make_layers(cfg['A']), batch_norm=batch_norm)
     elif name == 'vgg13':

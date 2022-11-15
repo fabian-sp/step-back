@@ -7,6 +7,8 @@ import torch
 import itertools
 import copy
 
+from sklearn.linear_model import Ridge
+
 #%%
 """
 Utility functions for Experiments.
@@ -120,3 +122,19 @@ def grad_norm(opt):
      
     return torch.sqrt(grad_norm).item()
 
+#%%
+"""
+Compute optimal value for convex problems.
+"""
+
+def ridge_opt_value(X, y, lmbda):
+    n_samples = len(y)
+    sk = Ridge(alpha=n_samples * lmbda/2, fit_intercept=False, tol=1e-10, solver='auto', random_state=1234)
+    
+    sk.fit(X,y)
+    sol = sk.coef_
+    
+    t1 = lmbda/2 * np.linalg.norm(sol)**2
+    t2 = ((X@sol - y)**2).mean()
+
+    return t1+t2
