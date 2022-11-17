@@ -1,6 +1,7 @@
 """
 Test Base class.
 """
+import torch
 
 from src.base import Base
 
@@ -18,8 +19,8 @@ from src.base import Base
 config = {"dataset": 'synthetic_linear',
           "dataset_kwargs": {'p': 10, 'n_samples': 100},
           "model": 'linear',
-          "loss_func": 'squared',
-          "score_func": 'squared',
+          "loss_func": 'logistic',
+          "score_func": 'logistic_accuracy',
           "opt": {'name': 'sgd', 'lr': 1e-1,  'lr_schedule': 'sqrt'},
           "batch_size": 20,
           "max_epoch": 10,

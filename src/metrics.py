@@ -1,6 +1,6 @@
 import torch 
 
-# Loss functions
+# Loss functions (used in training or validation)
 def get_metric_function(metric: str):
     
     if metric == "cross_entropy":
@@ -22,7 +22,8 @@ def get_metric_function(metric: str):
         raise KeyError(f"Unknown loss function {metric}.")
     
     return l
-    
+
+
     
 def cross_entropy_loss(out, targets, backwards=False):
     criterion = torch.nn.CrossEntropyLoss()

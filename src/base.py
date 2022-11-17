@@ -70,13 +70,16 @@ class Base:
         self.model.to(self.device)
         print(self.model)
         
+        #============ Loss function ========
+        self._training_loss_fun = None  
+        self._training_loss_obj = None  
+        
         #============ Optimizer ============
         opt_obj, hyperp = get_optimizer(self.config['opt'])
         self.opt = opt_obj(params=self.model.parameters(), **hyperp)       
-        if not hasattr(self.opt, 'state'):
-            self.opt['state'] = dict()
         
         print(self.opt)
+        
         self.sched = get_scheduler(self.config['opt'], self.opt)
         
         #============ Results ==============
@@ -105,24 +108,27 @@ class Base:
             s_time = time.time()
             self.train_epoch()
             e_time = time.time()
-        
+            
+            # Record metrics
+            score_dict['train_epoch_time'] = e_time - s_time       
+            score_dict['model_norm'] = l2_norm(self.model)        
+            score_dict['grad_norm'] = grad_norm(self.model)
+                
             # Validation
             with torch.no_grad():
-                metric_dict = {'loss': self.config['loss_func'], 'score': self.config['score_func']}
-                train_dict = self.validate(self.train_set, 
+                
+                metric_dict = {'loss': self.config['loss_func'], 'score': self.config['score_func']}                   
+                train_dict = self.evaluate(self.train_set, 
                                            metric_dict = metric_dict,
                                            )  
             
-                val_dict = self.validate(self.val_set, 
+                val_dict = self.evaluate(self.val_set, 
                                          metric_dict = metric_dict,
                                          )                     
                        
-                # Record more metrics
+                # Record metrics
                 score_dict.update(train_dict)
                 score_dict.update(val_dict)
-                score_dict['train_epoch_time'] = e_time - s_time       
-                score_dict['model_norm'] = l2_norm(self.model)        
-                score_dict['grad_norm'] = self.opt.state.get('grad_norm')
                 
                 # Reset 
                 if self.opt.state.get('step_size_list'):
@@ -161,8 +167,7 @@ class Base:
             
             pbar.set_description(f'Training - {loss_val:.3f}')
         
-        # store gradient norm
-        self.opt.state['grad_norm'] = grad_norm(self.opt)
+        
         print("Current learning rate", self.sched.get_last_lr()[0])
         
         # update learning rate             
@@ -170,13 +175,15 @@ class Base:
 
         return
     
-    def validate(self, dataset, metric_dict):
+    def evaluate(self, dataset, metric_dict):
         """
-        Validate model for a given dataset (train or val), and for several metrics.
+        Evaluate model for a given dataset (train or val), and for several metrics.
         
         metric_dict:
             Should have the form {'metric_name1': metric1, 'metric_name2': metric2, ...}
         """
+        #assert len(metric_dict) 
+        
         # create temporary DataLoader
         dl = torch.utils.data.DataLoader(dataset, drop_last=True, 
                                          batch_size=self.config['batch_size'])

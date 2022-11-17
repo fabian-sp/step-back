@@ -3,7 +3,7 @@ import warnings
 
 from ..types import Params, LossClosure, OptFloat
 
-class AdaPolyak(torch.optim.Optimizer):
+class MoMo(torch.optim.Optimizer):
     def __init__(self, 
                  params: Params, 
                  lr: float=1e-3,
@@ -17,7 +17,7 @@ class AdaPolyak(torch.optim.Optimizer):
         
         defaults = dict(lr=lr)
         
-        super(AdaPolyak, self).__init__(params, defaults)
+        super(MoMo, self).__init__(params, defaults)
         
         self.lr = lr
         self.beta = beta # weight for newest element in all averages
