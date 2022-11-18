@@ -168,7 +168,7 @@ class Base:
         """
                 
         self.model.train()
-        pbar = self.train_loader # tqdm.tqdm(self.train_loader)
+        pbar = tqdm.tqdm(self.train_loader)
         
         for batch in pbar:
             self.opt.zero_grad()    
@@ -206,7 +206,7 @@ class Base:
         # create temporary DataLoader
         dl = torch.utils.data.DataLoader(dataset, drop_last=True, 
                                          batch_size=self.config['batch_size'])
-        pbar = dl #tqdm.tqdm(dl)
+        pbar = tqdm.tqdm(dl)
         
         self.model.eval()
         score_dict = dict(zip(metric_dict.keys(), np.zeros(len(metric_dict))))
