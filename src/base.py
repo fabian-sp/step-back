@@ -147,19 +147,19 @@ class Base:
         loss_function = get_metric_function(self.config['loss_func'])
                 
         self.model.train()
-        pbar = tqdm.tqdm(self.train_loader)
+        pbar = self.train_loader # tqdm.tqdm(self.train_loader)
         
         for batch in pbar:
             self.opt.zero_grad()    
             
             # get batch and compute model output
             data, targets = batch['data'].to(device=self.device), batch['targets'].to(device=self.device)
-            out = self.model(data)
+            out = self.model(data).to(device=self.device)
                    
             closure = lambda: loss_function(out, targets, backwards=True)
             loss_val = self.opt.step(closure)
-            
-            pbar.set_description(f'Training - {loss_val:.3f}')
+            #print((f'Training - {loss_val:.3f}'))
+            #pbar.set_description(f'Training - {loss_val:.3f}')
         
         # store gradient norm
         self.opt.state['grad_norm'] = grad_norm(self.opt)
@@ -180,7 +180,7 @@ class Base:
         # create temporary DataLoader
         dl = torch.utils.data.DataLoader(dataset, drop_last=True, 
                                          batch_size=self.config['batch_size'])
-        pbar = tqdm.tqdm(dl)
+        pbar = dl #tqdm.tqdm(dl)
         
         self.model.eval()
         score_dict = dict(zip(metric_dict.keys(), np.zeros(len(metric_dict))))
@@ -194,13 +194,14 @@ class Base:
                 this_metric = get_metric_function(_met_fun)
                 # metric takes average over batch ==> multiply with batch size
                 score_dict[_met] += this_metric(out, targets).item() * data.shape[0] 
-                
-            pbar.set_description(f'Validating {dataset.split}')
+            
+            #pbar.set_description(f'Validating {dataset.split}')
             
         
         for _met in metric_dict.keys():
             # Get from sum to average
             score_dict[_met] = float(score_dict[_met] / len(dl.dataset))
+            print(score_dict[_met])
             # add split in front of names
             score_dict[dataset.split + '_' + _met] = score_dict.pop(_met)
         

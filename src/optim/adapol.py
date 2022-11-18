@@ -6,7 +6,7 @@ from ..types import Params, LossClosure, OptFloat
 class AdaPolyak(torch.optim.Optimizer):
     def __init__(self, 
                  params: Params, 
-                 lr: float=1e-3,
+                 lr: float=1e-1,
                  beta: float=0.9,
                  lb: float=0) -> None:
         
@@ -27,10 +27,11 @@ class AdaPolyak(torch.optim.Optimizer):
         # flag that we did step() at least once
         self._flag_first_step = False
         
+        self.number_step = 0
         # initialize averages
         for group in self.param_groups:
             for p in group['params']:
-                p.grad_avg = torch.zeros(p.shape)
+                p.grad_avg = torch.zeros(p.shape).to(p.device)
                 p.grad_dot_w = 0.
         
         self.state['step_size_list'] = list() # for storing
@@ -46,38 +47,39 @@ class AdaPolyak(torch.optim.Optimizer):
         if self.loss_avg is None:
             self.loss_avg = loss
         else:
-            self.loss_avg = self.beta*loss + (1-self.beta)*self.loss_avg
+            self.loss_avg = (1 - self.beta) * loss +  self.beta * self.loss_avg
             
         if self._flag_first_step:
             beta = self.beta
         else:
-            beta = 1
+            beta = 0.9 # to change to .9
                 
         _dot = 0.
         _gamma = 0.
         _norm = 0.
         
+        self.number_step += 1
         ############################################################
         # compute all quantities
         for group in self.param_groups:
             for p in group['params']:
                 
-                p.grad_avg = beta*p.grad + (1-beta)*p.grad_avg
-                p.grad_dot_w = beta*torch.sum(torch.mul(p.data, p.grad)) + (1-beta)*p.grad_dot_w
+                p.grad_avg = (1-beta) * p.grad + beta * p.grad_avg
+                p.grad_dot_w = (1-beta) * torch.sum(torch.mul(p.data, p.grad)) + beta * p.grad_dot_w
                 
                 _dot += torch.sum(torch.mul(p.data, p.grad_avg))
                 _gamma += p.grad_dot_w
                 _norm += torch.sum(torch.mul(p.grad_avg, p.grad_avg))
                 
+        # import pdb; pdb.set_trace()
         t1 = max(self.loss_avg + _dot - _gamma , self.lb)/_norm
         t1 = t1.item() # make scalar
         
         # update weights
         for group in self.param_groups:
             lr = group['lr']
-            
-            for p in group['params']:              
-                tau = min(lr, t1) # step size                
+            tau = min(lr/(1-beta**self.number_step), t1) # step size 
+            for p in group['params']:                             
                 p.data.add_(other=p.grad_avg, alpha=-tau)
                 
         ############################################################

@@ -13,7 +13,7 @@ from src.log import Container
 
 #%%
 
-exp_id = 'mnist_mlp' # file name of config
+exp_id = 'cifar_vgg' # file name of config
 
 with open(f'configs/{exp_id}.json') as f:
     exp_config = json.load(f)
@@ -31,7 +31,7 @@ C = Container(name=exp_id)
 
 for config in exp_list:
     
-    B = Base(name=exp_id, config=config, device='cpu')
+    B = Base(name=exp_id, config=config, device='cuda')
     B.setup()
     B.run() # train and validate
     
