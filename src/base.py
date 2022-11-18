@@ -227,7 +227,7 @@ class Base:
         for _met in metric_dict.keys():
             # Get from sum to average
             score_dict[_met] = float(score_dict[_met] / len(dl.dataset))
-            print(score_dict[_met])
+            
             # add split in front of names
             score_dict[dataset.split + '_' + _met] = score_dict.pop(_met)
         
