@@ -10,21 +10,25 @@ from torch.utils.data import DataLoader
 from .datasets.main import get_dataset, infer_shapes
 from .models.main import get_model
 from .optim.main import get_optimizer, get_scheduler
-from .metrics import get_metric_function
+from .metrics import Loss
 
 from .utils import l2_norm, grad_norm, ridge_opt_value
 
 class Base:
-    def __init__(self, name: str, config: dict, device: str='cpu'):
+    def __init__(self, name: str, config: dict, device: str='cpu', data_dir: str='data/'):
         self.name = name
         self.config = copy.deepcopy(config)
-        
+        self.data_dir = data_dir
 
         print("CUDA available? ", torch.cuda.is_available())
-        self.device = torch.device(device)
+        
+        if torch.cuda.is_available():
+            self.device = torch.device(device)
+        else:
+            self.device = torch.device('cpu')
+            
         print("Using device: ", self.device)
         
-        self.data_path = 'data/'
         self.seed = 1234567
         self.run_seed = 456789 + config.get('run_id', 0)
         
@@ -51,8 +55,8 @@ class Base:
     def setup(self):
         
         #============ Data =================
-        self.train_set = get_dataset(config=self.config, split='train', seed=self.seed, path=self.data_path)
-        self.val_set = get_dataset(config=self.config, split='val', seed=self.run_seed, path=self.data_path)
+        self.train_set = get_dataset(config=self.config, split='train', seed=self.seed, path=self.data_dir)
+        self.val_set = get_dataset(config=self.config, split='val', seed=self.run_seed, path=self.data_dir)
         
         self.config['_input_dim'], self.config['_output_dim'] = infer_shapes(self.train_set)
         
@@ -70,13 +74,14 @@ class Base:
         self.model.to(self.device)
         print(self.model)
         
+        #============ Loss function ========
+        self.training_loss = Loss(name=self.config['loss_func'], backwards=True)
+        
         #============ Optimizer ============
         opt_obj, hyperp = get_optimizer(self.config['opt'])
-        self.opt = opt_obj(params=self.model.parameters(), **hyperp)       
-        if not hasattr(self.opt, 'state'):
-            self.opt['state'] = dict()
         
-        print(self.opt)
+        self._init_opt(opt_obj, hyperp)
+        
         self.sched = get_scheduler(self.config['opt'], self.opt)
         
         #============ Results ==============
@@ -90,6 +95,18 @@ class Base:
             self.results['summary']['opt_val'] = opt_val
         
         return 
+    
+    def _init_opt(self, opt_obj, hyperp):
+        """Initializes the opt object. If your optimizer needs custom commands, add them here."""
+        
+        self.opt = opt_obj(params=self.model.parameters(), **hyperp)         
+        self._custom_closure = False
+        
+        ### Set self._custom_closure=True if your optimizer needs a custom closure function
+        # in that case, self.opt.closure(out, targets) will be executed in .step()
+        
+        print(self.opt)        
+        return
     
     def run(self):
         start_time = str(datetime.datetime.now())
@@ -105,24 +122,29 @@ class Base:
             s_time = time.time()
             self.train_epoch()
             e_time = time.time()
-        
+            
+            # Record metrics
+            score_dict['train_epoch_time'] = e_time - s_time       
+            score_dict['model_norm'] = l2_norm(self.model)        
+            score_dict['grad_norm'] = grad_norm(self.model)
+                
             # Validation
             with torch.no_grad():
-                metric_dict = {'loss': self.config['loss_func'], 'score': self.config['score_func']}
-                train_dict = self.validate(self.train_set, 
+                
+                metric_dict = {'loss': Loss(self.config['loss_func'], backwards=False), 
+                               'score': Loss(self.config['score_func'], backwards=False)}      
+                
+                train_dict = self.evaluate(self.train_set, 
                                            metric_dict = metric_dict,
                                            )  
             
-                val_dict = self.validate(self.val_set, 
+                val_dict = self.evaluate(self.val_set, 
                                          metric_dict = metric_dict,
                                          )                     
                        
-                # Record more metrics
+                # Record metrics
                 score_dict.update(train_dict)
                 score_dict.update(val_dict)
-                score_dict['train_epoch_time'] = e_time - s_time       
-                score_dict['model_norm'] = l2_norm(self.model)        
-                score_dict['grad_norm'] = self.opt.state.get('grad_norm')
                 
                 # Reset 
                 if self.opt.state.get('step_size_list'):
@@ -144,7 +166,6 @@ class Base:
         """
         Train one epoch.
         """
-        loss_function = get_metric_function(self.config['loss_func'])
                 
         self.model.train()
         pbar = self.train_loader # tqdm.tqdm(self.train_loader)
@@ -155,14 +176,18 @@ class Base:
             # get batch and compute model output
             data, targets = batch['data'].to(device=self.device), batch['targets'].to(device=self.device)
             out = self.model(data).to(device=self.device)
-                   
-            closure = lambda: loss_function(out, targets, backwards=True)
-            loss_val = self.opt.step(closure)
-            #print((f'Training - {loss_val:.3f}'))
-            #pbar.set_description(f'Training - {loss_val:.3f}')
+           
+            if not self._custom_closure:
+                closure = lambda: self.training_loss.compute(out, targets)
+            else:
+                closure = lambda: self.opt.closure(out, targets)
+                
+            loss_val = self.opt.step(closure) # here the magic happens
+            
+            pbar.set_description(f'Training - {loss_val:.3f}')
+
         
-        # store gradient norm
-        self.opt.state['grad_norm'] = grad_norm(self.opt)
+        
         print("Current learning rate", self.sched.get_last_lr()[0])
         
         # update learning rate             
@@ -170,13 +195,14 @@ class Base:
 
         return
     
-    def validate(self, dataset, metric_dict):
+    def evaluate(self, dataset, metric_dict):
         """
-        Validate model for a given dataset (train or val), and for several metrics.
+        Evaluate model for a given dataset (train or val), and for several metrics.
         
         metric_dict:
             Should have the form {'metric_name1': metric1, 'metric_name2': metric2, ...}
         """
+        
         # create temporary DataLoader
         dl = torch.utils.data.DataLoader(dataset, drop_last=True, 
                                          batch_size=self.config['batch_size'])
@@ -191,11 +217,11 @@ class Base:
             out = self.model(data)
             
             for _met, _met_fun in metric_dict.items():
-                this_metric = get_metric_function(_met_fun)
                 # metric takes average over batch ==> multiply with batch size
-                score_dict[_met] += this_metric(out, targets).item() * data.shape[0] 
-            
-            #pbar.set_description(f'Validating {dataset.split}')
+                score_dict[_met] += _met_fun.compute(out, targets).item() * data.shape[0] 
+                
+            pbar.set_description(f'Validating {dataset.split}')
+
             
         
         for _met in metric_dict.keys():

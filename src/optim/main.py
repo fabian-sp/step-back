@@ -1,7 +1,7 @@
 import torch
 from torch.optim.lr_scheduler import LambdaLR, StepLR
 
-from .adapol import AdaPolyak
+from .momo import MoMo
 
 def get_optimizer(opt_config: dict) -> (torch.optim.Optimizer, dict):
     """
@@ -44,8 +44,8 @@ def get_optimizer(opt_config: dict) -> (torch.optim.Optimizer, dict):
                   'eps': opt_config.get('eps', 1e-8)
                   }
     
-    elif name == 'adapol':
-        opt_obj = AdaPolyak
+    elif name == 'momo':
+        opt_obj = MoMo
         hyperp = {'lr': opt_config.get('lr', 1e-3),
                   'beta': opt_config.get('beta', 0.9)
                   }

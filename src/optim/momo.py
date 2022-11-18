@@ -3,7 +3,7 @@ import warnings
 
 from ..types import Params, LossClosure, OptFloat
 
-class AdaPolyak(torch.optim.Optimizer):
+class MoMo(torch.optim.Optimizer):
     def __init__(self, 
                  params: Params, 
                  lr: float=1e-1,
@@ -17,7 +17,7 @@ class AdaPolyak(torch.optim.Optimizer):
         
         defaults = dict(lr=lr)
         
-        super(AdaPolyak, self).__init__(params, defaults)
+        super(MoMo, self).__init__(params, defaults)
         
         self.lr = lr
         self.beta = beta # weight for newest element in all averages
@@ -52,7 +52,8 @@ class AdaPolyak(torch.optim.Optimizer):
         if self._flag_first_step:
             beta = self.beta
         else:
-            beta = 0.9 # to change to .9
+            #beta = 0. # version 1
+            beta = self.beta # version 2 (Adam type)
                 
         _dot = 0.
         _gamma = 0.
@@ -78,7 +79,10 @@ class AdaPolyak(torch.optim.Optimizer):
         # update weights
         for group in self.param_groups:
             lr = group['lr']
-            tau = min(lr/(1-beta**self.number_step), t1) # step size 
+            
+            #tau = min(lr, t1) # step size 
+            tau = min(lr/(1-beta**self.number_step), t1) # step size (Adam version)
+            
             for p in group['params']:                             
                 p.data.add_(other=p.grad_avg, alpha=-tau)
                 

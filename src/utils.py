@@ -111,16 +111,15 @@ def l2_norm(model: torch.nn.Module):
     return torch.sqrt(w).item()
 
 @torch.no_grad()
-def grad_norm(opt):
+def grad_norm(model: torch.nn.Module):
     """
     Computes norm of (stochastic) gradient.
     """
-    grad_norm = 0.        
-    for group in opt.param_groups:
-        for p in group['params']:
-            grad_norm += torch.sum(torch.mul(p.grad, p.grad))
+    g = 0.        
+    for p in model.parameters():
+        g += torch.sum(torch.mul(p.grad, p.grad))
      
-    return torch.sqrt(grad_norm).item()
+    return torch.sqrt(g).item()
 
 #%%
 """

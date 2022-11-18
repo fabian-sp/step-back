@@ -1,5 +1,5 @@
 """
-Main file for running experiments
+Main file for running experiments.
 """
 import json
 import copy
@@ -11,31 +11,37 @@ from src.base import Base
 from src.log import Container
 
 
-#%%
+CONFIG_DIR = 'configs/'
+OUTPUT_DIR = 'output/'
 
 exp_id = 'cifar_vgg' # file name of config
 
-with open(f'configs/{exp_id}.json') as f:
-    exp_config = json.load(f)
 
-
-# prepare list of configs (cartesian product)
-exp_config = prepare_config(exp_config)
-exp_list = create_exp_list(exp_config)
+def run_one(exp_id):
+    
+    # load config
+    with open(CONFIG_DIR + f'{exp_id}.json') as f:
+        exp_config = json.load(f)
+    
+    # prepare list of configs (cartesian product)
+    exp_config = prepare_config(exp_config)
+    exp_list = create_exp_list(exp_config)
+        
+    print(f"Created {len(exp_list)} different configurations.")
     
 
-print(f"Created {len(exp_list)} different configurations.")
+    # initialize container for storing
+    C = Container(name=exp_id, output_dir=OUTPUT_DIR)
+    
+    for config in exp_list: 
+        B = Base(name=exp_id, config=config, device='cuda', data_dir='data/')
+        B.setup()
+        B.run() # train and validate
+        
+        C.append(B.results).store() # store results
+    
+    return 
 
-# initialize container for storing
-C = Container(name=exp_id)
-
-for config in exp_list:
-    
-    B = Base(name=exp_id, config=config, device='cuda')
-    B.setup()
-    B.run() # train and validate
-    
-    C.append(B.results).store() # store results
-    
+run_one(exp_id)
     
 
