@@ -14,7 +14,7 @@ from src.log import Container
 CONFIG_DIR = 'configs/'
 OUTPUT_DIR = 'output/'
 
-exp_id = 'mnist_mlp' # file name of config
+exp_id = 'cifar_vgg' # file name of config
 
 
 def run_one(exp_id):
@@ -29,11 +29,12 @@ def run_one(exp_id):
         
     print(f"Created {len(exp_list)} different configurations.")
     
+
     # initialize container for storing
     C = Container(name=exp_id, output_dir=OUTPUT_DIR)
     
     for config in exp_list: 
-        B = Base(name=exp_id, config=config, device='cpu', data_dir='data/')
+        B = Base(name=exp_id, config=config, device='cuda', data_dir='data/')
         B.setup()
         B.run() # train and validate
         

@@ -22,7 +22,7 @@ config = {"dataset": 'synthetic_linear',
           "loss_func": 'logistic',
           "score_func": 'logistic_accuracy',
           #"opt": {'name': 'sgd', 'lr': 1e-1,  'lr_schedule': 'sqrt'},
-          "opt": {'name': 'momo', 'lr': 1e-1,  'lr_schedule': 'sqrt'},
+          "opt": {'name': 'momo', 'lr': 1e-1,  'lr_schedule': 'sqrt', 'bias_correction': False},
           "batch_size": 20,
           "max_epoch": 10,
           "run_id": 0}

@@ -22,6 +22,7 @@ class VGG_CIFAR10(nn.Module):
             nn.ReLU(True),
             nn.Linear(512, 10),
         )
+        
          # Initialize weights
         for m in self.modules():
             if isinstance(m, nn.Conv2d):
@@ -64,12 +65,12 @@ cfg = {
 
 def get_cifar10_vgg(name, batch_norm=False):
     if name == 'vgg11':
-        m = VGG_CIFAR10(make_layers(cfg['A']), batch_norm=batch_norm)
+        m = VGG_CIFAR10(make_layers(cfg['A'], batch_norm=batch_norm))
     elif name == 'vgg13':
-        m = VGG_CIFAR10(make_layers(cfg['B']), batch_norm=batch_norm)
+        m = VGG_CIFAR10(make_layers(cfg['B'], batch_norm=batch_norm))
     elif name == 'vgg16':
-        m = VGG_CIFAR10(make_layers(cfg['D']), batch_norm=batch_norm)
+        m = VGG_CIFAR10(make_layers(cfg['D'], batch_norm=batch_norm))
     elif name == 'vgg19':
-        m = VGG_CIFAR10(make_layers(cfg['E']), batch_norm=batch_norm)
+        m = VGG_CIFAR10(make_layers(cfg['E'], batch_norm=batch_norm))
     
     return m

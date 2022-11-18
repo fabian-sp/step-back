@@ -21,7 +21,12 @@ class Base:
         self.data_dir = data_dir
 
         print("CUDA available? ", torch.cuda.is_available())
-        self.device = torch.device(device)
+        
+        if torch.cuda.is_available():
+            self.device = torch.device(device)
+        else:
+            self.device = torch.device('cpu')
+            
         print("Using device: ", self.device)
         
         self.seed = 1234567
@@ -170,7 +175,7 @@ class Base:
             
             # get batch and compute model output
             data, targets = batch['data'].to(device=self.device), batch['targets'].to(device=self.device)
-            out = self.model(data)
+            out = self.model(data).to(device=self.device)
            
             if not self._custom_closure:
                 closure = lambda: self.training_loss.compute(out, targets)
@@ -180,6 +185,7 @@ class Base:
             loss_val = self.opt.step(closure) # here the magic happens
             
             pbar.set_description(f'Training - {loss_val:.3f}')
+
         
         
         print("Current learning rate", self.sched.get_last_lr()[0])
@@ -215,11 +221,13 @@ class Base:
                 score_dict[_met] += _met_fun.compute(out, targets).item() * data.shape[0] 
                 
             pbar.set_description(f'Validating {dataset.split}')
+
             
         
         for _met in metric_dict.keys():
             # Get from sum to average
             score_dict[_met] = float(score_dict[_met] / len(dl.dataset))
+            
             # add split in front of names
             score_dict[dataset.split + '_' + _met] = score_dict.pop(_met)
         

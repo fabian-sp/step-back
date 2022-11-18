@@ -47,7 +47,8 @@ def get_optimizer(opt_config: dict) -> (torch.optim.Optimizer, dict):
     elif name == 'momo':
         opt_obj = MoMo
         hyperp = {'lr': opt_config.get('lr', 1e-3),
-                  'beta': opt_config.get('beta', 0.9)
+                  'beta': opt_config.get('beta', 0.9),
+                  'bias_correction': opt_config.get('bias_correction', True)
                   }
         
     else:
