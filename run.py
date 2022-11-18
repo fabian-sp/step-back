@@ -1,5 +1,5 @@
 """
-Main file for running experiments
+Main file for running experiments.
 """
 import json
 import copy
@@ -11,31 +11,36 @@ from src.base import Base
 from src.log import Container
 
 
-#%%
+CONFIG_DIR = 'configs/'
+OUTPUT_DIR = 'output/'
 
 exp_id = 'mnist_mlp' # file name of config
 
-with open(f'configs/{exp_id}.json') as f:
-    exp_config = json.load(f)
 
-
-# prepare list of configs (cartesian product)
-exp_config = prepare_config(exp_config)
-exp_list = create_exp_list(exp_config)
+def run_one(exp_id):
     
-
-print(f"Created {len(exp_list)} different configurations.")
-
-# initialize container for storing
-C = Container(name=exp_id)
-
-for config in exp_list:
+    # load config
+    with open(CONFIG_DIR + f'{exp_id}.json') as f:
+        exp_config = json.load(f)
     
-    B = Base(name=exp_id, config=config, device='cpu')
-    B.setup()
-    B.run() # train and validate
+    # prepare list of configs (cartesian product)
+    exp_config = prepare_config(exp_config)
+    exp_list = create_exp_list(exp_config)
+        
+    print(f"Created {len(exp_list)} different configurations.")
     
-    C.append(B.results).store() # store results
+    # initialize container for storing
+    C = Container(name=exp_id, output_dir=OUTPUT_DIR)
     
+    for config in exp_list: 
+        B = Base(name=exp_id, config=config, device='cpu', data_dir='data/')
+        B.setup()
+        B.run() # train and validate
+        
+        C.append(B.results).store() # store results
+    
+    return 
+
+run_one(exp_id)
     
 
