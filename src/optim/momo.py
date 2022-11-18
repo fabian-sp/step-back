@@ -30,7 +30,7 @@ class MoMo(torch.optim.Optimizer):
         # initialize averages
         for group in self.param_groups:
             for p in group['params']:
-                p.grad_avg = torch.zeros(p.shape)
+                p.grad_avg = torch.zeros(p.shape).to(p.device)
                 p.grad_dot_w = 0.
         
         self.state['step_size_list'] = list() # for storing
