@@ -12,7 +12,7 @@ from .models.main import get_model
 from .optim.main import get_optimizer, get_scheduler
 from .metrics import Loss
 
-from .utils import l2_norm, grad_norm, ridge_opt_value
+from .utils import l2_norm, grad_norm, ridge_opt_value, logreg_opt_value
 
 class Base:
     def __init__(self, name: str, config: dict, device: str='cpu', data_dir: str='data/'):
@@ -110,8 +110,9 @@ class Base:
     
     def run(self):
         start_time = str(datetime.datetime.now())
-        score_list = []
-    
+        score_list = []   
+        self._epochs_trained = 0
+        
         for epoch in range(self.config['max_epoch']):
             
             # Record metrics
@@ -153,6 +154,8 @@ class Base:
                 
                 # Add score_dict to score_list
                 score_list += [score_dict]
+            
+            self._epochs_trained += 1
         
         end_time = str(datetime.datetime.now())
         
@@ -233,19 +236,36 @@ class Base:
         
         return score_dict
 
+    def save_checkpoint(self, path):
+        """See https://pytorch.org/tutorials/recipes/recipes/saving_and_loading_a_general_checkpoint.html"""
+        torch.save({'epoch': self._epochs_trained,
+                    'model_state_dict': self.model.state_dict(),
+                    'opt_state_dict': self.opt.state_dict(),
+                    }, 
+                   path + self.name + '.mt')
+
+        return         
 
     def _compute_opt_value(self):
         """
         For linear model, the problem is convex and we can compute the optimal value
         """
         if self.config['model'] == 'linear':
+            
+            #fit_intercept = (self.model[0].bias is not None)
+            
             if self.config['loss_func'] == 'squared':
                 opt_val = ridge_opt_value(X=self.train_set.dataset.tensors[0].detach().numpy(),
                                           y=self.train_set.dataset.tensors[1].detach().numpy(),
-                                          lmbda = self.config['opt'].get('weight_decay', 0)
+                                          lmbda = self.config['opt'].get('weight_decay', 0),
+                                          fit_intercept = False
                                           )
             elif self.config['loss_func'] == 'logistic':
-                opt_val = 1
+                opt_val = logreg_opt_value(X=self.train_set.dataset.tensors[0].detach().numpy(),
+                                            y=self.train_set.dataset.tensors[1].detach().numpy().astype(int).reshape(-1),
+                                            lmbda = self.config['opt'].get('weight_decay', 0),
+                                            fit_intercept = False
+                                            )
         else:
             opt_val = None
             

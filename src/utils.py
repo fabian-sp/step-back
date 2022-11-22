@@ -7,7 +7,7 @@ import torch
 import itertools
 import copy
 
-from sklearn.linear_model import Ridge
+from sklearn.linear_model import Ridge, LogisticRegression
 
 #%%
 """
@@ -126,14 +126,38 @@ def grad_norm(model: torch.nn.Module):
 Compute optimal value for convex problems.
 """
 
-def ridge_opt_value(X, y, lmbda):
+def ridge_opt_value(X, y, lmbda, fit_intercept=False):
     n_samples = len(y)
-    sk = Ridge(alpha=n_samples * lmbda/2, fit_intercept=False, tol=1e-10, solver='auto', random_state=1234)
+    sk = Ridge(alpha=n_samples * lmbda/2, fit_intercept=fit_intercept, tol=1e-10, solver='auto', random_state=1234)
     
     sk.fit(X,y)
     sol = sk.coef_
     
+    if fit_intercept:
+        t2 = ((X@sol + sk.intercept_ - y)**2).mean()
+    else:
+        t2 = ((X@sol - y)**2).mean()
+        
     t1 = lmbda/2 * np.linalg.norm(sol)**2
-    t2 = ((X@sol - y)**2).mean()
+    
+    return t1+t2
 
+def logreg_opt_value(X, y, lmbda, fit_intercept=False):
+    n_samples = len(y)
+    
+    if lmbda > 0:
+        sk = LogisticRegression(C=1/(n_samples*lmbda), penalty='l2', fit_intercept=False, tol=1e-10, random_state=1234)
+    else:
+        sk = LogisticRegression(penalty='none', fit_intercept=False, tol=1e-10, random_state=1234)
+        
+    sk.fit(X,y)
+    sol = sk.coef_.squeeze()
+    print(sol)
+    
+    if fit_intercept:
+        t2 = np.log(1+np.exp(-y*(X@sol + sk.intercept_))).mean()
+    else:
+        t2 = np.log(1+np.exp(-y*(X@sol))).mean()
+        
+    t1 = lmbda/2 * np.linalg.norm(sol)**2
     return t1+t2

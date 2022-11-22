@@ -29,12 +29,12 @@ def run_one(exp_id):
         
     print(f"Created {len(exp_list)} different configurations.")
     
-
     # initialize container for storing
-    C = Container(name=exp_id, output_dir=OUTPUT_DIR, as_json=False)
+    C = Container(name=exp_id, output_dir=OUTPUT_DIR, as_json=True)
     
-    for config in exp_list: 
-        B = Base(name=exp_id, config=config, device='cuda', data_dir='data/')
+    for j, config in enumerate(exp_list): 
+        # each run gets id, by position in the list
+        B = Base(name=exp_id + '_j', config=config, device='cuda', data_dir='data/')
         B.setup()
         B.run() # train and validate
         

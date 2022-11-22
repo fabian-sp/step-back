@@ -30,14 +30,28 @@ def test_base_object():
 
 
 config_logreg = {"dataset": 'synthetic_linear',
-                  "dataset_kwargs": {'p': 10, 'n_samples': 100},
+                  "dataset_kwargs": {'p': 5, 'n_samples': 100},
                   "model": 'linear',
                   "loss_func": 'logistic',
                   "score_func": 'logistic_accuracy',
-                  "opt": {'name': 'sgd', 'lr': 1e-1, 'weight_decay': 1e-3, 'lr_schedule': 'constant'},
+                  "opt": {'name': 'sgd', 'lr': 1., 'weight_decay': 1e-2, 'lr_schedule': 'constant'},
                   "batch_size": 100,
-                  "max_epoch": 50,
+                  "max_epoch": 200,
                   "run_id": 0}
+
+def test_logreg():
+    """Solve Logistic regression with Gradient Descent."""
+    B = Base(name, config_logreg, device)
+    B.setup()
+    B.run()
+    
+    lam = B.config['opt']['weight_decay']
+    f1 = B.results['history'][-1]['train_loss'] + (lam/2) * B.results['history'][-1]['model_norm']**2
+    f2 = B.results['summary']['opt_val']
+    
+    assert_almost_equal(f1, f2, decimal=3)
+
+    return
 
 config_ridge = {"dataset": 'synthetic_linear',
                   "dataset_kwargs": {'p': 10, 'n_samples': 100},
