@@ -11,9 +11,9 @@ from src.base import Base
 #           "model": 'matrix_fac',
 #           "loss_func": 'squared',
 #           "score_func": 'squared',
-#           "opt": {'name': 'sgd', 'lr': 1e-1, 'weight_decay': 0, 'lr_schedule': 'sqrt'},
+#           "opt": {'name': 'momo', 'lr': 1., 'weight_decay': 0, 'lr_schedule': 'sqrt', 'bias_correction': False},
 #           "batch_size": 20,
-#           "max_epoch": 10,
+#           "max_epoch": 30,
 #           "run_id": 0}
 
 config = {"dataset": 'synthetic_linear',

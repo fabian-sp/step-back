@@ -1,6 +1,6 @@
 {
 "dataset": "synthetic_linear",
-"dataset_kwargs": {"p": 10, "n_samples": 20},
+"dataset_kwargs": {"p": 10, "n_samples": 50},
 "model": "linear",
 "loss_func": "logistic",
 "score_func": "logistic_accuracy",
