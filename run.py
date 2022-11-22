@@ -14,7 +14,7 @@ from src.log import Container
 CONFIG_DIR = 'configs/'
 OUTPUT_DIR = 'output/'
 
-exp_id = 'cifar_vgg' # file name of config
+exp_id = 'test1' # file name of config
 
 
 def run_one(exp_id):
@@ -31,7 +31,7 @@ def run_one(exp_id):
     
 
     # initialize container for storing
-    C = Container(name=exp_id, output_dir=OUTPUT_DIR)
+    C = Container(name=exp_id, output_dir=OUTPUT_DIR, as_json=False)
     
     for config in exp_list: 
         B = Base(name=exp_id, config=config, device='cuda', data_dir='data/')
