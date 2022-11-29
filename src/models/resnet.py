@@ -1,6 +1,7 @@
 """
 This script has been taken from: https://github.com/akamaster/pytorch_resnet_cifar10/blob/master/resnet.py
-We added the option to remove BatchNorm.
+We added the option to remove BatchNorm. 
+We also use the model for CIFAR100, only changing the dimension of the last linear layer.
 
     Properly implemented ResNet-s for CIFAR10 as described in paper [1].
     The implementation and structure of this file is hugely influenced by [2]
@@ -30,7 +31,6 @@ import torch.nn.functional as F
 import torch.nn.init as init
 
 
-__all__ = ['ResNet', 'resnet20', 'resnet32', 'resnet44', 'resnet56', 'resnet110', 'resnet1202']
 
 def _weights_init(m):
     classname = m.__class__.__name__
@@ -124,25 +124,27 @@ class ResNet(nn.Module):
 
 
 
-def get_cifar10_resnet(name, batch_norm=False):
+def get_cifar_resnet(name, num_classes, batch_norm=False):
+    
+    assert num_classes in [10,100]
     
     if name == 'resnet20':
-        m= ResNet(BasicBlock, [3, 3, 3], batch_norm=batch_norm)
+        m= ResNet(BasicBlock, [3, 3, 3], num_classes=num_classes, batch_norm=batch_norm)
 
     elif name == 'resnet32':
-        m= ResNet(BasicBlock, [5, 5, 5], batch_norm=batch_norm)
+        m= ResNet(BasicBlock, [5, 5, 5], num_classes=num_classes, batch_norm=batch_norm)
         
     elif name == 'resnet44':
-        m= ResNet(BasicBlock, [7, 7, 7], batch_norm=batch_norm)
+        m= ResNet(BasicBlock, [7, 7, 7], num_classes=num_classes, batch_norm=batch_norm)
 
     elif name == 'resnet56':
-        m= ResNet(BasicBlock, [9, 9, 9], batch_norm=batch_norm)
+        m= ResNet(BasicBlock, [9, 9, 9], num_classes=num_classes, batch_norm=batch_norm)
     
     elif name == 'resnet110':
-        m= ResNet(BasicBlock, [18, 18, 18], batch_norm=batch_norm)
+        m= ResNet(BasicBlock, [18, 18, 18], num_classes=num_classes, batch_norm=batch_norm)
     
     elif name == 'resnet1202':
-        m= ResNet(BasicBlock, [200, 200, 200], batch_norm=batch_norm)
+        m= ResNet(BasicBlock, [200, 200, 200], num_classes=num_classes, batch_norm=batch_norm)
     
     return m
     
