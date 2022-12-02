@@ -5,10 +5,10 @@ import json
 import copy
 from itertools import product
 
-from src.utils import prepare_config, create_exp_list
-from src.base import Base
+from stepback.utils import prepare_config, create_exp_list
+from stepback.base import Base
 
-from src.log import Container
+from stepback.log import Container
 
 
 CONFIG_DIR = 'configs/'

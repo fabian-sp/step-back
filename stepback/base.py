@@ -149,7 +149,7 @@ class Base:
                 
                 # Reset 
                 if self.opt.state.get('step_size_list'):
-                    score_dict['step_size_list'] = self.opt.state['step_size_list'].copy()
+                    score_dict['step_size_list'] = [np.round(t,5) for t in self.opt.state['step_size_list']]
                     self.opt.state['step_size_list'] = list()
                 
                 # Add score_dict to score_list

@@ -3,7 +3,7 @@ Test Base class.
 """
 import torch
 
-from src.base import Base
+from stepback.base import Base
 
 
 # config = {"dataset": 'synthetic_matrix_fac',
