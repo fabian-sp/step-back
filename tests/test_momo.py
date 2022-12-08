@@ -45,3 +45,17 @@ def test_momo_no_bias():
     assert_array_almost_equal(B.results['history'][0]['step_size_list'], goal_step_sizes, decimal=5)
 
     return
+
+def test_momo_weight_decay():    
+    config2 = config.copy()
+    config2['opt']['weight_decay'] = 0.1
+    B = Base(name, config, device)
+    B.setup()
+    B.run()
+    
+    assert_almost_equal(B.results['history'][0]['train_loss'], 0.49726436734199525, decimal=5)
+    assert_almost_equal(B.results['history'][0]['val_score'], 0.5778649687767029, decimal=5)
+    goal_step_sizes = np.array([0.10064, 0.00784, 0.00874, 0.00667, 0.01315])
+    assert_array_almost_equal(B.results['history'][0]['step_size_list'], goal_step_sizes, decimal=5)
+
+    return
