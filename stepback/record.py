@@ -3,9 +3,35 @@ import seaborn as sns
 import pandas as pd
 import numpy as np
 import copy
+import itertools
 
 from .log import Container
 
+#%%
+plt.rcParams["font.family"] = "serif"
+plt.rcParams['font.size'] = 12
+plt.rcParams['axes.linewidth'] = 1
+plt.rc('text', usetex=True)
+
+score_names = {'train_loss': 'Training loss', 
+               'val_loss': 'Validation loss', 
+               'train_score': 'Training score', 
+               'val_score': 'Validation score',
+               'model_norm': r'$\|x^k\|$',
+               }
+
+
+aes = {'sgd': {'color': '#7fb285', 'markevery': 15},
+              'sgd-m': {'color': '#de9151', 'markevery': 8},
+              'adam': {'color': '#f34213', 'markevery': 10}, 
+              'adamw': {'color': '#f34213', 'markevery': 10},
+              'momo': {'color': '#023047', 'markevery': 5},
+              'default': {'color': 'grey', 'markevery': 3},
+              }
+#7fb285
+
+
+#%%
 class Record:
     def __init__(self, exp_id: str, output_dir='output/', as_json=True):
         self.exp_id = exp_id
@@ -77,8 +103,58 @@ class Record:
             assert len(df.run_id.unique()) == 1
             df = df.drop('run_id',axis=1)
             df = df.reset_index(level=-1) # moves epoch out of index
-            
+        
+        df = df.sort_values(['id', 'epoch'])
         return df
+    
+    #============ PLOTTING =================================
+    #=======================================================
+    def plot_metric(self, s, df=None, log_scale=False, ylim=None, ax=None):
+        
+        if df is None:
+            df = self.base_df.copy()
+        
+        # has to be set freshly every time
+        for m in aes.keys():
+            aes[m]['marker_cycle'] = itertools.cycle(('o', 'p', 's', '>', 'v', 'D'))  
+        
+        if ax is None:
+            fig, ax = plt.subplots()
+        else:
+            fig = ax.get_figure()
+            
+        for m in df.index.unique():
+            x = df.loc[m,'epoch']
+            y = df.loc[m,s]
+            conf = id_to_dict(m) 
+            
+            # construct label
+            label = conf['name'] + ', ' + r'$\alpha_0=$' + conf['lr']
+            for k,v in conf.items():
+                if k in ['name', 'lr']:
+                    continue
+                label += ', ' + k + '=' + str(v)
+            
+            # plot
+            ax.plot(x, y, 
+                    c=aes.get(conf['name'], aes['default']).get('color'), 
+                    marker=next(aes.get(conf['name'], aes['default']).get('marker_cycle')), 
+                    markersize=6, 
+                    markevery=(aes.get(conf['name'], aes['default']).get('markevery'), 20), 
+                    label=label)
+        
+        ax.set_xlabel('Epoch')
+        ax.set_ylabel(score_names[s])
+        ax.grid(which='both', lw=0.2, ls='--', zorder=-10)
+        
+        if log_scale:
+            ax.yscale('log')    
+        if ylim:
+            ax.set_ylim(ylim)
+            
+        ax.legend(fontsize=8, loc='lower left')
+
+        return 
 
     
 def id_to_dict(id):
