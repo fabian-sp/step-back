@@ -15,6 +15,7 @@ class Record:
         self.C.load() # load data
         
         self.raw_df = self._build_raw_df()
+        self.id_df = self._build_id_df()
         self.base_df = self._build_base_df(agg='mean')
         return
     
@@ -28,7 +29,6 @@ class Record:
             
             id = list()
             for k, v in opt_dict.items():       
-                this_df['_'+k] = v
                 id.append(k+'='+ str(v)) 
                 
             this_df['id'] = ':'.join(id) # identifier given by all opt specifications
@@ -38,7 +38,19 @@ class Record:
         df = pd.concat(df_list)   
         df = df.reset_index(drop=True)
         return df
+    
+    def _build_id_df(self):
+        # create columns with single parts of id
+        id_cols = list()
+        all_ids = self.raw_df.id.unique()
+        for i in all_ids:
+            d = id_to_dict(i)
+            id_cols.append(d)
         
+        id_df = pd.DataFrame(id_cols, index=all_ids)
+        return id_df
+        
+    
     def _build_base_df(self, agg='mean'):
         raw_df = self.raw_df.copy()
         
@@ -67,6 +79,7 @@ class Record:
             df = df.reset_index(level=-1) # moves epoch out of index
             
         return df
+
     
 def id_to_dict(id):
     """utility for creating a dictionary from the identifier"""

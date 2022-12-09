@@ -3,6 +3,7 @@ import seaborn as sns
 import pandas as pd
 import numpy as np
 import copy
+import itertools
 
 from stepback.record import Record, id_to_dict
 
@@ -10,7 +11,8 @@ from stepback.record import Record, id_to_dict
 exp_id = 'test1' # file name of config
 
 R = Record(exp_id)
-df = R._build_base_df(agg='mean') # mean over runs
+df = R.base_df # mean over runs
+id_df = R.id_df
 
 #%% aesthetics
 
@@ -26,6 +28,19 @@ col_dict = {'sgd': '#7fb285' , 'adam': '#f34213', 'momo': '#023047', 'sgd-m': '#
 markevery_dict = {'momo': 5, 'sgd': 15, 'adam': 10, 'sgd-m': 8}
 
 
+
+
+aesthetics = {'sgd': {'color': '#7fb285', 'markevery': 15},
+              'sgd-m': {'color': '#de9151', 'markevery': 8},
+              'adam': {'color': '#f34213', 'markevery': 10}, 
+              'adamw': {'color': '#f34213', 'markevery': 10},
+              'momo': {'color': '#023047', 'markevery': 5},
+              }
+
+for m in aesthetics.keys():
+    aesthetics[m]['marker_cycle'] = itertools.cycle(('o', '+', '*'))  
+
+
 #%% plotting
 
 s = 'val_score' # what to plot
@@ -39,13 +54,20 @@ for m in df.index.unique():
     y = df.loc[m,s]
     conf = id_to_dict(m) 
     
+    # construct label
     label = conf['name'] + ', ' + r'$\alpha_0=$' + conf['lr']
     for k,v in conf.items():
         if k in ['name', 'lr']:
             continue
         label += ', ' + k + '=' + str(v)
     
-    ax.plot(x, y, c=col_dict[conf['name']], marker='o', markersize=5, markevery=(markevery_dict[conf['name']], 20), label=label)
+    # plot
+    ax.plot(x, y, 
+            c=aesthetics.get(conf['name']).get('color'), 
+            marker=next(aesthetics.get(conf['name']).get('marker_cycle')), 
+            markersize=5, 
+            markevery=(aesthetics.get(conf['name']).get('markevery'), 20), 
+            label=label)
 
 ax.set_xlabel('Epoch')
 ax.set_ylabel(score_names[s])
