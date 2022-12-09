@@ -126,7 +126,7 @@ class ResNet(nn.Module):
 
 def get_cifar_resnet(name, num_classes, batch_norm=True):
     
-    assert num_classes in [10,100]
+    assert num_classes in [10,100,1000]
     
     if name == 'resnet20':
         m= ResNet(BasicBlock, [3, 3, 3], num_classes=num_classes, batch_norm=batch_norm)
@@ -148,6 +148,8 @@ def get_cifar_resnet(name, num_classes, batch_norm=True):
     
     return m
     
+
+get_imagenet32_resnet = get_cifar_resnet
 
 
 def test(net):

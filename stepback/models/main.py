@@ -2,8 +2,8 @@ import torch
 import warnings
 
 from .basic_models import MLP, MatrixFac
-from .vgg import get_cifar_vgg
-from .resnet import get_cifar_resnet
+from .vgg import get_cifar_vgg, get_imagenet32_vgg
+from .resnet import get_cifar_resnet, get_imagenet32_resnet
 
 def get_model(config: dict={}) -> torch.nn.Module:
     """
@@ -51,6 +51,8 @@ def get_model(config: dict={}) -> torch.nn.Module:
             model = get_cifar_vgg(name, num_classes=10, **kwargs) # batch_norm False by default
         elif config['dataset'] == 'cifar100':
             model = get_cifar_vgg(name, num_classes=100, **kwargs) # batch_norm False by default
+        elif config['dataset'] == 'imagenet32':
+            model = get_imagenet32_vgg(name, **kwargs) # batch_norm False by default
         else:
             raise KeyError(f"Model {name} is not implemented yet for dataset {config['dataset']}.")   
     
@@ -61,6 +63,8 @@ def get_model(config: dict={}) -> torch.nn.Module:
                 model = get_cifar_resnet(name, num_classes=10, **kwargs) # batch_norm True by default
         elif config['dataset'] == 'cifar100':
                 model = get_cifar_resnet(name, num_classes=100, **kwargs) # batch_norm True by default
+        elif config['dataset'] == 'imagenet32':
+                model = get_imagenet32_resnet(name, num_classes=1000, **kwargs) # batch_norm True by default
         else:
             raise KeyError(f"Model {name} is not implemented yet for dataset {config['dataset']}.")   
     
