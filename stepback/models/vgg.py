@@ -38,6 +38,35 @@ class VGG_CIFAR10(nn.Module):
         return x
 
 
+class VGG_IMAGENET32(nn.Module):
+    def __init__(self, features):
+        super(VGG_IMAGENET32, self).__init__()
+        self.features = features
+        self.classifier = nn.Sequential(
+            nn.Dropout(),
+            nn.Linear(512, 512),
+            nn.ReLU(True),
+            nn.Dropout(),
+            nn.Linear(512, 512),
+            nn.ReLU(True),
+            nn.Linear(512, 1000),
+        )
+        
+         # Initialize weights
+        for m in self.modules():
+            if isinstance(m, nn.Conv2d):
+                n = m.kernel_size[0] * m.kernel_size[1] * m.out_channels
+                m.weight.data.normal_(0, math.sqrt(2. / n))
+                m.bias.data.zero_()
+
+
+    def forward(self, x):
+        x = self.features(x)
+        x = x.view(x.size(0), -1)
+        x = self.classifier(x)
+        return x
+
+
 def make_layers(cfg, batch_norm=False):
     layers = []
     in_channels = 3
@@ -74,3 +103,18 @@ def get_cifar10_vgg(name, batch_norm=False):
         m = VGG_CIFAR10(make_layers(cfg['E'], batch_norm=batch_norm))
     
     return m
+
+
+def get_imagenet32_vgg(name, batch_norm=False):
+    if name == 'vgg11':
+        m = VGG_IMAGENET32(make_layers(cfg['A'], batch_norm=batch_norm))
+    elif name == 'vgg13':
+        m = VGG_IMAGENET32(make_layers(cfg['B'], batch_norm=batch_norm))
+    elif name == 'vgg16':
+        m = VGG_IMAGENET32(make_layers(cfg['D'], batch_norm=batch_norm))
+    elif name == 'vgg19':
+        m = VGG_IMAGENET32(make_layers(cfg['E'], batch_norm=batch_norm))
+    
+    return m
+
+
