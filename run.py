@@ -42,6 +42,7 @@ def run_one(exp_id):
     
     return 
 
-run_one(exp_id)
+if __name__ == '__main__':
+    run_one(exp_id)
     
 
