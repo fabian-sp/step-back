@@ -90,10 +90,10 @@ class MoMo(torch.optim.Optimizer):
             
             # \bar f_k + <d_k, x^k> - gamma_k
             if lmbda > 0:
-                t1 = max(self.loss_avg + _dot - _gamma , self.lb)/_norm
-            else:
                 nom = (rho+lr*lmbda)/rho * self.loss_avg  + _dot - (rho+lr*lmbda)/rho * _gamma
                 t1 = max(nom, self.lb)/_norm
+            else:
+                t1 = max(self.loss_avg + _dot - _gamma, self.lb)/_norm
             
             t1 = t1.item() # make scalar
             
