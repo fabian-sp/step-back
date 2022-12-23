@@ -80,7 +80,7 @@ class Record:
             id_cols.append(d)
         
         id_df = pd.DataFrame(id_cols, index=all_ids)
-        id_df.fillna('default', inplace=True)
+        id_df.fillna('none', inplace=True)
         return id_df
         
     

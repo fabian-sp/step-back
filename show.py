@@ -34,7 +34,7 @@ if cutoff is None:
 # filter epochs
 sub_df = base_df[(base_df.epoch >= cutoff_epoch[0]) & (base_df.epoch <= cutoff_epoch[1])] 
 # group by all id_cols 
-df = sub_df.groupby(list(id_df.columns))[s].mean()
+df = sub_df.groupby(list(id_df.columns))[s].mean() # use dropna=False if we would have nan values
 # move xaxis out of grouping
 df = df.reset_index(level=xaxis)
 # make xaxis  float
@@ -44,6 +44,7 @@ best_ind, best_x = df.index[df[s].argmax()], df[xaxis][df[s].argmax()]
 
 
 fig, ax = plt.subplots(figsize=(6,4))
+# .unique(level=) might be useful at some point
 for m in df.index.unique():
     this_df = df.loc[m,:]
     this_df = this_df.sort_values(xaxis) # sort!
@@ -51,11 +52,15 @@ for m in df.index.unique():
     
     x = this_df[xaxis]
     y = this_df[s]
-
-    ax.plot(x,y, c=R.aes.get(name, R.aes['default'])['color'], label=str(m),
+    
+    label = "/" + ", ".join([k+"="+v for k,v in zip(df.index.names,m) if v != 'none'])
+    ax.plot(x,y, c=R.aes.get(name, R.aes['default'])['color'], label=label,
             #markevery=(1,5), marker='o'
             )
     
+    
+        
+        
     # mark overall best
     if m == best_ind:
         ax.scatter(best_x, df[s].max(), s=40, marker='o', c='k', zorder=100)
