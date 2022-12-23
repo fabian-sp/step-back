@@ -53,9 +53,9 @@ def test_momo_weight_decay():
     B.setup()
     B.run()
     
-    assert_almost_equal(B.results['history'][0]['train_loss'], 0.49726436734199525, decimal=5)
-    assert_almost_equal(B.results['history'][0]['val_score'], 0.5778649687767029, decimal=5)
-    goal_step_sizes = np.array([0.10064, 0.00784, 0.00874, 0.00667, 0.01315])
+    assert_almost_equal(B.results['history'][0]['train_loss'], 0.4929815590381622, decimal=5)
+    assert_almost_equal(B.results['history'][0]['val_score'], 0.5650611400604248, decimal=5)
+    goal_step_sizes = np.array([0.103182, 0.0083815, 0.00942883, 0.00738135, 0.0144944])
     assert_array_almost_equal(B.results['history'][0]['step_size_list'], goal_step_sizes, decimal=5)
 
     return
