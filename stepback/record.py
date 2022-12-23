@@ -22,19 +22,23 @@ score_names = {'train_loss': 'Training loss',
 
 
 aes = {'sgd': {'color': '#7fb285', 'markevery': 15},
-              'sgd-m': {'color': '#de9151', 'markevery': 8},
-              'adam': {'color': '#f34213', 'markevery': 10}, 
-              'adamw': {'color': '#f34213', 'markevery': 10},
-              'momo': {'color': '#023047', 'markevery': 5},
-              'default': {'color': 'grey', 'markevery': 3},
-              }
+        'sgd-m': {'color': '#de9151', 'markevery': 8},
+        'adam': {'color': '#f34213', 'markevery': 10}, 
+        'adamw': {'color': '#f34213', 'markevery': 10},
+        'momo': {'color': '#023047', 'markevery': 5},
+        'default': {'color': 'grey', 'markevery': 3},
+        }
 #7fb285
 
 
 #%%
+
+_USE_UNDERSCORE = True # whether to add underscore to column names in id_df?
+
 class Record:
     def __init__(self, exp_id: str, output_dir='output/', as_json=True):
         self.exp_id = exp_id
+        self.aes = copy.deepcopy(aes)
         self.C = Container(name=exp_id, output_dir=output_dir, as_json=as_json)
         
         print(f"Loading data from {output_dir+exp_id}")
@@ -46,6 +50,7 @@ class Record:
         return
     
     def _build_raw_df(self):
+        """ create DataFrame with the stored output. Creates an id column based on opt config. """
         df_list = list()
         for r in self.C.data:
             this_df = pd.DataFrame(r['history'])
@@ -63,17 +68,19 @@ class Record:
             
         df = pd.concat(df_list)   
         df = df.reset_index(drop=True)
+        df.insert(0, 'id', df.pop('id')) # move id column to front
         return df
     
     def _build_id_df(self):
-        # create columns with single parts of id
+        """ create a DataFrame where each id is split up into all hyperparameter settings """
         id_cols = list()
         all_ids = self.raw_df.id.unique()
         for i in all_ids:
-            d = id_to_dict(i)
+            d = id_to_dict(i, add_underscore=_USE_UNDERSCORE)
             id_cols.append(d)
         
         id_df = pd.DataFrame(id_cols, index=all_ids)
+        id_df.fillna('default', inplace=True)
         return id_df
         
     
@@ -89,22 +96,15 @@ class Record:
             df = pd.concat([df,df2], axis=1) 
             df = df.reset_index(level=-1) # moves epoch out of index
             
-            # create columns with single parts of id
-            id_cols = list()
-            for i in df.index:
-                d = id_to_dict(i)
-                id_cols.append(d)
-            
-            id_col_df = pd.DataFrame(id_cols, index=df.index)
-            df = pd.concat([df,id_col_df], axis=1)
-        
         elif agg == 'first':
             df = raw_df.groupby(['id', 'epoch'], sort=False).first()
             assert len(df.run_id.unique()) == 1
-            df = df.drop('run_id',axis=1)
+            df = df.drop('run_id', axis=1)
             df = df.reset_index(level=-1) # moves epoch out of index
         
-        df = df.sort_values(['id', 'epoch'])
+        df = df.reset_index(drop=False) # set index as integers
+        df = df.merge(self.id_df, how='left', left_on='id', right_index=True) # add columns from id_df
+        
         return df
     
     #============ PLOTTING =================================
@@ -123,10 +123,11 @@ class Record:
         else:
             fig = ax.get_figure()
             
-        for m in df.index.unique():
-            x = df.loc[m,'epoch']
-            y = df.loc[m,s]
-            conf = id_to_dict(m) 
+        for m in df.id.unique():
+            this_df = df[df.id==m]
+            x = this_df.loc[:,'epoch']
+            y = this_df.loc[:,s]
+            conf = id_to_dict(m, add_underscore=False) 
             
             # construct label
             label = conf['name'] + ', ' + r'$\alpha_0=$' + conf['lr']
@@ -157,8 +158,22 @@ class Record:
         return 
 
     
-def id_to_dict(id):
+def id_to_dict(id, add_underscore=False):
     """utility for creating a dictionary from the identifier"""
     tmp = id.split(':')
+    if add_underscore:
+        tmp = ['_'+t for t in tmp] # let each column start with _ to indicate that it is added afterwards
     d = dict([j.split('=') for j in tmp])
     return d
+
+
+def create_label(id, subset=None):
+    d = id_to_dict(id)
+    if subset is None:
+        s = [k +'='+ v for k,v in d.items()]
+    else:
+        s = [k +'='+ v for k,v in d.items() if k in subset]
+        
+    return ', '.join(s)
+
+
