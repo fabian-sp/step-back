@@ -7,7 +7,7 @@ import itertools
 from stepback.record import Record, score_names, id_to_dict, create_label
 
 
-exp_id = 'cifar_vgg_2' # file name of config
+exp_id = 'test1' # file name of config
 
 R = Record(exp_id)
 raw_df = R.raw_df 
@@ -58,9 +58,6 @@ for m in df.index.unique():
             #markevery=(1,5), marker='o'
             )
     
-    
-        
-        
     # mark overall best
     if m == best_ind:
         ax.scatter(best_x, df[s].max(), s=40, marker='o', c='k', zorder=100)
