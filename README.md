@@ -24,4 +24,23 @@ Any experiment needs a config file, see e.g. `configs/test1.json`.
 
 You can run an experiment with `run.py` or with `run.ipynb`.
 
-The output is stored in `output` if no other directory is specified. 
+The output is stored in `output` if no other directory is specified.
+
+## Output structure
+
+Every single run stores output as a dictionary in the following way:
+
+```
+    {'config': configuration of the experiment
+     'history': list of dictionary (one per epoch), see key names below
+     'summary': useful information such as start time and end time
+    } 
+```
+
+For the entries in `history`, the following keys are important:
+
+* `learning_rate`: the learning rate value in that epoch. This is different to the `lr` key in `config['opt']` if learning rate schedule is used.
+* `train_loss`: loss function value over training set
+* `val_loss`: loss function value over validation set
+* `train_score`: score function (eg accuracy) over training set
+* `val_score`: score function (eg accuracy) over validation set
