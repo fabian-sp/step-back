@@ -33,7 +33,7 @@ aes = {'sgd': {'color': '#7fb285', 'markevery': 15},
 
 #%%
 
-_USE_UNDERSCORE = True # whether to add underscore to column names in id_df?
+_USE_UNDERSCORE = False # whether to add underscore to column names in id_df?
 
 class Record:
     def __init__(self, exp_id: str, output_dir='output/', as_json=True):
