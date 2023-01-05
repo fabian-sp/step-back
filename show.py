@@ -42,6 +42,7 @@ df[xaxis] = df._lr.astype('float')
 # get method and learning rate with best score
 best_ind, best_x = df.index[df[s].argmax()], df[xaxis][df[s].argmax()]
 
+R._reset_marker_cycle()
 
 fig, ax = plt.subplots(figsize=(6,4))
 # .unique(level=) might be useful at some point
@@ -55,7 +56,8 @@ for m in df.index.unique():
     
     label = "/" + ", ".join([k+"="+v for k,v in zip(df.index.names,m) if v != 'none'])
     ax.plot(x,y, c=R.aes.get(name, R.aes['default'])['color'], label=label,
-            #markevery=(1,5), marker='o'
+            marker=next(R.aes.get(name, R.aes['default']).get('marker_cycle')), 
+            #markevery=(1,5),
             )
     
     # mark overall best

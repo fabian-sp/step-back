@@ -109,14 +109,18 @@ class Record:
     
     #============ PLOTTING =================================
     #=======================================================
+    def _reset_marker_cycle(self):
+        for m in self.aes.keys():
+            self.aes[m]['marker_cycle'] = itertools.cycle(('o', 'p', 's', '>', 'v', 'D'))  
+        return
+    
     def plot_metric(self, s, df=None, log_scale=False, ylim=None, ax=None):
         
         if df is None:
             df = self.base_df.copy()
         
         # has to be set freshly every time
-        for m in aes.keys():
-            aes[m]['marker_cycle'] = itertools.cycle(('o', 'p', 's', '>', 'v', 'D'))  
+        self._reset_marker_cycle()
         
         if ax is None:
             fig, ax = plt.subplots()
@@ -138,10 +142,10 @@ class Record:
             
             # plot
             ax.plot(x, y, 
-                    c=aes.get(conf['name'], aes['default']).get('color'), 
-                    marker=next(aes.get(conf['name'], aes['default']).get('marker_cycle')), 
+                    c=aes.get(conf['name'], self.aes['default']).get('color'), 
+                    marker=next(self.aes.get(conf['name'], self.aes['default']).get('marker_cycle')), 
                     markersize=6, 
-                    markevery=(aes.get(conf['name'], aes['default']).get('markevery'), 20), 
+                    markevery=(self.aes.get(conf['name'], self.aes['default']).get('markevery'), 20), 
                     label=label)
         
         ax.set_xlabel('Epoch')

@@ -4,11 +4,9 @@
 "model": "linear",
 "loss_func": "logistic",
 "score_func": "logistic_accuracy",
-"opt": [{"name": "sgd", "lr": [1e-1,1e-2], "weight_decay": 0, "lr_schedule": "constant"},
-        {"name": "sgd-m", "lr": 1e-1},
-        {"name": "adam", "lr": 1e-1, "weight_decay": 0},
-        {"name": "momo", "lr": 1e-1, "bias_correction": true},
-        {"name": "momo", "lr": 1e-1, "bias_correction": false}
+"opt": [{"name": "sgd-m", "lr": [1e-2,1e-1,1], "lr_schedule": "constant"},
+        {"name": "adam", "lr": [1e-2,1e-1,1], "weight_decay": 0, "lr_schedule": "constant"},
+        {"name": "momo", "lr": [1e-2,1e-1,1], "beta": [0.1, 0.9], "lr_schedule": "constant"}
         ],
 "batch_size": 5,
 "max_epoch": 10,
