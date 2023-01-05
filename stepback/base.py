@@ -117,7 +117,7 @@ class Base:
             
             # Record metrics
             score_dict = {'epoch': epoch}
-            score_dict['lr'] = self.sched.get_last_lr()[0] # must be stored before sched.step()
+            score_dict['learning_rate'] = self.sched.get_last_lr()[0] # must be stored before sched.step()
                            
             # Train one epoch
             s_time = time.time()

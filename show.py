@@ -2,56 +2,135 @@ from matplotlib import pyplot as plt
 import seaborn as sns
 import pandas as pd
 import numpy as np
-import copy
+import itertools
 
-from stepback.record import Record, id_to_dict
+from stepback.record import Record, score_names, id_to_dict, create_label
 
 
 exp_id = 'test1' # file name of config
 
 R = Record(exp_id)
-df = R._build_base_df(agg='mean') # mean over runs
-
-#%% aesthetics
-
-plt.rcParams["font.family"] = "serif"
-plt.rcParams['font.size'] = 12
-plt.rcParams['axes.linewidth'] = 1
-plt.rc('text', usetex=True)
-
-score_names = {'train_loss': 'Training loss', 'val_loss': 'Validation loss', 'train_score': 'Training score', 'val_score': 'Validation score',
-               'model_norm': r'$\|x^k\|$'}
-col_dict = {'sgd': '#7fb285' , 'adam': '#f34213', 'momo': '#023047', 'sgd-m': '#de9151'}
-#7fb285
-markevery_dict = {'momo': 5, 'sgd': 15, 'adam': 10, 'sgd-m': 8}
+raw_df = R.raw_df 
+base_df = R.base_df # mean over runs
+id_df = R.id_df # dataframe with the optimizer setups that were run
 
 
-#%% plotting
+R.plot_metric(s='val_score', log_scale=False)
 
-s = 'val_score' # what to plot
-log_scale = False # 
+#%% stability plots
 
+s = 'val_score' # the score that should be the y-axis
+xaxis = 'lr' # the parameter that should be the x-axis
+cutoff = None
 
-fig, ax = plt.subplots()
+#############
+grouped = base_df.groupby(['name', xaxis])
+max_epoch = grouped['epoch'].max()
+assert len(max_epoch.unique()) == 1, "It seems that different setups ran for different number of epochs."
 
+if cutoff is None:
+    cutoff_epoch = (max_epoch[0], max_epoch[0])
+
+# filter epochs
+sub_df = base_df[(base_df.epoch >= cutoff_epoch[0]) & (base_df.epoch <= cutoff_epoch[1])] 
+# group by all id_cols 
+df = sub_df.groupby(list(id_df.columns))[s].mean() # use dropna=False if we would have nan values
+# move xaxis out of grouping
+df = df.reset_index(level=xaxis)
+# make xaxis  float
+df[xaxis] = df[xaxis].astype('float')
+# get method and learning rate with best score
+best_ind, best_x = df.index[df[s].argmax()], df[xaxis][df[s].argmax()]
+
+R._reset_marker_cycle()
+
+fig, ax = plt.subplots(figsize=(6,4))
+# .unique(level=) might be useful at some point
 for m in df.index.unique():
-    x = df.loc[m,'epoch']
-    y = df.loc[m,s]
-    conf = id_to_dict(m) 
+    this_df = df.loc[m,:]
+    this_df = this_df.sort_values(xaxis) # sort!
+    name = this_df.index.get_level_values('name')[0]
     
-    label = conf['name'] + ', ' + r'$\alpha_0=$' + conf['lr']
-    for k,v in conf.items():
-        if k in ['name', 'lr']:
-            continue
-        label += ', ' + k + '=' + str(v)
+    x = this_df[xaxis]
+    y = this_df[s]
     
-    ax.plot(x, y, c=col_dict[conf['name']], marker='o', markersize=5, markevery=(markevery_dict[conf['name']], 20), label=label)
-
-ax.set_xlabel('Epoch')
+    label = ", ".join([k+"="+v for k,v in zip(df.index.names,m) if v != 'none'])
+    ax.plot(x,y, c=R.aes.get(name, R.aes['default'])['color'], label=label,
+            marker=next(R.aes.get(name, R.aes['default']).get('marker_cycle')), 
+            #markevery=(1,5),
+            )
+    
+    # mark overall best
+    if m == best_ind:
+        ax.scatter(best_x, df[s].max(), s=40, marker='o', c='k', zorder=100)
+        
+if xaxis == 'lr':
+    ax.set_xlabel('learning rate')
+else:
+    ax.set_xlabel(xaxis)
+    
 ax.set_ylabel(score_names[s])
-ax.grid(which='both', lw=0.2, ls='--', zorder=-10)
+ax.set_xscale('log')
+ax.grid(axis='y', lw=0.2, ls='--', zorder=-10)
+fig.legend(fontsize=9, loc='lower left')
 
-if log_scale:
-    ax.yscale('log')    
+fig.tight_layout()
+#grouped.indices.keys()
+
+#%% plots the adaptive step size
+
+df = R._build_base_df(agg='first')
+df = df[df['name'] == 'momo']
+
+counter = 0
+ncol = 3
+nrow = 2
+
+fig, axs = plt.subplots(nrow, ncol, figsize=(10,6))
+
+for _id in df.id.unique():
+    ax = axs.ravel()[counter]
+    this_df = df[df.id == _id]
     
-ax.legend(fontsize=8)
+    iter_per_epoch = len(this_df['step_size_list'].iloc[0])
+    upsampled = np.linspace(this_df.epoch.values[0], this_df.epoch.values[-1],\
+                            len(this_df)*iter_per_epoch)
+    
+    all_s = []
+    all_s_median = []
+    for j in this_df.index:
+        all_s_median.append(np.median(this_df.loc[j,'step_size_list']))
+        all_s += this_df.loc[j,'step_size_list'] 
+    
+    # plot adaptive term
+    ax.scatter(upsampled, all_s, c='#023047', s=5, alpha=0.35)
+    ax.plot(this_df.epoch, all_s_median, c='gainsboro', marker='o', markevery=(5,7),\
+            markerfacecolor='#023047', markeredgecolor='gainsboro', lw=2.5, label=r"$\tau_k^+$")
+    
+    # plot LR
+    ax.plot(this_df.epoch, this_df.learning_rate, c='silver', lw=2.5, label=r"$\alpha_k$")
+    #ax.plot(this_df.epoch, this_df.lr, c='silver', lw=2.5, label=r"$\alpha_k$") # OLD
+    
+    ax.set_xlim(0, )
+    ax.set_ylim(1e-3, 1e3)
+    ax.set_yscale('log')
+    
+    if counter%ncol == 0:
+        ax.set_ylabel('Step size', fontsize=10)
+        ax.tick_params(axis='y', which='major', labelsize=9)
+        ax.tick_params(axis='y', which='minor', labelsize=6)    
+    else:
+        ax.set_yticks([])
+        
+    if counter >= ncol*(nrow-1):
+        ax.set_xlabel('Epoch', fontsize=10)
+        ax.tick_params(axis='x', which='both', labelsize=9)
+    else:
+        ax.set_xticks([])
+    
+    ax.legend(loc='upper right', fontsize=10)
+    
+    
+    ax.set_title(create_label(_id, subset=['beta']), fontsize=8)
+    
+    counter += 1

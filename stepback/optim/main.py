@@ -1,5 +1,6 @@
 import torch
 from torch.optim.lr_scheduler import LambdaLR, StepLR
+import warnings
 
 from .momo import MoMo
 
@@ -11,6 +12,9 @@ def get_optimizer(opt_config: dict) -> (torch.optim.Optimizer, dict):
     """
     
     name = opt_config['name']
+    
+    if opt_config.get('lr') is None:
+        warnings.warn("You have not specified a learning rate. A default value of 1e-3 will be used.")
     
     if name == 'sgd':
         opt_obj = torch.optim.SGD

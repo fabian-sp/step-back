@@ -34,7 +34,7 @@ def run_one(exp_id):
     
     for j, config in enumerate(exp_list): 
         # each run gets id, by position in the list
-        B = Base(name=exp_id + '_j', config=config, device='cuda', data_dir='data/')
+        B = Base(name=exp_id + f'_{j}', config=config, device='cuda', data_dir='data/')
         B.setup()
         B.run() # train and validate
         
@@ -42,6 +42,7 @@ def run_one(exp_id):
     
     return 
 
-run_one(exp_id)
+if __name__ == '__main__':
+    run_one(exp_id)
     
 
