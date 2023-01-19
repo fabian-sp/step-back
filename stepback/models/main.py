@@ -2,7 +2,7 @@ import torch
 import warnings
 
 from .basic_models import MLP, MatrixFac
-from .vgg import get_cifar10_vgg
+from .vgg import get_cifar_vgg
 from .resnet import get_cifar_resnet
 
 def get_model(config: dict={}) -> torch.nn.Module:
@@ -46,7 +46,9 @@ def get_model(config: dict={}) -> torch.nn.Module:
     elif name in ['vgg11', 'vgg13', 'vgg16', 'vgg19']:
         
         if config['dataset'] == 'cifar10':
-            model = get_cifar10_vgg(name, **kwargs) # batch_norm False by default
+            model = get_cifar_vgg(name, num_classes=10, **kwargs) # batch_norm False by default
+        elif config['dataset'] == 'cifar100':
+            model = get_cifar_vgg(name, num_classes=100, **kwargs) # batch_norm False by default
         else:
             raise KeyError(f"Model {name} is not implemented yet for dataset {config['dataset']}.")   
     
