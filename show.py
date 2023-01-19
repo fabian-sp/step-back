@@ -96,6 +96,11 @@ for _id in df.id.unique():
     upsampled = np.linspace(this_df.epoch.values[0], this_df.epoch.values[-1],\
                             len(this_df)*iter_per_epoch)
     
+    # TODO: read the defaults from package
+    _beta = float(id_to_dict(_id).get('beta', 0.9))
+    _bias_correction = id_to_dict(_id).get('bias_correction', True)
+    rho = 1 - _beta**(np.arange(len(this_df)*iter_per_epoch)+1)
+
     all_s = []
     all_s_median = []
     for j in this_df.index:
@@ -105,10 +110,15 @@ for _id in df.id.unique():
     # plot adaptive term
     ax.scatter(upsampled, all_s, c='#023047', s=5, alpha=0.35)
     ax.plot(this_df.epoch, all_s_median, c='gainsboro', marker='o', markevery=(5,7),\
-            markerfacecolor='#023047', markeredgecolor='gainsboro', lw=2.5, label=r"$\tau_k^+$")
+            markerfacecolor='#023047', markeredgecolor='gainsboro', lw=2.5, label=r"$\zeta_k$")
     
+
     # plot LR
-    ax.plot(this_df.epoch, this_df.learning_rate, c='silver', lw=2.5, label=r"$\alpha_k$")
+    if _bias_correction:
+        y = np.repeat(this_df.learning_rate, iter_per_epoch) / rho
+        ax.plot(upsampled, y, c='silver', lw=2.5, label=r"$\alpha_k/\rho_k$")
+    else:
+        ax.plot(this_df.epoch, this_df.learning_rate, c='silver', lw=2.5, label=r"$\alpha_k$")
     #ax.plot(this_df.epoch, this_df.lr, c='silver', lw=2.5, label=r"$\alpha_k$") # OLD
     
     ax.set_xlim(0, )
@@ -134,3 +144,4 @@ for _id in df.id.unique():
     ax.set_title(create_label(_id, subset=['beta']), fontsize=8)
     
     counter += 1
+# %%
