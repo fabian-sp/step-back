@@ -68,10 +68,15 @@ def get_model(config: dict={}) -> torch.nn.Module:
         else:
             raise KeyError(f"Model {name} is not implemented yet for dataset {config['dataset']}.")   
     
+    elif name in ['resnet18-kuangliu']:
+        from .kuangliu_resnet import ResNet18
+        if config['dataset'] == 'imagenet32':
+            model = ResNet18(num_classes=1000)
+        else:
+            raise KeyError(f"Model {name} is not implemented yet for dataset {config['dataset']}.")
     
     else:
         raise KeyError(f"Unknown model option {name}.")   
     
     return model
-        
-        
+
