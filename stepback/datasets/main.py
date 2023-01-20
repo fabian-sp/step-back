@@ -72,7 +72,7 @@ def get_dataset(config: dict, split: str, seed: int, path: str) -> DataClass:
 
 def infer_shapes(D: DataClass):
     _tmp_dl = DataLoader(D, batch_size=1)   
-    batch = iter(_tmp_dl).next()
+    batch = next(iter(_tmp_dl))
     
     if len(batch['data'].shape) == 1:
         input_dim = (batch['data'].shape[0],)    
