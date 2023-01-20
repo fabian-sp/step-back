@@ -10,6 +10,7 @@ from stepback.utils import prepare_config, create_exp_list
 from stepback.base import Base
 from stepback.log import Container
 
+import sys
 
 parser = argparse.ArgumentParser(description='Run stepback from the terminal.')
 parser.add_argument('-i', '--id', nargs='?', type=str, default='test1', help="The id of the config (its file name).")
