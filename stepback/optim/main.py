@@ -28,7 +28,7 @@ def get_optimizer(opt_config: dict) -> (torch.optim.Optimizer, dict):
         hyperp = {'lr': opt_config.get('lr', 1e-3),
                   'weight_decay': opt_config.get('weight_decay', 0),
                   'momentum': opt_config.get('momentum', 0.9),
-                  'nesterov': opt_config.get('nesterov', False),
+                  'nesterov': False,
                   'dampening': opt_config.get('dampening', 0)
                   }
 
@@ -37,7 +37,7 @@ def get_optimizer(opt_config: dict) -> (torch.optim.Optimizer, dict):
         hyperp = {'lr': opt_config.get('lr', 1e-3),
                   'weight_decay': opt_config.get('weight_decay', 0),
                   'momentum': opt_config.get('momentum', 0.9),
-                  'nesterov': opt_config.get('nesterov', True),
+                  'nesterov': True,
                   'dampening': opt_config.get('dampening', 0)
                   }
                
