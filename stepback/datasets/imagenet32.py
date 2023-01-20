@@ -84,19 +84,28 @@ def get_imagenet32(split, path):
     if split.lower() not in ('train', 'val'):
         raise ValueError(f"split must be in ('train', 'test'), but got {split}")
     traindir = os.path.expanduser(os.path.join(path, "imagenet32/out_data_train/"))
-    traindir = os.path.expanduser(os.path.join(path, "imagenet32/out_data_val/"))
+    valdir = os.path.expanduser(os.path.join(path, "imagenet32/out_data_val/"))
     normalize = Normalize(mean=[0.485, 0.456, 0.406],
                              std=[0.229, 0.224, 0.225])
 
-    dataset = Imagenet32(
-        traindir,
-        train=split.lower() != 'val',
-        transform=Compose([
+    train = split.lower() != 'val'
+    if train:
+        transform = Compose([
             RandomCrop(32, padding=4),
             RandomHorizontalFlip(),
             ToTensor(),
             normalize,
-        ]))
+        ]) 
+    else:
+        transform =Compose([
+           ToTensor(),
+            normalize,
+        ]) 
+
+    dataset = Imagenet32(
+        traindir if train else valdir,
+        train=train,
+        transform=transform)
 
     return dataset
 
