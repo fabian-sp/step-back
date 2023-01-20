@@ -178,7 +178,7 @@ def plot_step_sizes(R, method='momo', ylim=(1e-5,1e3), xlim = None, grid=(3,3), 
     if 'beta' in df.columns:
         if len(df.beta.unique()) > 1:
             add_beta_to_title = True
-        
+
     fig, axs = plt.subplots(nrow, ncol, figsize=figsize)
     counter = 0
 
@@ -283,6 +283,3 @@ elif exp_id == 'mnist_mlp':
 elif exp_id == 'cifar100_resnet110':
     plot_step_sizes(R, method='momo', grid=(3,2), start=1, stop=7, save=save)
     plot_step_sizes(R, method='momo-adam', grid=(3,2), start=1, stop=7, save=save)
-
-
-# %%
