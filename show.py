@@ -8,7 +8,6 @@ from stepback.record import Record, score_names, id_to_dict, create_label
 
 
 exp_id = 'cifar10_vgg16' # file name of config
-
 R = Record(exp_id)
 raw_df = R.raw_df 
 base_df = R.base_df # mean over runs
@@ -46,7 +45,7 @@ max_epoch = grouped['epoch'].max()
 assert len(max_epoch.unique()) == 1, "It seems that different setups ran for different number of epochs."
 
 if cutoff is None:
-    cutoff_epoch = (max_epoch[0], max_epoch[0])
+cutoff_epoch = (max_epoch[0], max_epoch[0])
 
 # filter epochs
 sub_df = base_df[(base_df.epoch >= cutoff_epoch[0]) & (base_df.epoch <= cutoff_epoch[1])] 
@@ -87,7 +86,7 @@ for m in df.index.unique():
     #    ax.scatter(best_x, df[s].max(), s=40, marker='o', c='k', zorder=100)
         
 if xaxis == 'lr':
-    ax.set_xlabel('learning rate')
+ax.set_xlabel('learning rate')
 else:
     ax.set_xlabel(xaxis)
 
