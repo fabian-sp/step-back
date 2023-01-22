@@ -25,11 +25,17 @@ def get_optimizer(opt_config: dict) -> (torch.optim.Optimizer, dict):
         
     elif name == 'sgd-m':
         opt_obj = torch.optim.SGD
+        # sgd-m with exp. weighted average should have dampening = momentum
+        if opt_config.get('dampening') == 'momentum':
+            dampening = opt_config.get('momentum', 0.9)
+        else:
+            dampening = opt_config.get('dampening', 0)
+            
         hyperp = {'lr': opt_config.get('lr', 1e-3),
                   'weight_decay': opt_config.get('weight_decay', 0),
                   'momentum': opt_config.get('momentum', 0.9),
                   'nesterov': False,
-                  'dampening': opt_config.get('dampening', 0)
+                  'dampening': dampening
                   }
 
     elif name == 'sgd-nesterov':
