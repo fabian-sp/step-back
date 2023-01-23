@@ -56,9 +56,9 @@ def get_model(config: dict={}) -> torch.nn.Module:
     elif name in ['resnet20', 'resnet32', 'resnet44', 'resnet56', 'resnet110', 'resnet1202']:
         
         if config['dataset'] == 'cifar10':
-                model = get_cifar_resnet(name, num_classes=10, **kwargs) # batch_norm True by default
+                model = get_cifar_resnet(name, num_classes=10, **kwargs) # batch_norm False by default
         elif config['dataset'] == 'cifar100':
-                model = get_cifar_resnet(name, num_classes=100, **kwargs) # batch_norm True by default
+                model = get_cifar_resnet(name, num_classes=100, **kwargs) # batch_norm False by default
         else:
             raise KeyError(f"Model {name} is not implemented yet for dataset {config['dataset']}.")   
     
