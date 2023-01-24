@@ -30,6 +30,7 @@ plt.rc('text', usetex=True)
 
 s = 'val_score' # the score that should be the y-axis
 xaxis = 'lr' # the parameter that should be the x-axis
+sigma = 1 # number of standard deviations to show (in one direction)
 cutoff = None
 
 #############
@@ -43,13 +44,13 @@ if cutoff is None:
 # filter epochs
 sub_df = base_df[(base_df.epoch >= cutoff_epoch[0]) & (base_df.epoch <= cutoff_epoch[1])] 
 # group by all id_cols 
-df = sub_df.groupby(list(id_df.columns))[s].mean() # use dropna=False if we would have nan values
+df = sub_df.groupby(list(id_df.columns))[s, s+'_std'].mean() # use dropna=False if we would have nan values
 # move xaxis out of grouping
 df = df.reset_index(level=xaxis)
-# make xaxis  float
+# make xaxis float
 df[xaxis] = df[xaxis].astype('float')
 # get method and learning rate with best score
-best_ind, best_x = df.index[df[s].argmax()], df[xaxis][df[s].argmax()]
+# best_ind, best_x = df.index[df[s].argmax()], df[xaxis][df[s].argmax()]
 
 R._reset_marker_cycle()
 
@@ -62,12 +63,17 @@ for m in df.index.unique():
     
     x = this_df[xaxis]
     y = this_df[s]
+    y2 = this_df[s+'_std']
     
     label = ", ".join([k+"="+v for k,v in zip(df.index.names,m) if v != 'none'])
     ax.plot(x,y, c=R.aes.get(name, R.aes['default'])['color'], label=label,
             marker=next(R.aes.get(name, R.aes['default']).get('marker_cycle')), 
             #markevery=(1,5),
             )
+    if sigma > 0:
+        ax.fill_between(x, y-sigma*y2, y+sigma*y2,
+                        color=R.aes.get(name, R.aes['default'])['color'],
+                        alpha=0.1, zorder=-10)
     
     # mark overall best
     #if m == best_ind:
