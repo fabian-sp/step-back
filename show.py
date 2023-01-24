@@ -7,7 +7,7 @@ import itertools
 from stepback.record import Record, score_names, id_to_dict, create_label
 
 
-exp_id = 'test1' # file name of config
+exp_id = 'cifar10_vgg16_2' # file name of config
 
 R = Record(exp_id)
 raw_df = R.raw_df 
@@ -16,6 +16,15 @@ id_df = R.id_df # dataframe with the optimizer setups that were run
 
 
 R.plot_metric(s='val_score', log_scale=False)
+save = False
+
+#%%
+%matplotlib qt5
+
+plt.rcParams["font.family"] = "serif"
+plt.rcParams['font.size'] = 12
+plt.rcParams['axes.linewidth'] = 1
+plt.rc('text', usetex=True)
 
 #%% stability plots
 
@@ -44,7 +53,7 @@ best_ind, best_x = df.index[df[s].argmax()], df[xaxis][df[s].argmax()]
 
 R._reset_marker_cycle()
 
-fig, ax = plt.subplots(figsize=(6,4))
+fig, ax = plt.subplots(figsize=(6,5))
 # .unique(level=) might be useful at some point
 for m in df.index.unique():
     this_df = df.loc[m,:]
@@ -61,8 +70,8 @@ for m in df.index.unique():
             )
     
     # mark overall best
-    if m == best_ind:
-        ax.scatter(best_x, df[s].max(), s=40, marker='o', c='k', zorder=100)
+    #if m == best_ind:
+    #    ax.scatter(best_x, df[s].max(), s=40, marker='o', c='k', zorder=100)
         
 if xaxis == 'lr':
     ax.set_xlabel('learning rate')
@@ -72,10 +81,14 @@ else:
 ax.set_ylabel(score_names[s])
 ax.set_xscale('log')
 ax.grid(axis='y', lw=0.2, ls='--', zorder=-10)
-fig.legend(fontsize=9, loc='lower left')
+fig.legend(fontsize=9, loc='upper right')
 
-fig.tight_layout()
+#fig.tight_layout()
+fig.subplots_adjust(top=0.8,bottom=0.09,left=0.1,right=0.97)
 #grouped.indices.keys()
+
+if save:
+    fig.savefig('output/plots/' + exp_id + f'/stability_{xaxis}_{s}.pdf')
 
 #%% plots the adaptive step size
 
@@ -83,10 +96,9 @@ df = R._build_base_df(agg='first')
 df = df[df['name'] == 'momo']
 
 counter = 0
-ncol = 3
-nrow = 2
+ncol, nrow = 3, 2
 
-fig, axs = plt.subplots(nrow, ncol, figsize=(10,6))
+fig, axs = plt.subplots(nrow, ncol, figsize=(6.6,4))
 
 for _id in df.id.unique():
     ax = axs.ravel()[counter]
@@ -97,8 +109,15 @@ for _id in df.id.unique():
                             len(this_df)*iter_per_epoch)
     
     # TODO: read the defaults from package
-    _beta = float(id_to_dict(_id).get('beta', 0.9))
-    _bias_correction = id_to_dict(_id).get('bias_correction', True)
+    _beta = float(id_to_dict(_id)['beta'])
+    _bias_correction = id_to_dict(_id)['bias_correction']
+    if _bias_correction == 'none':
+        _bias_correction = True
+    elif _bias_correction == 'True':
+        _bias_correction = True
+    else:
+        _bias_correction = False
+
     rho = 1 - _beta**(np.arange(len(this_df)*iter_per_epoch)+1)
 
     all_s = []
@@ -122,7 +141,7 @@ for _id in df.id.unique():
     #ax.plot(this_df.epoch, this_df.lr, c='silver', lw=2.5, label=r"$\alpha_k$") # OLD
     
     ax.set_xlim(0, )
-    ax.set_ylim(1e-3, 1e3)
+    ax.set_ylim(1e-5, 1e3)
     ax.set_yscale('log')
     
     if counter%ncol == 0:
@@ -141,7 +160,10 @@ for _id in df.id.unique():
     ax.legend(loc='upper right', fontsize=10)
     
     
-    ax.set_title(create_label(_id, subset=['beta']), fontsize=8)
+    ax.set_title(create_label(_id, subset=['lr','beta']), fontsize=8)
     
     counter += 1
-# %%
+
+    if save:
+        fig.savefig('output/plots/' + exp_id + f'/step_sizes.png', dpi=500)
+

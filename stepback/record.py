@@ -8,10 +8,6 @@ import itertools
 from .log import Container
 
 #%%
-plt.rcParams["font.family"] = "serif"
-plt.rcParams['font.size'] = 12
-plt.rcParams['axes.linewidth'] = 1
-plt.rc('text', usetex=True)
 
 score_names = {'train_loss': 'Training loss', 
                'val_loss': 'Validation loss', 
@@ -174,10 +170,19 @@ def id_to_dict(id, add_underscore=False):
 def create_label(id, subset=None):
     d = id_to_dict(id)
     if subset is None:
-        s = [k +'='+ v for k,v in d.items()]
+        s = [key_to_math(k) +'='+ v for k,v in d.items()]
     else:
-        s = [k +'='+ v for k,v in d.items() if k in subset]
+        s = [key_to_math(k) +'='+ v for k,v in d.items() if k in subset]
         
     return ', '.join(s)
 
-
+def key_to_math(k):
+    """translates column names from id_dict to math symbol"""
+    if k == 'lr':
+        k2 = r'$\alpha_0$'
+    elif k == 'beta':
+        k2 = r'$\beta$'
+        #v2 = None if v == 'none' else float(v)
+    if k == 'weight_decay':
+        k2 = r'$\lambda$'
+    return k2
