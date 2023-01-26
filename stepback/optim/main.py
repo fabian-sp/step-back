@@ -8,7 +8,7 @@ def get_optimizer(opt_config: dict) -> (torch.optim.Optimizer, dict):
     """
     Main function mapping opt configs to an instance of torch.optim.Optimizer and a dict of hyperparameter arguments (lr, weight_decay,..).  
     
-    For all hyperparameters which are not specified, we just use the PyTorch default.
+    For all hyperparameters which are not specified, we use PyTorch default.
     """
     
     name = opt_config['name']
@@ -25,10 +25,25 @@ def get_optimizer(opt_config: dict) -> (torch.optim.Optimizer, dict):
         
     elif name == 'sgd-m':
         opt_obj = torch.optim.SGD
+        # sgd-m with exp. weighted average should have dampening = momentum
+        if opt_config.get('dampening') == 'momentum':
+            dampening = opt_config.get('momentum', 0.9)
+        else:
+            dampening = opt_config.get('dampening', 0)
+            
         hyperp = {'lr': opt_config.get('lr', 1e-3),
                   'weight_decay': opt_config.get('weight_decay', 0),
                   'momentum': opt_config.get('momentum', 0.9),
-                  'nesterov': opt_config.get('nesterov', True),
+                  'nesterov': False,
+                  'dampening': dampening
+                  }
+
+    elif name == 'sgd-nesterov':
+        opt_obj = torch.optim.SGD
+        hyperp = {'lr': opt_config.get('lr', 1e-3),
+                  'weight_decay': opt_config.get('weight_decay', 0),
+                  'momentum': opt_config.get('momentum', 0.9),
+                  'nesterov': True,
                   'dampening': opt_config.get('dampening', 0)
                   }
                
@@ -53,6 +68,7 @@ def get_optimizer(opt_config: dict) -> (torch.optim.Optimizer, dict):
         hyperp = {'lr': opt_config.get('lr', 1e-3),
                   'weight_decay': opt_config.get('weight_decay', 0),
                   'beta': opt_config.get('beta', 0.9),
+                  'lb': opt_config.get('lb', 0.),
                   'bias_correction': opt_config.get('bias_correction', True)
                   }
         

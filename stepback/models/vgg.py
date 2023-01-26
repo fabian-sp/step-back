@@ -4,14 +4,16 @@ from torch import nn
 import math
 
 """
-VGG architectures for CIFAR-10
+VGG architectures for CIFAR-10 and CIFAR-100
 
 Adapted from https://github.com/chengyangfu/pytorch-vgg-cifar10/blob/master/vgg.py
+
+For CIFAR-100, we simply use the same architecture as for CIFAR-10 but with the last layer being of size 100.
 """
 
-class VGG_CIFAR10(nn.Module):
-    def __init__(self, features):
-        super(VGG_CIFAR10, self).__init__()
+class VGG_CIFAR(nn.Module):
+    def __init__(self, features, num_classes=10):
+        super(VGG_CIFAR, self).__init__()
         self.features = features
         self.classifier = nn.Sequential(
             nn.Dropout(),
@@ -20,7 +22,7 @@ class VGG_CIFAR10(nn.Module):
             nn.Dropout(),
             nn.Linear(512, 512),
             nn.ReLU(True),
-            nn.Linear(512, 10),
+            nn.Linear(512, num_classes),
         )
         
          # Initialize weights
@@ -63,14 +65,14 @@ cfg = {
 }
 
 
-def get_cifar10_vgg(name, batch_norm=False):
+def get_cifar_vgg(name, batch_norm=False, num_classes=10):
     if name == 'vgg11':
-        m = VGG_CIFAR10(make_layers(cfg['A'], batch_norm=batch_norm))
+        m = VGG_CIFAR(make_layers(cfg['A'], batch_norm=batch_norm), num_classes=num_classes)
     elif name == 'vgg13':
-        m = VGG_CIFAR10(make_layers(cfg['B'], batch_norm=batch_norm))
+        m = VGG_CIFAR(make_layers(cfg['B'], batch_norm=batch_norm), num_classes=num_classes)
     elif name == 'vgg16':
-        m = VGG_CIFAR10(make_layers(cfg['D'], batch_norm=batch_norm))
+        m = VGG_CIFAR(make_layers(cfg['D'], batch_norm=batch_norm), num_classes=num_classes)
     elif name == 'vgg19':
-        m = VGG_CIFAR10(make_layers(cfg['E'], batch_norm=batch_norm))
+        m = VGG_CIFAR(make_layers(cfg['E'], batch_norm=batch_norm), num_classes=num_classes)
     
     return m

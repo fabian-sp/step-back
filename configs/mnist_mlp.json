@@ -1,15 +1,16 @@
 {
-"dataset": "mnist",
-"dataset_kwargs": {"as_image": false},
-"model": "mlp",
-"model_kwargs": {"output_size": 10, "hidden_sizes": [100,100], "bias": true},
-"loss_func": "cross_entropy",
-"score_func": "cross_entropy_accuracy",
-"opt": [{"name": "momo", "lr": [1,1e-1], "weight_decay": 0, "beta": 0.1, "lr_schedule": "constant"},
-        {"name": "sgd", "lr": [1e-1,1e-2], "weight_decay": 0, "lr_schedule": "constant"},
-        {"name": "adam", "lr": 1e-3, "weight_decay": 0}
-        ],
-"batch_size": 128,
-"max_epoch": 5,
-"n_runs": 1
-}
+    "dataset": "mnist",
+    "dataset_kwargs": {"as_image": false},
+    "model": "mlp",
+    "model_kwargs": {"output_size": 10, "hidden_sizes": [100,100], "bias": true},
+    "loss_func": "cross_entropy",
+    "score_func": "cross_entropy_accuracy",
+    "opt": [{"name": "momo", "lr": [0.0001, 0.001, 0.01, 0.1, 1, 10, 100], "weight_decay": 0, "beta": [0.9, 0.1], "bias_correction": false, "lr_schedule": "constant"},
+            {"name": "adam", "lr": [0.0001, 0.001, 0.01, 0.1, 1, 10], "weight_decay": 0, "lr_schedule": "constant"},
+            {"name": "sgd-m", "lr": [0.0001, 0.001, 0.01, 0.1, 1, 10, 100], "weight_decay": 0, "momentum": 0.9, "dampening": 0.9, "lr_schedule": "constant"}
+            ],
+    "batch_size": 128,
+    "max_epoch": 10,
+    "n_runs": 1
+    }
+

@@ -1,0 +1,14 @@
+{
+    "dataset": "cifar10",
+    "model": "resnet20",
+    "model_kwargs": {"batch_norm": true},
+    "loss_func": "cross_entropy",
+    "score_func": "cross_entropy_accuracy",
+    "opt": [{"name": "momo", "lr": [0.01, 0.03162, 0.1, 0.3162, 1, 3.162, 10], "weight_decay": 0, "beta":[0.9, 0.1], "bias_correction": false, "lr_schedule": "constant"},
+            {"name": "adam", "lr": [1e-5, 1e-4, 1e-3, 1e-2, 1e-1], "weight_decay": 0, "lr_schedule": "constant"},
+            {"name": "sgd-m", "lr": [0.01, 0.03162, 0.1, 0.3162, 1, 3.162, 10], "weight_decay": 0, "momentum": 0.9, "dampening": 0.9, "lr_schedule": "constant"}
+            ],
+    "batch_size": 128,
+    "max_epoch": 40,
+    "n_runs": 1
+    }
