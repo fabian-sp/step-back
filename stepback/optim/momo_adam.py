@@ -17,7 +17,8 @@ class MomoAdam(torch.optim.Optimizer):
                 lr: float=1.0, 
                 betas:tuple=(0.9, 0.999), 
                 eps:float=1e-8,
-                weight_decay:float=0):
+                weight_decay:float=0,
+                lb: float=0):
 
         if not 0.0 <= lr:
             raise ValueError("Invalid learning rate: {}".format(lr))
@@ -35,6 +36,7 @@ class MomoAdam(torch.optim.Optimizer):
         
         super().__init__(params, defaults)
 
+        self.lb = lb
         self._number_steps = 0
         self.state['step_size_list'] = list() # for storing
 
@@ -98,12 +100,13 @@ class MomoAdam(torch.optim.Optimizer):
 
                 Dk = grad_avg_sq.sqrt().add_(eps) # = D_k
                 
-                _dot.add_(torch.sum(torch.mul(p.data, grad_avg)))
-                _gamma.add_(grad_dot_w)
-                _norm.add_(grad_avg.mul(grad_avg.div(Dk)))
+                _dot += torch.sum(torch.mul(p.data, grad_avg))
+                _gamma += grad_dot_w
+                _norm += torch.sum(grad_avg.mul(grad_avg.div(Dk)))
 
         #################   
         # Update
+        
         for group in self.param_groups:
             
             lr = group['lr']
@@ -114,7 +117,7 @@ class MomoAdam(torch.optim.Optimizer):
             denom = _norm
             t1 = (nom/denom).item()
             tau = min(lr, t1)
-
+            
             for p in group['params']:
                 if p.grad is None:
                     continue
