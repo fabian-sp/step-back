@@ -11,6 +11,7 @@ from ..types import Params, LossClosure, OptFloat
 
 class MomoAdam(torch.optim.Optimizer):
     r"""
+    Implements Adam with adaptive step sizes.
     """
     def __init__(self, 
                 params: Params, 
@@ -54,8 +55,8 @@ class MomoAdam(torch.optim.Optimizer):
             loss = closure()
         
         if len(self.param_groups) > 1:
-            warnings.warn("More than one param group. step_size_list contains adaptive term of first group.")
-            warnings.warn("More than one param group. Check if step method is correct for this case.")
+            warnings.warn("More than one param group. step_size_list contains adaptive term of last group.")
+            warnings.warn("More than one param group. This might cause issues for the step method.")
 
         group = self.param_groups[0]
         beta1, beta2 = group['betas']
@@ -86,7 +87,7 @@ class MomoAdam(torch.optim.Optimizer):
                     # Exponential moving average of gradients
                     state['grad_avg'] = grad.detach()
                     # Exponential moving average of squared gradient values
-                    state['grad_avg_sq'] = torch.mul(grad, grad).sqrt().detach()
+                    state['grad_avg_sq'] = torch.mul(grad, grad).detach()
                     # Exponential moving average of inner product <grad, weight>
                     state['grad_dot_w'] = torch.sum(torch.mul(p.data, grad))
                     
@@ -98,7 +99,7 @@ class MomoAdam(torch.optim.Optimizer):
                 grad_avg_sq.mul_(beta2).addcmul_(grad, grad, value=1-beta2) # = v_k
                 grad_dot_w.mul_(beta1).add_(torch.sum(torch.mul(p.data, grad)), alpha=1-beta1)
 
-                Dk = grad_avg_sq.sqrt().add_(eps) # = D_k
+                Dk = grad_avg_sq.sqrt().add(eps) # = D_k
                 
                 _dot += torch.sum(torch.mul(p.data, grad_avg))
                 _gamma += grad_dot_w
@@ -125,7 +126,7 @@ class MomoAdam(torch.optim.Optimizer):
                 state = self.state[p]
                 grad_avg, grad_avg_sq = state['grad_avg'], state['grad_avg_sq']
 
-                Dk = grad_avg_sq.sqrt().add_(eps) # = D_k
+                Dk = grad_avg_sq.sqrt().add(eps) # = D_k
                 p.data.addcdiv_(grad_avg, Dk, value=-tau) # x_k - tau*(d_k/D_k)
                 state['step'] += 1
 
