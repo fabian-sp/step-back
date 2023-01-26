@@ -1,5 +1,6 @@
 """
-Some parts of the code are adapted from https://github.com/facebookresearch/dadaptation/blob/main/dadaptation/dadapt_adam.py.
+Some parts of the code are adapted from:
+    Defazio, Aaron: https://github.com/facebookresearch/dadaptation/blob/main/dadaptation/dadapt_adam.py.
 """
 import math
 import warnings
@@ -34,6 +35,7 @@ class MomoAdam(torch.optim.Optimizer):
         
         super().__init__(params, defaults)
 
+        self._number_steps = 0
         self.state['step_size_list'] = list() # for storing
 
         return
@@ -48,10 +50,23 @@ class MomoAdam(torch.optim.Optimizer):
         loss = None
         if closure is not None:
             loss = closure()
+        
+        if len(self.param_groups) > 1:
+            warnings.warn("More than one param group. step_size_list contains adaptive term of first group.")
+            warnings.warn("More than one param group. Check if step method is correct for this case.")
 
         group = self.param_groups[0]
         beta1, beta2 = group['betas']
-        norm = 0 # = ||d_k||^2_{D_k^-1}
+        
+        _dot = 0. # = <d_k,x_k>
+        _gamma = 0. # = gamma_l
+        _norm = 0 # = ||d_k||^2_{D_k^-1}
+
+        # Exponential moving average of function value
+        if self._number_steps >= 1:
+            self.loss_avg = (1-beta1)*loss +  beta1*self.loss_avg  
+        else:
+            self.loss_avg = loss # initialize
 
         for group in self.param_groups:
             eps = group['eps']
@@ -59,53 +74,62 @@ class MomoAdam(torch.optim.Optimizer):
             for p in group['params']:
                 if p.grad is None:
                     continue
-                grad = p.grad.data
-                
-                
+
+                grad = p.grad.data                
                 state = self.state[p]
 
                 # State initialization
                 if 'step' not in state:
                     state['step'] = 0
-                    # Exponential moving average of gradient values
-                    state['exp_avg'] = grad.detach()
+                    # Exponential moving average of gradients
+                    state['grad_avg'] = grad.detach()
                     # Exponential moving average of squared gradient values
-                    state['exp_avg_sq'] = torch.mul(grad, grad).sqrt().detach()
-
-                exp_avg, exp_avg_sq = state['exp_avg'], state['exp_avg_sq']
-                
+                    state['grad_avg_sq'] = torch.mul(grad, grad).sqrt().detach()
+                    # Exponential moving average of inner product <grad, weight>
+                    state['grad_dot_w'] = torch.sum(torch.mul(p.data, grad))
+                    
+                grad_avg, grad_avg_sq = state['grad_avg'], state['grad_avg_sq']
+                grad_dot_w = state['grad_dot_w']
 
                 # Adam EMA updates
-                exp_avg.mul_(beta1).add_(grad, alpha=1-beta1) # = d_k
-                exp_avg_sq.mul_(beta2).addcmul_(grad, grad, value=1-beta2) # = v_k
+                grad_avg.mul_(beta1).add_(grad, alpha=1-beta1) # = d_k
+                grad_avg_sq.mul_(beta2).addcmul_(grad, grad, value=1-beta2) # = v_k
+                grad_dot_w.mul_(beta1).add_(torch.sum(torch.mul(p.data, grad)), alpha=1-beta1)
+
+                Dk = grad_avg_sq.sqrt().add_(eps) # = D_k
                 
-                Dk = exp_avg_sq.sqrt().add_(eps) # = D_k
-                norm.add_(exp_avg.mul((1/Dk).mul(exp_avg)))
+                _dot.add_(torch.sum(torch.mul(p.data, grad_avg)))
+                _gamma.add_(grad_dot_w)
+                _norm.add_(grad_avg.mul(grad_avg.div(Dk)))
 
-
-            ######
-
-        # FROM HERE ON FINALIZE
+        #################   
+        # Update
         for group in self.param_groups:
             
+            lr = group['lr']
             decay = group['weight_decay']
             eps = group['eps']
+
+            nom = max(self.loss_avg - self.lb + _dot - _gamma, 0)
+            denom = _norm
+            t1 = (nom/denom).item()
+            tau = min(lr, t1)
 
             for p in group['params']:
                 if p.grad is None:
                     continue
                 
                 state = self.state[p]
+                grad_avg, grad_avg_sq = state['grad_avg'], state['grad_avg_sq']
 
-                exp_avg, exp_avg_sq = state['exp_avg'], state['exp_avg_sq']
-
-                Dk = exp_avg_sq.sqrt().add_(eps) # = D_k
-
-                
-                ### Take step
-                #p.data.addcdiv_(exp_avg, denom, value=-1)
-                
+                Dk = grad_avg_sq.sqrt().add_(eps) # = D_k
+                p.data.addcdiv_(grad_avg, Dk, value=-tau) # x_k - tau*(d_k/D_k)
                 state['step'] += 1
 
+        #############################
+        ## Maintenance
+
+        self._number_steps += 1
+        self.state['step_size_list'].append(t1)
 
         return loss
