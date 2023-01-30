@@ -7,7 +7,7 @@ import itertools
 from stepback.record import Record, score_names, id_to_dict, create_label
 
 
-exp_id = 'cifar10_vgg16_3' # file name of config
+exp_id = 'cifar10_vgg16_2' # file name of config
 
 R = Record(exp_id)
 raw_df = R.raw_df 
@@ -115,7 +115,11 @@ for _id in df.id.unique():
                             len(this_df)*iter_per_epoch)
     
     # TODO: read the defaults from package
-    _beta = float(id_to_dict(_id)['beta'])
+    if id_to_dict(_id)['beta']== 'none':
+        _beta = 0.9
+    else:
+        _beta == float(id_to_dict(_id)['beta'])
+     
     _bias_correction = id_to_dict(_id)['bias_correction']
     if _bias_correction == 'none':
         _bias_correction = False
@@ -170,6 +174,6 @@ for _id in df.id.unique():
     
     counter += 1
 
-    if save:
-        fig.savefig('output/plots/' + exp_id + f'/step_sizes.png', dpi=500)
+if save:
+    fig.savefig('output/plots/' + exp_id + f'/step_sizes.png', dpi=500)
 
