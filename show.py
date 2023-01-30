@@ -7,7 +7,7 @@ import itertools
 from stepback.record import Record, score_names, id_to_dict, create_label
 
 
-exp_id = 'cifar10_vgg16_2' # file name of config
+exp_id = 'cifar10_vgg16_3' # file name of config
 
 R = Record(exp_id)
 raw_df = R.raw_df 
@@ -102,7 +102,7 @@ df = R._build_base_df(agg='first')
 df = df[df['name'] == 'momo']
 
 counter = 0
-ncol, nrow = 3, 2
+ncol, nrow = 3,2
 
 fig, axs = plt.subplots(nrow, ncol, figsize=(6.6,4))
 
