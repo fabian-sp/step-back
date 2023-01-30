@@ -15,7 +15,7 @@ from .metrics import Loss
 from .utils import l2_norm, grad_norm, ridge_opt_value, logreg_opt_value
 
 class Base:
-    def __init__(self, name: str, config: dict, device: str='cpu', data_dir: str='data/'):
+    def __init__(self, name: str, config: dict, device: str='cpu', force_deterministic: bool=True, data_dir: str='data/'):
         self.name = name
         self.config = copy.deepcopy(config)
         self.data_dir = data_dir
@@ -31,6 +31,11 @@ class Base:
         
         self.seed = 1234567
         self.run_seed = 456789 + config.get('run_id', 0)
+
+        # go into deterministic mode, see https://pytorch.org/docs/stable/notes/randomness.html#reproducibility
+        if force_deterministic:
+            torch.backends.cudnn.benchmark = True
+            torch.use_deterministic_algorithms(True) 
         
         self.check_config()
         

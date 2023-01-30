@@ -14,10 +14,7 @@ from stepback.log import Container
 CONFIG_DIR = 'configs/'
 OUTPUT_DIR = 'output/'
 
-exp_id = 'test1' # file name of config
-
-
-def run_one(exp_id):
+def run_one(exp_id, device='cuda', force_deterministic=True):
     
     # load config
     with open(CONFIG_DIR + f'{exp_id}.json') as f:
@@ -34,7 +31,12 @@ def run_one(exp_id):
     
     for j, config in enumerate(exp_list): 
         # each run gets id, by position in the list
-        B = Base(name=exp_id + f'_{j}', config=config, device='cuda', data_dir='data/')
+        B = Base(name=exp_id + f'_{j}',
+                config=config, 
+                device=device, 
+                force_deterministic=force_deterministic,
+                data_dir='data/')
+        
         B.setup()
         B.run() # train and validate
         
@@ -43,6 +45,7 @@ def run_one(exp_id):
     return 
 
 if __name__ == '__main__':
+    exp_id = 'test1' # file name of config
     run_one(exp_id)
     
 
