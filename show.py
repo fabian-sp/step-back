@@ -118,7 +118,7 @@ for _id in df.id.unique():
     _beta = float(id_to_dict(_id)['beta'])
     _bias_correction = id_to_dict(_id)['bias_correction']
     if _bias_correction == 'none':
-        _bias_correction = True
+        _bias_correction = False
     elif _bias_correction == 'True':
         _bias_correction = True
     else:

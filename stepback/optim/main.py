@@ -69,7 +69,7 @@ def get_optimizer(opt_config: dict) -> (torch.optim.Optimizer, dict):
                   'weight_decay': opt_config.get('weight_decay', 0),
                   'beta': opt_config.get('beta', 0.9),
                   'lb': opt_config.get('lb', 0.),
-                  'bias_correction': opt_config.get('bias_correction', True)
+                  'bias_correction': opt_config.get('bias_correction', False)
                   }
         
     else:
