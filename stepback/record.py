@@ -8,16 +8,13 @@ import itertools
 from .log import Container
 
 #%%
-plt.rcParams["font.family"] = "serif"
-plt.rcParams['font.size'] = 12
-plt.rcParams['axes.linewidth'] = 1
-plt.rc('text', usetex=True)
 
 score_names = {'train_loss': 'Training loss', 
                'val_loss': 'Validation loss', 
                'train_score': 'Training score', 
                'val_score': 'Validation score',
                'model_norm': r'$\|x^k\|$',
+               'grad_norm': r'$\|g_k\|$'
                }
 
 
@@ -114,7 +111,7 @@ class Record:
             self.aes[m]['marker_cycle'] = itertools.cycle(('o', 'p', 's', '>', 'v', 'D'))  
         return
     
-    def plot_metric(self, s, df=None, log_scale=False, ylim=None, ax=None):
+    def plot_metric(self, s, df=None, log_scale=False, ylim=None, legend=True, ax=None):
         
         if df is None:
             df = self.base_df.copy()
@@ -153,11 +150,12 @@ class Record:
         ax.grid(which='both', lw=0.2, ls='--', zorder=-10)
         
         if log_scale:
-            ax.yscale('log')    
+            ax.set_yscale('log')    
         if ylim:
             ax.set_ylim(ylim)
             
-        ax.legend(fontsize=8, loc='lower left')
+        if legend:
+            ax.legend(fontsize=8, loc='lower left')
 
         return 
 
@@ -174,10 +172,19 @@ def id_to_dict(id, add_underscore=False):
 def create_label(id, subset=None):
     d = id_to_dict(id)
     if subset is None:
-        s = [k +'='+ v for k,v in d.items()]
+        s = [key_to_math(k) +'='+ v for k,v in d.items()]
     else:
-        s = [k +'='+ v for k,v in d.items() if k in subset]
+        s = [key_to_math(k) +'='+ v for k,v in d.items() if k in subset]
         
     return ', '.join(s)
 
-
+def key_to_math(k):
+    """translates column names from id_dict to math symbol"""
+    if k == 'lr':
+        k2 = r'$\alpha_0$'
+    elif k == 'beta':
+        k2 = r'$\beta$'
+        #v2 = None if v == 'none' else float(v)
+    if k == 'weight_decay':
+        k2 = r'$\lambda$'
+    return k2
