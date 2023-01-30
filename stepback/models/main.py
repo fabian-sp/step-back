@@ -17,7 +17,9 @@ def get_model(config: dict={}) -> torch.nn.Module:
         assert len(config['_input_dim']) == 1, "Expecting input dimensionality of length 1."
         
         input_size = config['_input_dim'][0]
-        model = MLP(input_size=input_size, output_size=1, hidden_sizes=[], bias=False, **kwargs)
+        output_size = config['model_kwargs'].get('output_size', 1)
+
+        model = MLP(input_size=input_size, output_size=output_size, hidden_sizes=[], bias=False, **kwargs)
     
     #======== MLP with ReLU =============
     elif name == 'mlp':
