@@ -20,7 +20,8 @@ config = {"dataset": 'synthetic_linear',
           "max_epoch": 10,
           "run_id": 0}
 
-def test_momo():    
+def test_momo():
+    config['opt']['bias_correction'] = True
     B = Base(name, config, device)
     B.setup()
     B.run()
