@@ -57,9 +57,8 @@ class Base:
 
         return
     
-    def setup(self):
-        
-        #============ Data =================
+    def _setup_data(self):
+        """Loads training and validation set. Creates DataLoader for training."""
         self.train_set = get_dataset(config=self.config, split='train', seed=self.seed, path=self.data_dir)
         self.val_set = get_dataset(config=self.config, split='val', seed=self.run_seed, path=self.data_dir)
         
@@ -70,15 +69,29 @@ class Base:
         _gen.manual_seed(self.run_seed)
         self.train_loader = DataLoader(self.train_set, drop_last=True, shuffle=True, generator=_gen,
                                        batch_size=self.config['batch_size'])
-               
-        #============ Model ================
+        
+        return
+
+    def _setup_model(self):
+        """Initializes the model."""
         torch.manual_seed(self.seed) # Reseed to have same initialization   
         torch.cuda.manual_seed_all(self.seed)        
         
         self.model = get_model(self.config)
         self.model.to(self.device)
-        print(self.model)
+
+        return
         
+
+    def setup(self):
+        
+        #============ Data =================
+        self._setup_data()
+               
+        #============ Model ================
+        self._setup_model()
+        print(self.model)
+
         #============ Loss function ========
         self.training_loss = Loss(name=self.config['loss_func'], backwards=True)
         
