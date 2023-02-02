@@ -69,7 +69,7 @@ class MomoAdam(torch.optim.Optimizer):
         if self._number_steps >= 1:
             self.loss_avg = (1-beta1)*loss +  beta1*self.loss_avg  
         else:
-            self.loss_avg = loss # initialize
+            self.loss_avg = loss.clone().detach() # initialize
 
         for group in self.param_groups:
             eps = group['eps']
@@ -85,7 +85,7 @@ class MomoAdam(torch.optim.Optimizer):
                 if 'step' not in state:
                     state['step'] = 0
                     # Exponential moving average of gradients
-                    state['grad_avg'] = grad.detach()
+                    state['grad_avg'] = grad.clone().detach()
                     # Exponential moving average of squared gradient values
                     state['grad_avg_sq'] = torch.mul(grad, grad).detach()
                     # Exponential moving average of inner product <grad, weight>
