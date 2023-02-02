@@ -2,8 +2,8 @@
 Main file for running experiments.
 """
 import json
-import copy
 from itertools import product
+import argparse
 
 from stepback.utils import prepare_config, create_exp_list
 from stepback.base import Base
@@ -11,6 +11,12 @@ from stepback.base import Base
 from stepback.log import Container
 
 
+parser = argparse.ArgumentParser(description='Run stepback from the terminal.')
+parser.add_argument('-i', '--id', nargs='?', type=str, default='test1', help="The id of the config (its file name).")
+parser.add_argument('-cdir', '--config_dir', nargs='?', type=str, default='configs/', help="The config directory.")
+parser.add_argument('-odir', '--output_dir', nargs='?', type=str, default='output/', help="The output directory.")
+
+# for running from IPython
 CONFIG_DIR = 'configs/'
 OUTPUT_DIR = 'output/'
 
@@ -44,7 +50,12 @@ def run_one(exp_id, device='cuda'):
     return 
 
 if __name__ == '__main__':
-    exp_id = 'test1' # file name of config
-    run_one(exp_id)
+    args = parser.parse_args()
+
+    CONFIG_DIR = args.config_dir
+    OUTPUT_DIR = args.output_dir
+    EXP_ID = args.id
+
+    run_one(EXP_ID)
     
 
