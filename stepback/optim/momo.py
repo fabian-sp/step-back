@@ -61,9 +61,9 @@ class MoMo(torch.optim.Optimizer):
         else:
             rho = 1
             
-        _dot = 0.
-        _gamma = 0.
-        _norm = 0.
+        _dot = torch.zeros(1)
+        _gamma = torch.zeros(1)
+        _norm = torch.zeros(1)
         
         ############################################################
         # Compute all quantities
@@ -79,23 +79,21 @@ class MoMo(torch.optim.Optimizer):
                 if self._number_steps == 1:
                     if self.bias_correction:
                         state['grad_avg'] = torch.zeros_like(p.data, memory_format=torch.preserve_format).detach()
-                        state['grad_dot_w'] = 0
+                        state['grad_dot_w'] = torch.zeros(1).to(p.device)
                     else:
                         # Exponential moving average of gradients
                         state['grad_avg'] = grad.detach()
                         # Exponential moving average of inner product <grad, weight>
                         state['grad_dot_w'] = torch.sum(torch.mul(p.data, grad))
-                        print(state['grad_avg'], state['grad_dot_w'])
-                    
-
+                        
                 grad_avg, grad_dot_w = state['grad_avg'], state['grad_dot_w']
-                
+
                 grad_avg.mul_(beta).add_(grad, alpha=1-beta)
                 grad_dot_w.mul_(beta).add_(torch.sum(torch.mul(p.data, grad)), alpha=1-beta)
 
-                _dot += torch.sum(torch.mul(p.data, grad_avg))
-                _gamma += grad_dot_w
-                _norm += torch.sum(torch.mul(grad_avg, grad_avg))
+                _dot.add_(torch.sum(torch.mul(p.data, grad_avg)))
+                _gamma.add_(grad_dot_w)
+                _norm.add_(torch.sum(torch.mul(grad_avg, grad_avg)))
         
         print("dot: ", _dot)
         print("gamma: ", _gamma)
@@ -118,9 +116,6 @@ class MoMo(torch.optim.Optimizer):
             tau = min(lr/rho, t1)
                 
             for p in group['params']:   
-                if p.grad is None:
-                    continue 
-                
                 state = self.state[p]
                 grad_avg = state['grad_avg']          
                 p.data.add_(other=grad_avg, alpha=-tau)
