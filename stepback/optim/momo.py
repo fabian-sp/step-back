@@ -49,20 +49,20 @@ class MoMo(torch.optim.Optimizer):
         ###### Preliminaries
         if self._number_steps == 1:
             if self.bias_correction:
-                self.loss_avg = torch.zeros(1)
+                self.loss_avg = 0.
             else:
                 self.loss_avg = loss.detach().clone()
         
-        self.loss_avg.mul_(beta).add_(loss, alpha=1-beta)        
+        self.loss_avg = beta*self.loss_avg + (1-beta)*loss        
 
         if self.bias_correction:
             rho = 1-beta**self._number_steps # must be after incrementing k
         else:
             rho = 1
             
-        _dot = torch.zeros(1)
-        _gamma = torch.zeros(1)
-        _norm = torch.zeros(1)
+        _dot = 0.
+        _gamma = 0.
+        _norm = 0.
         
         ############################################################
         # Compute all quantities
@@ -90,9 +90,9 @@ class MoMo(torch.optim.Optimizer):
                 grad_avg.mul_(beta).add_(grad, alpha=1-beta)
                 grad_dot_w.mul_(beta).add_(torch.sum(torch.mul(p.data, grad)), alpha=1-beta)
 
-                _dot.add_(torch.sum(torch.mul(p.data, grad_avg)))
-                _gamma.add_(grad_dot_w)
-                _norm.add_(torch.sum(torch.mul(grad_avg, grad_avg)))
+                _dot += torch.sum(torch.mul(p.data, grad_avg))
+                _gamma += grad_dot_w
+                _norm += torch.sum(torch.mul(grad_avg, grad_avg))
 
         ###### Update weights
         for group in self.param_groups:

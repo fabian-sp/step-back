@@ -35,7 +35,7 @@ class Base:
         # go into deterministic mode, see https://pytorch.org/docs/stable/notes/randomness.html#reproducibility
         if force_deterministic:
             torch.backends.cudnn.benchmark = False
-            torch.use_deterministic_algorithms(True) 
+            #torch.use_deterministic_algorithms(True) 
         
         self.check_config()
         
