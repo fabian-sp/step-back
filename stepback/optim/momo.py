@@ -50,12 +50,12 @@ class MoMo(torch.optim.Optimizer):
             if self.bias_correction:
                 self.loss_avg = 0
             else:
-                with torch.no_grad():
-                    self.loss_avg = loss
-                    print(self.loss_avg)
+                self.loss_avg = loss
         else:
             self.loss_avg.mul_(beta).add_(loss, alpha=1-beta)        
         
+        print("loss_avg: ", self.loss_avg)
+
         if self.bias_correction:
             rho = 1-beta**self._number_steps # must be after incrementing k
         else:
@@ -85,6 +85,7 @@ class MoMo(torch.optim.Optimizer):
                         state['grad_avg'] = grad.detach()
                         # Exponential moving average of inner product <grad, weight>
                         state['grad_dot_w'] = torch.sum(torch.mul(p.data, grad))
+                        print(state['grad_avg'], state['grad_dot_w'])
                     
 
                 grad_avg, grad_dot_w = state['grad_avg'], state['grad_dot_w']
@@ -95,7 +96,10 @@ class MoMo(torch.optim.Optimizer):
                 _dot += torch.sum(torch.mul(p.data, grad_avg))
                 _gamma += grad_dot_w
                 _norm += torch.sum(torch.mul(grad_avg, grad_avg))
-
+        
+        print("dot: ", _dot)
+        print("gamma: ", _gamma)
+        print("norm: ", _norm)
 
         ###### Update weights
         for group in self.param_groups:
