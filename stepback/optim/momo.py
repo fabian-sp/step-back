@@ -41,6 +41,7 @@ class MoMo(torch.optim.Optimizer):
         
         with torch.enable_grad():
             loss = closure()
+            print(loss)
 
         self._number_steps += 1
         beta = self.beta  
@@ -48,13 +49,11 @@ class MoMo(torch.optim.Optimizer):
         ###### Preliminaries
         if self._number_steps == 1:
             if self.bias_correction:
-                self.loss_avg = 0
+                self.loss_avg = torch.zeros(1)
             else:
-                self.loss_avg = loss
-        else:
-            self.loss_avg.mul_(beta).add_(loss, alpha=1-beta)        
+                self.loss_avg = loss.detach().clone()
         
-        print("loss_avg: ", self.loss_avg)
+        self.loss_avg.mul_(beta).add_(loss, alpha=1-beta)        
 
         if self.bias_correction:
             rho = 1-beta**self._number_steps # must be after incrementing k
@@ -72,7 +71,7 @@ class MoMo(torch.optim.Optimizer):
         for group in self.param_groups:
             for p in group['params']:
                 
-                grad = p.grad.data
+                grad = p.grad.data.detach()
                 state = self.state[p]
 
                 # Initialize EMA
@@ -82,7 +81,7 @@ class MoMo(torch.optim.Optimizer):
                         state['grad_dot_w'] = torch.zeros(1).to(p.device)
                     else:
                         # Exponential moving average of gradients
-                        state['grad_avg'] = grad.detach()
+                        state['grad_avg'] = grad.clone()
                         # Exponential moving average of inner product <grad, weight>
                         state['grad_dot_w'] = torch.sum(torch.mul(p.data, grad))
                         
@@ -94,10 +93,6 @@ class MoMo(torch.optim.Optimizer):
                 _dot.add_(torch.sum(torch.mul(p.data, grad_avg)))
                 _gamma.add_(grad_dot_w)
                 _norm.add_(torch.sum(torch.mul(grad_avg, grad_avg)))
-        
-        print("dot: ", _dot)
-        print("gamma: ", _gamma)
-        print("norm: ", _norm)
 
         ###### Update weights
         for group in self.param_groups:
