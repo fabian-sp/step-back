@@ -14,7 +14,7 @@ from stepback.log import Container
 CONFIG_DIR = 'configs/'
 OUTPUT_DIR = 'output/'
 
-def run_one(exp_id, device='cuda', force_deterministic=True):
+def run_one(exp_id, device='cuda'):
     
     # load config
     with open(CONFIG_DIR + f'{exp_id}.json') as f:
@@ -34,7 +34,6 @@ def run_one(exp_id, device='cuda', force_deterministic=True):
         B = Base(name=exp_id + f'_{j}',
                 config=config, 
                 device=device, 
-                force_deterministic=force_deterministic,
                 data_dir='data/')
         
         B.setup()
