@@ -41,7 +41,6 @@ class MoMo(torch.optim.Optimizer):
         
         with torch.enable_grad():
             loss = closure()
-            print(loss)
 
         self._number_steps += 1
         beta = self.beta  
