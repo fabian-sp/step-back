@@ -3,6 +3,7 @@ from torch.optim.lr_scheduler import LambdaLR, StepLR
 import warnings
 
 from .momo import MoMo
+from .momo_adam import MomoAdam
 
 def get_optimizer(opt_config: dict) -> (torch.optim.Optimizer, dict):
     """
@@ -71,7 +72,16 @@ def get_optimizer(opt_config: dict) -> (torch.optim.Optimizer, dict):
                   'lb': opt_config.get('lb', 0.),
                   'bias_correction': opt_config.get('bias_correction', False)
                   }
-        
+    
+    elif name == 'momo-adam':
+        opt_obj = MomoAdam
+        hyperp = {'lr': opt_config.get('lr', 1e-3),
+                  'weight_decay': opt_config.get('weight_decay', 0),
+                  'betas': opt_config.get('betas', (0.9, 0.999)),
+                  'eps': opt_config.get('eps', 1e-8),
+                  'lb': opt_config.get('lb', 0.),
+                  }
+
     else:
         raise KeyError(f"Unknown optimizer name {name}.")
         

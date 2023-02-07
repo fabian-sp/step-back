@@ -63,7 +63,7 @@ class MomoAdam(torch.optim.Optimizer):
         
         _dot = 0. # = <d_k,x_k>
         _gamma = 0. # = gamma_l
-        _norm = 0 # = ||d_k||^2_{D_k^-1}
+        _norm = 0. # = ||d_k||^2_{D_k^-1}
 
         # Exponential moving average of function value
         if self._number_steps >= 1:
@@ -111,11 +111,16 @@ class MomoAdam(torch.optim.Optimizer):
         for group in self.param_groups:
             
             lr = group['lr']
-            decay = group['weight_decay']
+            lmbda = group['weight_decay']
             eps = group['eps']
 
-            nom = max(self.loss_avg - self.lb + _dot - _gamma, 0)
-            denom = _norm
+            if lmbda > 0:
+                nom = max(self.loss_avg - self.lb + 1/(1+lmbda)*_dot - _gamma, 0)
+                denom = 1/(1+lmbda)*_norm
+            else:
+                nom = max(self.loss_avg - self.lb + _dot - _gamma, 0)
+                denom = _norm
+            
             t1 = (nom/denom).item()
             tau = min(lr, t1)
             
@@ -128,6 +133,10 @@ class MomoAdam(torch.optim.Optimizer):
 
                 Dk = grad_avg_sq.sqrt().add(eps) # = D_k
                 p.data.addcdiv_(grad_avg, Dk, value=-tau) # x_k - tau*(d_k/D_k)
+
+                if lmbda > 0:
+                    p.data.div_(1+lmbda) # decay
+
                 state['step'] += 1
 
         #############################
