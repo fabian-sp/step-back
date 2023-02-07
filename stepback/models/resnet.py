@@ -86,7 +86,7 @@ class BasicBlock(nn.Module):
 
 
 class ResNet(nn.Module):
-    def __init__(self, block, num_blocks, num_classes=10, batch_norm=False):
+    def __init__(self, block, num_blocks, num_classes=10, batch_norm=True):
         super(ResNet, self).__init__()
         self.in_planes = 16
 
@@ -124,7 +124,7 @@ class ResNet(nn.Module):
 
 
 
-def get_cifar_resnet(name, num_classes, batch_norm=False):
+def get_cifar_resnet(name, num_classes, batch_norm=True):
     
     assert num_classes in [10,100]
     

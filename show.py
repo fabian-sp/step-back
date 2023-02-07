@@ -102,7 +102,7 @@ df = R._build_base_df(agg='first')
 df = df[df['name'] == 'momo']
 
 counter = 0
-ncol, nrow = 3, 2
+ncol, nrow = 3,2
 
 fig, axs = plt.subplots(nrow, ncol, figsize=(6.6,4))
 
@@ -115,10 +115,14 @@ for _id in df.id.unique():
                             len(this_df)*iter_per_epoch)
     
     # TODO: read the defaults from package
-    _beta = float(id_to_dict(_id)['beta'])
+    if id_to_dict(_id)['beta']== 'none':
+        _beta = 0.9
+    else:
+        _beta == float(id_to_dict(_id)['beta'])
+     
     _bias_correction = id_to_dict(_id)['bias_correction']
     if _bias_correction == 'none':
-        _bias_correction = True
+        _bias_correction = False
     elif _bias_correction == 'True':
         _bias_correction = True
     else:
@@ -170,6 +174,6 @@ for _id in df.id.unique():
     
     counter += 1
 
-    if save:
-        fig.savefig('output/plots/' + exp_id + f'/step_sizes.png', dpi=500)
+if save:
+    fig.savefig('output/plots/' + exp_id + f'/step_sizes.png', dpi=500)
 

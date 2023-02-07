@@ -10,7 +10,7 @@ class MoMo(torch.optim.Optimizer):
                  weight_decay: float=0,
                  beta: float=0.9,
                  lb: float=0,
-                 bias_correction: bool=True) -> None:
+                 bias_correction: bool=False) -> None:
         
         if lr < 0.0:
             raise ValueError("Invalid learning rate: {}".format(lr))

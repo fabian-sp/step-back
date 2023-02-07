@@ -17,7 +17,9 @@ def get_model(config: dict={}) -> torch.nn.Module:
         assert len(config['_input_dim']) == 1, "Expecting input dimensionality of length 1."
         
         input_size = config['_input_dim'][0]
-        model = MLP(input_size=input_size, output_size=1, hidden_sizes=[], bias=False, **kwargs)
+        output_size = config['model_kwargs'].get('output_size', 1)
+
+        model = MLP(input_size=input_size, output_size=output_size, hidden_sizes=[], bias=False, **kwargs)
     
     #======== MLP with ReLU =============
     elif name == 'mlp':
@@ -56,9 +58,9 @@ def get_model(config: dict={}) -> torch.nn.Module:
     elif name in ['resnet20', 'resnet32', 'resnet44', 'resnet56', 'resnet110', 'resnet1202']:
         
         if config['dataset'] == 'cifar10':
-                model = get_cifar_resnet(name, num_classes=10, **kwargs) # batch_norm False by default
+                model = get_cifar_resnet(name, num_classes=10, **kwargs) # batch_norm True by default
         elif config['dataset'] == 'cifar100':
-                model = get_cifar_resnet(name, num_classes=100, **kwargs) # batch_norm False by default
+                model = get_cifar_resnet(name, num_classes=100, **kwargs) # batch_norm True by default
         else:
             raise KeyError(f"Model {name} is not implemented yet for dataset {config['dataset']}.")   
     
