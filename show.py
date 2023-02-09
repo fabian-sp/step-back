@@ -7,7 +7,7 @@ import itertools
 from stepback.record import Record, score_names, id_to_dict, create_label
 
 
-exp_id = 'cifar10_vgg16_2' # file name of config
+exp_id = 'cifar10_vgg16' # file name of config
 
 R = Record(exp_id)
 raw_df = R.raw_df 
@@ -118,9 +118,9 @@ for _id in df.id.unique():
     if id_to_dict(_id)['beta']== 'none':
         _beta = 0.9
     else:
-        _beta == float(id_to_dict(_id)['beta'])
+        _beta = float(id_to_dict(_id)['beta'])
      
-    _bias_correction = id_to_dict(_id)['bias_correction']
+    _bias_correction = id_to_dict(_id).get('bias_correction', 'none')
     if _bias_correction == 'none':
         _bias_correction = False
     elif _bias_correction == 'True':
