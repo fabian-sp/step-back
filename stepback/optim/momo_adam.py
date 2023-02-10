@@ -115,8 +115,8 @@ class MomoAdam(torch.optim.Optimizer):
             eps = group['eps']
 
             if lmbda > 0:
-                nom = max(self.loss_avg - self.lb + 1/(1+lmbda)*_dot - _gamma, 0)
-                denom = 1/(1+lmbda)*_norm
+                nom = max(self.loss_avg - self.lb + 1/(1+lmbda*lr)*_dot - _gamma, 0)
+                denom = 1/(1+lmbda*lr)*_norm
             else:
                 nom = max(self.loss_avg - self.lb + _dot - _gamma, 0)
                 denom = _norm
@@ -135,7 +135,7 @@ class MomoAdam(torch.optim.Optimizer):
                 p.data.addcdiv_(grad_avg, Dk, value=-tau) # x_k - tau*(d_k/D_k)
 
                 if lmbda > 0:
-                    p.data.div_(1+lmbda) # decay
+                    p.data.div_(1+lmbda*lr) # decay
 
                 state['step'] += 1
 
