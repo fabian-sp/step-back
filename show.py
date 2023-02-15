@@ -18,12 +18,6 @@ id_df = R.id_df # dataframe with the optimizer setups that were run
 fig = R.plot_metric(s='val_score', log_scale=False, legend=True)
 save = False
 
-## if you only want to plot good settings:
-#ixx =  base_df[base_df['val_score'] >= 0.5].id.unique()
-#df1 = base_df.loc[base_df.id.isin(ixx),:]
-#fig = R.plot_metric(df=df1, s='val_score', log_scale=False, legend=False)
-#fig.savefig('output/plots/' + exp_id + f'/all_{s}.pdf')
-
 #%%
 %matplotlib qt5
 
@@ -31,6 +25,13 @@ plt.rcParams["font.family"] = "serif"
 plt.rcParams['font.size'] = 12
 plt.rcParams['axes.linewidth'] = 1
 plt.rc('text', usetex=True)
+
+#%% if you only want to plot good settings:
+ixx =  base_df[base_df['val_score'] >= 0.5].id.unique()
+df1 = base_df.loc[base_df.id.isin(ixx),:]
+fig, ax = plt.subplots(figsize=(6,5))
+fig = R.plot_metric(df=df1, s='val_score', ylim = (0.5, 0.9), log_scale=False, legend=False)
+fig.savefig('output/plots/' + exp_id + f'/all_val_score.pdf')
 
 #%% stability plots
 
