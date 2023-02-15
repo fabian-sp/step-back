@@ -15,8 +15,14 @@ base_df = R.base_df # mean over runs
 id_df = R.id_df # dataframe with the optimizer setups that were run
 
 
-R.plot_metric(s='val_score', log_scale=False)
+fig = R.plot_metric(s='val_score', log_scale=False, legend=True)
 save = False
+
+## if you only want to plot good settings:
+#ixx =  base_df[base_df['val_score'] >= 0.5].id.unique()
+#df1 = base_df.loc[base_df.id.isin(ixx),:]
+#fig = R.plot_metric(df=df1, s='val_score', log_scale=False, legend=False)
+#fig.savefig('output/plots/' + exp_id + f'/all_{s}.pdf')
 
 #%%
 %matplotlib qt5
@@ -83,7 +89,8 @@ if xaxis == 'lr':
     ax.set_xlabel('learning rate')
 else:
     ax.set_xlabel(xaxis)
-    
+
+#ax.set_ylim(0,1)    
 ax.set_ylabel(score_names[s])
 ax.set_xscale('log')
 ax.grid(axis='y', lw=0.2, ls='--', zorder=-10)
