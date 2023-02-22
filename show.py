@@ -7,7 +7,7 @@ import itertools
 from stepback.record import Record, score_names, id_to_dict, create_label
 
 
-exp_id = 'cifar10_vgg16_2' # file name of config
+exp_id = 'cifar10_vgg16' # file name of config
 
 R = Record(exp_id)
 raw_df = R.raw_df 
@@ -15,7 +15,7 @@ base_df = R.base_df # mean over runs
 id_df = R.id_df # dataframe with the optimizer setups that were run
 
 
-R.plot_metric(s='val_score', log_scale=False)
+fig = R.plot_metric(s='val_score', log_scale=False, legend=True)
 save = False
 
 #%%
@@ -25,6 +25,13 @@ plt.rcParams["font.family"] = "serif"
 plt.rcParams['font.size'] = 12
 plt.rcParams['axes.linewidth'] = 1
 plt.rc('text', usetex=True)
+
+#%% if you only want to plot good settings:
+ixx =  base_df[base_df['val_score'] >= 0.5].id.unique()
+df1 = base_df.loc[base_df.id.isin(ixx),:]
+fig, ax = plt.subplots(figsize=(6,5))
+fig = R.plot_metric(df=df1, s='val_score', ylim = (0.5, 0.9), log_scale=False, legend=False)
+fig.savefig('output/plots/' + exp_id + f'/all_val_score.pdf')
 
 #%% stability plots
 
@@ -83,7 +90,8 @@ if xaxis == 'lr':
     ax.set_xlabel('learning rate')
 else:
     ax.set_xlabel(xaxis)
-    
+
+#ax.set_ylim(0,1)    
 ax.set_ylabel(score_names[s])
 ax.set_xscale('log')
 ax.grid(axis='y', lw=0.2, ls='--', zorder=-10)
@@ -118,9 +126,9 @@ for _id in df.id.unique():
     if id_to_dict(_id)['beta']== 'none':
         _beta = 0.9
     else:
-        _beta == float(id_to_dict(_id)['beta'])
+        _beta = float(id_to_dict(_id)['beta'])
      
-    _bias_correction = id_to_dict(_id)['bias_correction']
+    _bias_correction = id_to_dict(_id).get('bias_correction', 'none')
     if _bias_correction == 'none':
         _bias_correction = False
     elif _bias_correction == 'True':

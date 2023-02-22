@@ -2,13 +2,13 @@ from numpy.testing import assert_almost_equal
 from numpy.testing import assert_array_almost_equal
 import torch
 import numpy as np
+import copy
 
 from stepback.base import Base
 
 name = 'test'
 device = 'cpu'
 
-torch.manual_seed(123)
 
 config = {"dataset": 'synthetic_linear',
           "dataset_kwargs": {'p': 10, 'n_samples': 100},
@@ -21,6 +21,8 @@ config = {"dataset": 'synthetic_linear',
           "run_id": 0}
 
 def test_momo():
+    torch.manual_seed(123)
+
     config['opt']['bias_correction'] = True
     B = Base(name, config, device)
     B.setup()
@@ -33,10 +35,12 @@ def test_momo():
 
     return
 
-def test_momo_no_bias():    
-    config2 = config.copy()
+def test_momo_no_bias():  
+    torch.manual_seed(123)
+
+    config2 = copy.deepcopy(config)
     config2['opt']['bias_correction'] = False
-    B = Base(name, config, device)
+    B = Base(name, config2, device)
     B.setup()
     B.run()
     
@@ -47,16 +51,18 @@ def test_momo_no_bias():
 
     return
 
-def test_momo_weight_decay():    
-    config2 = config.copy()
+def test_momo_weight_decay():  
+    torch.manual_seed(123)
+
+    config2 = copy.deepcopy(config)
     config2['opt']['weight_decay'] = 0.1
-    B = Base(name, config, device)
+    B = Base(name, config2, device)
     B.setup()
     B.run()
     
-    assert_almost_equal(B.results['history'][0]['train_loss'], 0.4929815590381622, decimal=5)
-    assert_almost_equal(B.results['history'][0]['val_score'], 0.5650611400604248, decimal=5)
-    goal_step_sizes = np.array([0.103182, 0.0083815, 0.00942883, 0.00738135, 0.0144944])
+    assert_almost_equal(B.results['history'][0]['train_loss'], 0.21620030999183654, decimal=5)
+    assert_almost_equal(B.results['history'][0]['val_score'], 0.3015472382307053, decimal=5)
+    goal_step_sizes = np.array([1.26087, 0.642797, 0.474165, 0.366889, 0.462078])
     assert_array_almost_equal(B.results['history'][0]['step_size_list'], goal_step_sizes, decimal=5)
 
     return

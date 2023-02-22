@@ -1,4 +1,5 @@
 from matplotlib import pyplot as plt
+from matplotlib.lines import Line2D
 import seaborn as sns
 import pandas as pd
 import numpy as np
@@ -26,6 +27,8 @@ aes = {'sgd': {'color': '#7fb285', 'markevery': 15},
         'default': {'color': 'grey', 'markevery': 3},
         }
 #7fb285
+
+ALL_MARKER = ('o', 'H', 's', '>', 'v', '<' , '^', 'D', 'x')
 
 
 #%%
@@ -108,7 +111,7 @@ class Record:
     #=======================================================
     def _reset_marker_cycle(self):
         for m in self.aes.keys():
-            self.aes[m]['marker_cycle'] = itertools.cycle(('o', 'p', 's', '>', 'v', 'D'))  
+            self.aes[m]['marker_cycle'] = itertools.cycle(ALL_MARKER)  
         return
     
     def plot_metric(self, s, df=None, log_scale=False, ylim=None, legend=True, ax=None):
@@ -123,6 +126,13 @@ class Record:
             fig, ax = plt.subplots()
         else:
             fig = ax.get_figure()
+
+        if legend:
+            alpha = 1
+            markersize = 6
+        else:
+            alpha = .8
+            markersize = 4
             
         for m in df.id.unique():
             this_df = df[df.id==m]
@@ -140,9 +150,10 @@ class Record:
             # plot
             ax.plot(x, y, 
                     c=aes.get(conf['name'], self.aes['default']).get('color'), 
-                    marker=next(self.aes.get(conf['name'], self.aes['default']).get('marker_cycle')), 
-                    markersize=6, 
+                    marker=next(self.aes.get(conf['name'], self.aes['default']).get('marker_cycle')) if legend else 'o', 
+                    markersize=markersize, 
                     markevery=(self.aes.get(conf['name'], self.aes['default']).get('markevery'), 20), 
+                    alpha = alpha,
                     label=label)
         
         ax.set_xlabel('Epoch')
@@ -153,11 +164,16 @@ class Record:
             ax.set_yscale('log')    
         if ylim:
             ax.set_ylim(ylim)
-            
+        
+        # full legend or only solver names
         if legend:
             ax.legend(fontsize=8, loc='lower left')
-
-        return 
+        else:
+            for n in df.name.unique():
+                handles = [Line2D([0], [0], color=aes.get(n, self.aes['default']).get('color'), lw=4) for n in df.name.unique()]
+                names = list(df.name.unique())
+                ax.legend(handles, names, loc='lower left')
+        return fig
 
     
 def id_to_dict(id, add_underscore=False):
