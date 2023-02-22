@@ -2,6 +2,7 @@ from numpy.testing import assert_almost_equal
 from numpy.testing import assert_array_almost_equal
 import torch
 import numpy as np
+import copy
 
 from stepback.base import Base
 
@@ -34,7 +35,7 @@ def test_momo_adam():
 
 def test_momo_adam_weight_decay():    
     torch.manual_seed(123)
-    config2 = config.copy()
+    config2 = copy.deepcopy(config)
     config2['opt']['weight_decay'] = 0.01
     B = Base(name, config2, device)
     B.setup()
