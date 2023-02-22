@@ -24,6 +24,7 @@ aes = {'sgd': {'color': '#7fb285', 'markevery': 15},
         'adam': {'color': '#f34213', 'markevery': 10}, 
         'adamw': {'color': '#f34213', 'markevery': 10},
         'momo': {'color': '#023047', 'markevery': 5},
+        'momo-adam': {'color': '#0496FF', 'markevery': 7},
         'default': {'color': 'grey', 'markevery': 3},
         }
 #7fb285
