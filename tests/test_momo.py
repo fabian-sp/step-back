@@ -20,7 +20,7 @@ config = {"dataset": 'synthetic_linear',
           "max_epoch": 10,
           "run_id": 0}
 
-def test_momo():
+def test_momo_bias():
     torch.manual_seed(123)
 
     config['opt']['bias_correction'] = True
@@ -35,7 +35,7 @@ def test_momo():
 
     return
 
-def test_momo_no_bias():  
+def test_momo():  
     torch.manual_seed(123)
 
     config2 = copy.deepcopy(config)
