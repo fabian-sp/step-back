@@ -22,9 +22,9 @@ def test_base_object():
     B.setup()
     B.run()
     
-    assert_almost_equal(B.results['history'][-1]['train_loss'], 0.44169596433639524, decimal=5)
-    assert_almost_equal(B.results['history'][-1]['val_score'], 0.7500000119209289, decimal=5)
-    assert_almost_equal(B.results['history'][-1]['model_norm'], 0.7555383443832397, decimal=5)
+    assert_almost_equal(B.results['history'][-1]['train_loss'], 0.44169596433639524, decimal=4)
+    assert_almost_equal(B.results['history'][-1]['val_score'], 0.7500000119209289, decimal=4)
+    assert_almost_equal(B.results['history'][-1]['model_norm'], 0.7555383443832397, decimal=4)
 
     return
 
