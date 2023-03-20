@@ -4,6 +4,7 @@ import torch
 import copy
 import time
 import datetime
+import warnings
 
 from torch.utils.data import DataLoader
 
@@ -194,17 +195,24 @@ class Base:
             # get batch and compute model output
             data, targets = batch['data'].to(device=self.device), batch['targets'].to(device=self.device)
             out = self.model(data).to(device=self.device)
-           
+
+            if len(out.shape) <= 1:
+                warnings.warn(f"Shape of model output is {out.shape}, recommended to have shape [batch_size, ..].")
+               
             if not self._custom_closure:
                 closure = lambda: self.training_loss.compute(out, targets)
             else:
                 closure = lambda: self.opt.closure(out, targets)
-                
-            loss_val = self.opt.step(closure) # here the magic happens
             
+            # see optim/README.md for explanation 
+            if hasattr(self.opt,"prestep"):
+                ind = batch['ind'].to(device=self.device) # indices of batch members
+                self.opt.prestep(out, targets, ind, self.training_loss.name)
+            
+            # Here the magic happens
+            loss_val = self.opt.step(closure=closure) 
             pbar.set_description(f'Training - {loss_val:.3f}')
 
-        
         
         print("Current learning rate", self.sched.get_last_lr()[0])
         
