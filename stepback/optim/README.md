@@ -1,6 +1,6 @@
 ## Optimizers
 
-If you want to add an optimizer to `step-back`, you need to place the
+If you want to add an optimizer to `step-back`, you need to register it in [main.py](main.py).
 
 * Your optimizer should inherit from `torch.optim.Optimizer`.
 * The `step`-method should have one argument called `closure` (if other arguments exists, they will be called with their default). See the method `train_epoch` in [`base.py`](../base.py).
@@ -14,8 +14,8 @@ For possible arguments, see the below example.
 ``` python
 
 class MyOptimizer(torch.optim.Optimizer)
-    def __init__(self,...):
-
+    
+    def __init__(self):
         return
 
 
@@ -27,7 +27,8 @@ class MyOptimizer(torch.optim.Optimizer)
             loss = closure()
 
         return loss
-    # This method is optional. Only if your optimizer requires more than loss value and gradients for doing a step.
+
+    # This method is optional. Only needed if your optimizer requires more than loss value and gradients for doing a step.
     def prestep(out, targets, ind, loss_name):
         """
         out : model output (before loss)
