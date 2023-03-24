@@ -19,7 +19,8 @@ class MomoAdam(torch.optim.Optimizer):
                 betas:tuple=(0.9, 0.999), 
                 eps:float=1e-8,
                 weight_decay:float=0,
-                lb: float=0):
+                lb: float=0,
+                divide: bool=True):
 
         if not 0.0 <= lr:
             raise ValueError("Invalid learning rate: {}".format(lr))
@@ -38,7 +39,11 @@ class MomoAdam(torch.optim.Optimizer):
         super().__init__(params, defaults)
 
         self.lb = lb
+        self.divide = divide 
+
+        # initialize
         self._number_steps = 0
+        self.loss_avg = 0.
         self.state['step_size_list'] = list() # for storing
 
         return
@@ -50,29 +55,34 @@ class MomoAdam(torch.optim.Optimizer):
             closure (callable, optional): A closure that reevaluates the model
                 and returns the loss.
         """
-        loss = None
-        if closure is not None:
+        
+        with torch.enable_grad():
             loss = closure()
         
         if len(self.param_groups) > 1:
             warnings.warn("More than one param group. step_size_list contains adaptive term of last group.")
             warnings.warn("More than one param group. This might cause issues for the step method.")
 
-        group = self.param_groups[0]
-        beta1, beta2 = group['betas']
+        beta1, beta2 = self.param_groups[0]['betas']
         
         _dot = 0. # = <d_k,x_k>
         _gamma = 0. # = gamma_l
         _norm = 0. # = ||d_k||^2_{D_k^-1}
 
         # Exponential moving average of function value
-        if self._number_steps >= 1:
-            self.loss_avg = (1-beta1)*loss +  beta1*self.loss_avg  
-        else:
-            self.loss_avg = loss.clone().detach() # initialize
+        self.loss_avg = (1-beta1)*loss +  beta1*self.loss_avg 
+        
+        # OLD: NO BIAS CORRECTION
+        # if self._number_steps >= 1:
+        #     self.loss_avg = (1-beta1)*loss +  beta1*self.loss_avg  
+        # else:
+        #     self.loss_avg = loss.clone().detach() # initialize
+
+        self._number_steps += 1
 
         for group in self.param_groups:
             eps = group['eps']
+            beta1, beta2 = group['betas']
 
             for p in group['params']:
                 if p.grad is None:
@@ -81,16 +91,29 @@ class MomoAdam(torch.optim.Optimizer):
                 grad = p.grad.data                
                 state = self.state[p]
 
+                # OLD: NO BIAS CORRECTION
+                # State initialization
+                # if 'step' not in state:
+                #    state['step'] = 0
+                #    # Exponential moving average of gradients
+                #    state['grad_avg'] = grad.clone().detach()
+                #    # Exponential moving average of squared gradient values
+                #    state['grad_avg_sq'] = torch.mul(grad, grad).detach()
+                #    # Exponential moving average of inner product <grad, weight>
+                #    state['grad_dot_w'] = torch.sum(torch.mul(p.data, grad))
+
                 # State initialization
                 if 'step' not in state:
                     state['step'] = 0
                     # Exponential moving average of gradients
-                    state['grad_avg'] = grad.clone().detach()
+                    state['grad_avg'] = torch.zeros_like(p.data, memory_format=torch.preserve_format).detach()
                     # Exponential moving average of squared gradient values
-                    state['grad_avg_sq'] = torch.mul(grad, grad).detach()
+                    state['grad_avg_sq'] = torch.zeros_like(p.data, memory_format=torch.preserve_format).detach()
                     # Exponential moving average of inner product <grad, weight>
-                    state['grad_dot_w'] = torch.sum(torch.mul(p.data, grad))
-                    
+                    state['grad_dot_w'] = torch.tensor(0.)
+                
+                state['step'] += 1 # increment iteration counter
+
                 grad_avg, grad_avg_sq = state['grad_avg'], state['grad_avg_sq']
                 grad_dot_w = state['grad_dot_w']
 
@@ -99,7 +122,8 @@ class MomoAdam(torch.optim.Optimizer):
                 grad_avg_sq.mul_(beta2).addcmul_(grad, grad, value=1-beta2) # = v_k
                 grad_dot_w.mul_(beta1).add_(torch.sum(torch.mul(p.data, grad)), alpha=1-beta1)
 
-                Dk = grad_avg_sq.sqrt().add(eps) # = D_k
+                bias_correction2 = 1 - beta2 ** state['step']
+                Dk = grad_avg_sq.div(bias_correction2).sqrt().add(eps) # = D_k
                 
                 _dot += torch.sum(torch.mul(p.data, grad_avg))
                 _gamma += grad_dot_w
@@ -113,16 +137,19 @@ class MomoAdam(torch.optim.Optimizer):
             lr = group['lr']
             lmbda = group['weight_decay']
             eps = group['eps']
+            beta1, _ = group['betas']
+
+            bias_correction1 = 1 - beta1 ** state['step']
 
             if lmbda > 0:
-                nom = max(self.loss_avg - self.lb + 1/(1+lmbda*lr)*_dot - _gamma, 0)
-                denom = 1/(1+lmbda*lr)*_norm
+                nom = max((1+lmbda*lr)*(self.loss_avg - bias_correction1*self.lb) + _dot - (1+lmbda*lr)*_gamma, 0)
+                denom = _norm
             else:
-                nom = max(self.loss_avg - self.lb + _dot - _gamma, 0)
+                nom = max(self.loss_avg - bias_correction1*self.lb + _dot - _gamma, 0)
                 denom = _norm
             
             t1 = (nom/denom).item()
-            tau = min(lr, t1)
+            tau = min(lr/bias_correction1, t1)
             
             for p in group['params']:
                 if p.grad is None:
@@ -131,18 +158,22 @@ class MomoAdam(torch.optim.Optimizer):
                 state = self.state[p]
                 grad_avg, grad_avg_sq = state['grad_avg'], state['grad_avg_sq']
 
-                Dk = grad_avg_sq.sqrt().add(eps) # = D_k
+                Dk = grad_avg_sq.div(bias_correction2).sqrt().add(eps)
+                
+                # AdamW-Pytorch way of weight decay
+                if lmbda > 0 and not self.divide:
+                    p.data.mul_(1-lmbda*lr)
+
+                # gradient step
                 p.data.addcdiv_(grad_avg, Dk, value=-tau) # x_k - tau*(d_k/D_k)
 
-                if lmbda > 0:
+                # Proximal way of weight decay
+                if lmbda > 0 and self.divide:
                     p.data.div_(1+lmbda*lr) # decay
-
-                state['step'] += 1
 
         #############################
         ## Maintenance
 
-        self._number_steps += 1
         self.state['step_size_list'].append(t1)
 
         return loss

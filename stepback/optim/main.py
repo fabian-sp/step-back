@@ -80,6 +80,7 @@ def get_optimizer(opt_config: dict) -> (torch.optim.Optimizer, dict):
                   'betas': opt_config.get('betas', (0.9, 0.999)),
                   'eps': opt_config.get('eps', 1e-8),
                   'lb': opt_config.get('lb', 0.),
+                  'divide': opt_config.get('divide', True)
                   }
 
     else:

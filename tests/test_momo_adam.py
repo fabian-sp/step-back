@@ -10,7 +10,7 @@ name = 'test'
 device = 'cpu'
 
 
-config = {"dataset": 'synthetic_linear',
+_config = {"dataset": 'synthetic_linear',
           "dataset_kwargs": {'p': 10, 'n_samples': 100},
           "model": 'linear',
           "loss_func": 'squared',
@@ -22,28 +22,29 @@ config = {"dataset": 'synthetic_linear',
 
 def test_momo_adam():
     torch.manual_seed(123)
+    config = copy.deepcopy(_config)
     B = Base(name, config, device)
     B.setup()
     B.run()
     
-    assert_almost_equal(B.results['history'][0]['train_loss'], 0.5928951382637024, decimal=5)
-    assert_almost_equal(B.results['history'][0]['val_score'], 0.5384113848209381, decimal=5)
-    goal_step_sizes = np.array([0.13795, 0.00745714, 0.00856603, 0.00412777, 0.0151196])
+    assert_almost_equal(B.results['history'][0]['train_loss'], 0.2505902022123337, decimal=5)
+    assert_almost_equal(B.results['history'][0]['val_score'], 0.22642181515693666, decimal=5)
+    goal_step_sizes = np.array([1.3795, 0.655501, 0.425859, 0.143845, 0.155355])
     assert_array_almost_equal(B.results['history'][0]['step_size_list'], goal_step_sizes, decimal=5)
 
     return
 
 def test_momo_adam_weight_decay():    
     torch.manual_seed(123)
-    config2 = copy.deepcopy(config)
-    config2['opt']['weight_decay'] = 0.01
-    B = Base(name, config2, device)
+    config = copy.deepcopy(_config)
+    config['opt']['weight_decay'] = 0.01
+    B = Base(name, config, device)
     B.setup()
     B.run()
     
-    assert_almost_equal(B.results['history'][0]['train_loss'], 0.5717200577259064, decimal=5)
-    assert_almost_equal(B.results['history'][0]['val_score'], 0.5319624423980713, decimal=5)
-    goal_step_sizes = np.array([0.138299, 0.00783268, 0.0089153, 0.00460468, 0.0153383])
+    assert_almost_equal(B.results['history'][0]['train_loss'], 0.24365038871765138, decimal=5)
+    assert_almost_equal(B.results['history'][0]['val_score'], 0.22479842305183412, decimal=5)
+    goal_step_sizes = np.array([1.38299, 0.653872, 0.420978, 0.142662, 0.158556])
     assert_array_almost_equal(B.results['history'][0]['step_size_list'], goal_step_sizes, decimal=5)
 
     return
