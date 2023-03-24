@@ -29,7 +29,6 @@ plt.rc('text', usetex=True)
 #%% if you only want to plot good settings:
 ixx =  base_df[base_df['val_score'] >= 0.5].id.unique()
 df1 = base_df.loc[base_df.id.isin(ixx),:]
-fig, ax = plt.subplots(figsize=(6,5))
 fig = R.plot_metric(df=df1, s='val_score', ylim = (0.5, 0.9), log_scale=False, legend=False)
 fig.savefig('output/plots/' + exp_id + f'/all_val_score.pdf')
 
@@ -98,7 +97,7 @@ ax.grid(axis='y', lw=0.2, ls='--', zorder=-10)
 fig.legend(fontsize=9, loc='upper right')
 
 #fig.tight_layout()
-fig.subplots_adjust(top=0.8,bottom=0.09,left=0.1,right=0.97)
+fig.subplots_adjust(top=0.8,bottom=0.09,left=0.12,right=0.97)
 #grouped.indices.keys()
 
 if save:

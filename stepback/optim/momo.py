@@ -99,10 +99,10 @@ class MoMo(torch.optim.Optimizer):
             lmbda = group['weight_decay']
             
             if lmbda > 0:
-                nom = (rho+lr*lmbda)/rho * (self.loss_avg - self.lb)  + _dot - (rho+lr*lmbda)/rho * _gamma
+                nom = (1+lr*lmbda) * (self.loss_avg - rho*self.lb)  + _dot - (1+lr*lmbda) * _gamma
                 t1 = max(nom, 0.)/_norm
             else:
-                t1 = max(self.loss_avg - self.lb + _dot - _gamma, 0.)/_norm
+                t1 = max(self.loss_avg - rho*self.lb + _dot - _gamma, 0.)/_norm
             
             t1 = t1.item() # make scalar
             
@@ -115,7 +115,7 @@ class MoMo(torch.optim.Optimizer):
                 p.data.add_(other=grad_avg, alpha=-tau)
                 
                 if lmbda > 0:
-                    p.data.mul_(rho/(rho+lr*lmbda))
+                    p.data.div_(1+lr*lmbda)
                     
         ############################################################
         
