@@ -7,7 +7,7 @@ import itertools
 from stepback.record import Record, score_names, id_to_dict, create_label
 
 
-exp_id = 'cifar10_vgg16' # file name of config
+exp_id = ['cifar10_resnet20', 'cifar10_resnet20-2'] # file names of config
 
 R = Record(exp_id)
 raw_df = R.raw_df 
