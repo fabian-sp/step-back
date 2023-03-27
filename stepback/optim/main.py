@@ -3,6 +3,7 @@ from torch.optim.lr_scheduler import LambdaLR, StepLR
 import warnings
 
 from .momo import MoMo
+from .sps import SPS
 
 def get_optimizer(opt_config: dict) -> (torch.optim.Optimizer, dict):
     """
@@ -70,6 +71,14 @@ def get_optimizer(opt_config: dict) -> (torch.optim.Optimizer, dict):
                   'beta': opt_config.get('beta', 0.9),
                   'lb': opt_config.get('lb', 0.),
                   'bias_correction': opt_config.get('bias_correction', False)
+                  }
+        
+    elif name == 'prox-sps':
+        opt_obj = SPS
+        hyperp = {'lr': opt_config.get('lr', 1e-3),
+                  'weight_decay': opt_config.get('weight_decay', 0),
+                  'lb': opt_config.get('lb', 0.),
+                  'prox': True
                   }
         
     else:
