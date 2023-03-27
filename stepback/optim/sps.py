@@ -115,7 +115,7 @@ class SPS(torch.optim.Optimizer):
 
         return loss
     
-        
+    @torch.no_grad()
     def compute_grad_terms(self, need_gdotw=True):
         """
         computes:
