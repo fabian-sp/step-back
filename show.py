@@ -7,7 +7,7 @@ import itertools
 from stepback.record import Record, score_names, id_to_dict, create_label
 
 
-exp_id = 'cifar10_vgg16' # file name of config
+exp_id = ['cifar10_resnet20', 'cifar10_resnet20-2', 'cifar10_resnet20-3'] # file names of config
 
 R = Record(exp_id)
 raw_df = R.raw_df 
@@ -30,7 +30,7 @@ plt.rc('text', usetex=True)
 ixx =  base_df[base_df['val_score'] >= 0.5].id.unique()
 df1 = base_df.loc[base_df.id.isin(ixx),:]
 fig = R.plot_metric(df=df1, s='val_score', ylim = (0.5, 0.9), log_scale=False, legend=False)
-fig.savefig('output/plots/' + exp_id + f'/all_val_score.pdf')
+#fig.savefig('output/plots/' + exp_id + f'/all_val_score.pdf')
 
 #%% stability plots
 
@@ -105,11 +105,14 @@ if save:
 
 #%% plots the adaptive step size
 
+method = 'momo'
+
 df = R._build_base_df(agg='first')
-df = df[df['name'] == 'momo']
+df = df[df['name'] == method]
 
 counter = 0
-ncol, nrow = 3,2
+ncol, nrow = 3,3
+
 
 fig, axs = plt.subplots(nrow, ncol, figsize=(6.6,4))
 
@@ -121,21 +124,25 @@ for _id in df.id.unique():
     upsampled = np.linspace(this_df.epoch.values[0], this_df.epoch.values[-1],\
                             len(this_df)*iter_per_epoch)
     
-    # TODO: read the defaults from package
-    if id_to_dict(_id)['beta']== 'none':
-        _beta = 0.9
-    else:
-        _beta = float(id_to_dict(_id)['beta'])
-     
-    _bias_correction = id_to_dict(_id).get('bias_correction', 'none')
-    if _bias_correction == 'none':
-        _bias_correction = False
-    elif _bias_correction == 'True':
-        _bias_correction = True
-    else:
-        _bias_correction = False
+    if method == 'momo':
+        # TODO: read the defaults from package
+        if id_to_dict(_id)['beta']== 'none':
+            _beta = 0.9
+        else:
+            _beta = float(id_to_dict(_id)['beta'])
+        
+        _bias_correction = id_to_dict(_id).get('bias_correction', 'none')
+        if _bias_correction == 'none':
+            _bias_correction = False
+        elif _bias_correction == 'True':
+            _bias_correction = True
+        else:
+            _bias_correction = False
 
-    rho = 1 - _beta**(np.arange(len(this_df)*iter_per_epoch)+1)
+        rho = 1 - _beta**(np.arange(len(this_df)*iter_per_epoch)+1)
+    else:
+        _bias_correction = False
+        _beta = None
 
     all_s = []
     all_s_median = []
@@ -144,9 +151,9 @@ for _id in df.id.unique():
         all_s += this_df.loc[j,'step_size_list'] 
     
     # plot adaptive term
-    ax.scatter(upsampled, all_s, c='#023047', s=5, alpha=0.35)
+    ax.scatter(upsampled, all_s, c=R.aes[method]['color'], s=5, alpha=0.35)
     ax.plot(this_df.epoch, all_s_median, c='gainsboro', marker='o', markevery=(5,7),\
-            markerfacecolor='#023047', markeredgecolor='gainsboro', lw=2.5, label=r"$\zeta_k$")
+            markerfacecolor=R.aes[method]['color'], markeredgecolor='gainsboro', lw=2.5, label=r"$\zeta_k$")
     
 
     # plot LR
@@ -177,8 +184,11 @@ for _id in df.id.unique():
     ax.legend(loc='upper right', fontsize=10)
     
     
-    ax.set_title(create_label(_id, subset=['lr','beta']), fontsize=8)
-    
+    if method == 'momo':
+        ax.set_title(create_label(_id, subset=['lr','beta']), fontsize=8)
+    elif method == 'prox-sps':
+        ax.set_title(create_label(_id, subset=['lr']), fontsize=8)
+
     counter += 1
 
 if save:
