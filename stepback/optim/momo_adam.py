@@ -110,7 +110,7 @@ class MomoAdam(torch.optim.Optimizer):
                     # Exponential moving average of squared gradient values
                     state['grad_avg_sq'] = torch.zeros_like(p.data, memory_format=torch.preserve_format).detach()
                     # Exponential moving average of inner product <grad, weight>
-                    state['grad_dot_w'] = torch.tensor(0.)
+                    state['grad_dot_w'] = torch.tensor(0.).to(p.device)
                 
                 state['step'] += 1 # increment iteration counter
 
