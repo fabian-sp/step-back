@@ -5,6 +5,8 @@ import pandas as pd
 import numpy as np
 import copy
 import itertools
+from typing import Union
+import warnings
 
 from .log import Container
 
@@ -24,10 +26,15 @@ aes = {'sgd': {'color': '#7fb285', 'markevery': 15},
         'adam': {'color': '#f34213', 'markevery': 10}, 
         'adamw': {'color': '#f34213', 'markevery': 10},
         'momo': {'color': '#023047', 'markevery': 5},
-        'momo-adam': {'color': '#0496FF', 'markevery': 7},
+        'momo-adam': {'color': '#0496FF', 'markevery': 6},
+        'prox-sps': {'color': '#97BF88', 'markevery': 7},
         'default': {'color': 'grey', 'markevery': 3},
         }
-#7fb285
+# more colors:
+#4FB0C6
+#8be8cb
+#7ea2aa
+#97BF88
 
 ALL_MARKER = ('o', 'H', 's', '>', 'v', '<' , '^', 'D', 'x')
 
@@ -37,14 +44,30 @@ ALL_MARKER = ('o', 'H', 's', '>', 'v', '<' , '^', 'D', 'x')
 _USE_UNDERSCORE = False # whether to add underscore to column names in id_df?
 
 class Record:
-    def __init__(self, exp_id: str, output_dir='output/', as_json=True):
+    def __init__(self, 
+                 exp_id: Union[str, list], 
+                 output_dir='output/', 
+                 as_json=True):
+        
         self.exp_id = exp_id
         self.aes = copy.deepcopy(aes)
-        self.C = Container(name=exp_id, output_dir=output_dir, as_json=as_json)
+
+        # exp_id can be str or list (if we want to merge multiple output files)
+        if isinstance(exp_id, str):
+            exp_id = [exp_id]
+        else:
+            warnings.warn("Loading from multiple output files. Contents will be merged.")   
         
-        print(f"Loading data from {output_dir+exp_id}")
-        self.C.load() # load data
-        
+        # object to store everything
+        self.data = list()
+
+        for _e in exp_id:
+            C = Container(name=_e, output_dir=output_dir, as_json=as_json)
+            print(f"Loading data from {output_dir+_e}")
+            C.load() # load data
+
+            self.data += C.data # append
+
         self.raw_df = self._build_raw_df()
         self.id_df = self._build_id_df()
         self.base_df = self._build_base_df(agg='mean')
@@ -53,7 +76,7 @@ class Record:
     def _build_raw_df(self):
         """ create DataFrame with the stored output. Creates an id column based on opt config. """
         df_list = list()
-        for r in self.C.data:
+        for r in self.data:
             this_df = pd.DataFrame(r['history'])
             
             opt_dict = copy.deepcopy(r['config']['opt'])
@@ -70,6 +93,11 @@ class Record:
         df = pd.concat(df_list)   
         df = df.reset_index(drop=True)
         df.insert(0, 'id', df.pop('id')) # move id column to front
+
+        # raise error if duplicates
+        if df.duplicated(subset=['id', 'epoch', 'run_id']).any():
+            raise KeyError("There seem to be duplicates (by id, epoch, run_id). Please check the output data.")
+
         return df
     
     def _build_id_df(self):

@@ -3,7 +3,9 @@ from torch.optim.lr_scheduler import LambdaLR, StepLR
 import warnings
 
 from .momo import MoMo
+
 from .momo_adam import MomoAdam
+from .sps import SPS
 
 def get_optimizer(opt_config: dict) -> (torch.optim.Optimizer, dict):
     """
@@ -82,7 +84,14 @@ def get_optimizer(opt_config: dict) -> (torch.optim.Optimizer, dict):
                   'lb': opt_config.get('lb', 0.),
                   'divide': opt_config.get('divide', True)
                   }
-
+        
+    elif name == 'prox-sps':
+        opt_obj = SPS
+        hyperp = {'lr': opt_config.get('lr', 1e-3),
+                  'weight_decay': opt_config.get('weight_decay', 0),
+                  'lb': opt_config.get('lb', 0.),
+                  'prox': True
+                  }
     else:
         raise KeyError(f"Unknown optimizer name {name}.")
         
