@@ -7,13 +7,15 @@ import itertools
 from stepback.record import Record, score_names, id_to_dict, create_label
 
 
-exp_id = ['cifar10_resnet20', 'cifar10_resnet20-2', 'cifar10_resnet20-3'] # file names of config
+exp_id = ['cifar10_resnet20', 'cifar10_resnet20-2', 
+          'cifar10_resnet20-3', 'cifar10_resnet20-4'] # file names of config
 
 R = Record(exp_id)
 raw_df = R.raw_df 
 base_df = R.base_df # mean over runs
 id_df = R.id_df # dataframe with the optimizer setups that were run
 
+#base_df, id_df = R.filter(exclude=['prox-sps'])
 
 fig = R.plot_metric(s='val_score', log_scale=False, legend=True)
 save = False
@@ -75,7 +77,9 @@ for m in df.index.unique():
     ax.plot(x,y, c=R.aes.get(name, R.aes['default'])['color'], label=label,
             marker=next(R.aes.get(name, R.aes['default']).get('marker_cycle')), 
             #markevery=(1,5),
+            zorder=R.aes.get(name, R.aes['default']).get('zorder')
             )
+    
     if sigma > 0:
         ax.fill_between(x, y-sigma*y2, y+sigma*y2,
                         color=R.aes.get(name, R.aes['default'])['color'],

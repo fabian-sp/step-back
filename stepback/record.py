@@ -21,14 +21,14 @@ score_names = {'train_loss': 'Training loss',
                }
 
 
-aes = {'sgd': {'color': '#7fb285', 'markevery': 15},
-        'sgd-m': {'color': '#de9151', 'markevery': 8},
-        'adam': {'color': '#f34213', 'markevery': 10}, 
-        'adamw': {'color': '#f34213', 'markevery': 10},
-        'momo': {'color': '#023047', 'markevery': 5},
-        'momo-adam': {'color': '#0496FF', 'markevery': 6},
-        'prox-sps': {'color': '#97BF88', 'markevery': 7},
-        'default': {'color': 'grey', 'markevery': 3},
+aes = {'sgd': {'color': '#7fb285', 'markevery': 15, 'zorder': 7},
+        'sgd-m': {'color': '#de9151', 'markevery': 8, 'zorder': 8},
+        'adam': {'color': '#f34213', 'markevery': 10, 'zorder': 9}, 
+        'adamw': {'color': '#f34213', 'markevery': 10, 'zorder': 9},
+        'momo': {'color': '#023047', 'markevery': 5, 'zorder': 11},
+        'momo-adam': {'color': '#0083F5', 'markevery': 6, 'zorder': 10},
+        'prox-sps': {'color': '#97BF88', 'markevery': 7, 'zorder': 6},
+        'default': {'color': 'grey', 'markevery': 3, 'zorder': 1},
         }
 # more colors:
 #4FB0C6
@@ -73,6 +73,13 @@ class Record:
         self.base_df = self._build_base_df(agg='mean')
         return
     
+    def filter(self, exclude=[]):
+
+        base_df = self.base_df[~self.base_df.name.isin(exclude)]
+        id_df = self.id_df[~self.id_df.name.isin(exclude)]
+
+        return base_df, id_df
+
     def _build_raw_df(self):
         """ create DataFrame with the stored output. Creates an id column based on opt config. """
         df_list = list()
@@ -160,7 +167,7 @@ class Record:
             alpha = 1
             markersize = 6
         else:
-            alpha = .8
+            alpha = .65
             markersize = 4
             
         for m in df.id.unique():
@@ -178,12 +185,13 @@ class Record:
             
             # plot
             ax.plot(x, y, 
-                    c=aes.get(conf['name'], self.aes['default']).get('color'), 
+                    c=self.aes.get(conf['name'], self.aes['default']).get('color'), 
                     marker=next(self.aes.get(conf['name'], self.aes['default']).get('marker_cycle')) if legend else 'o', 
                     markersize=markersize, 
                     markevery=(self.aes.get(conf['name'], self.aes['default']).get('markevery'), 20), 
                     alpha = alpha,
-                    label=label)
+                    label=label,
+                    zorder=self.aes.get(conf['name'], self.aes['default']).get('zorder'))
         
         ax.set_xlabel('Epoch')
         ax.set_ylabel(score_names[s])
@@ -196,12 +204,12 @@ class Record:
         
         # full legend or only solver names
         if legend:
-            ax.legend(fontsize=8, loc='lower left')
+            ax.legend(fontsize=8, loc='lower left').set_zorder(100)
         else:
             for n in df.name.unique():
                 handles = [Line2D([0], [0], color=aes.get(n, self.aes['default']).get('color'), lw=4) for n in df.name.unique()]
                 names = list(df.name.unique())
-                ax.legend(handles, names, loc='lower left')
+                ax.legend(handles, names, loc='lower left').set_zorder(100)
         return fig
 
     
