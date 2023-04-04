@@ -6,11 +6,11 @@ import itertools
 
 from stepback.record import Record, score_names, id_to_dict, create_label
 
+exp_id = 'cifar10_resnet20'
+output_names = ['cifar10_resnet20', 'cifar10_resnet20-2', 
+                'cifar10_resnet20-3', 'cifar10_resnet20-4'] # file names of config
 
-exp_id = ['cifar10_resnet20', 'cifar10_resnet20-2', 
-          'cifar10_resnet20-3', 'cifar10_resnet20-4'] # file names of config
-
-R = Record(exp_id)
+R = Record(output_names)
 raw_df = R.raw_df 
 base_df = R.base_df # mean over runs
 id_df = R.id_df # dataframe with the optimizer setups that were run
@@ -108,17 +108,19 @@ if save:
     fig.savefig('output/plots/' + exp_id + f'/stability_{xaxis}_{s}.pdf')
 
 #%% plots the adaptive step size
+###################################
+### THIS PLOT IS ONLY RELEVANT FOR METHODS WITH ADAPTIVE STEP SIZE
+###################################
 
-method = 'momo'
+method = 'momo' # choose which method to plot
 
 df = R._build_base_df(agg='first')
 df = df[df['name'] == method]
 
 counter = 0
-ncol, nrow = 3,3
+nrow, ncol = 3,3
 
-
-fig, axs = plt.subplots(nrow, ncol, figsize=(6.6,4))
+fig, axs = plt.subplots(nrow, ncol, figsize=(ncol*2,nrow*1.5))
 
 for _id in df.id.unique():
     ax = axs.ravel()[counter]
@@ -144,6 +146,7 @@ for _id in df.id.unique():
             _bias_correction = False
 
         rho = 1 - _beta**(np.arange(len(this_df)*iter_per_epoch)+1)
+    
     else:
         _bias_correction = False
         _beta = None
@@ -155,9 +158,11 @@ for _id in df.id.unique():
         all_s += this_df.loc[j,'step_size_list'] 
     
     # plot adaptive term
-    ax.scatter(upsampled, all_s, c=R.aes[method]['color'], s=5, alpha=0.35)
+    ax.scatter(upsampled, all_s, c=R.aes[method]['color'], s=5, alpha=0.25)
     ax.plot(this_df.epoch, all_s_median, c='gainsboro', marker='o', markevery=(5,7),\
-            markerfacecolor=R.aes[method]['color'], markeredgecolor='gainsboro', lw=2.5, label=r"$\zeta_k$")
+            markerfacecolor=R.aes[method]['color'], 
+            markeredgecolor='gainsboro', lw=2.5,
+            label=r"$\zeta_k$")
     
 
     # plot LR
@@ -166,8 +171,8 @@ for _id in df.id.unique():
         ax.plot(upsampled, y, c='silver', lw=2.5, label=r"$\alpha_k/\rho_k$")
     else:
         ax.plot(this_df.epoch, this_df.learning_rate, c='silver', lw=2.5, label=r"$\alpha_k$")
-    #ax.plot(this_df.epoch, this_df.lr, c='silver', lw=2.5, label=r"$\alpha_k$") # OLD
     
+
     ax.set_xlim(0, )
     ax.set_ylim(1e-5, 1e3)
     ax.set_yscale('log')
@@ -185,16 +190,20 @@ for _id in df.id.unique():
     else:
         ax.set_xticks([])
     
-    ax.legend(loc='upper right', fontsize=10)
-    
+    # plot legend only once
+    if counter == 0:
+        ax.legend(loc='upper right', fontsize=10)
     
     if method == 'momo':
         ax.set_title(create_label(_id, subset=['lr','beta']), fontsize=8)
-    elif method == 'prox-sps':
+    else:
         ax.set_title(create_label(_id, subset=['lr']), fontsize=8)
 
     counter += 1
 
+fig.tight_layout()
+fig.subplots_adjust(hspace=0.2, wspace=0.2)
+
 if save:
-    fig.savefig('output/plots/' + exp_id + f'/step_sizes.png', dpi=500)
+    fig.savefig('output/plots/' + exp_id + f'/step_sizes_'+ method + '.png', dpi=500)
 

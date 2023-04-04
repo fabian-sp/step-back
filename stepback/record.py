@@ -26,7 +26,7 @@ aes = {'sgd': {'color': '#7fb285', 'markevery': 15, 'zorder': 7},
         'adam': {'color': '#f34213', 'markevery': 10, 'zorder': 9}, 
         'adamw': {'color': '#f34213', 'markevery': 10, 'zorder': 9},
         'momo': {'color': '#023047', 'markevery': 5, 'zorder': 11},
-        'momo-adam': {'color': '#0083F5', 'markevery': 6, 'zorder': 10},
+        'momo-adam': {'color': '#1F86E0', 'markevery': 6, 'zorder': 10},
         'prox-sps': {'color': '#97BF88', 'markevery': 7, 'zorder': 6},
         'default': {'color': 'grey', 'markevery': 3, 'zorder': 1},
         }
