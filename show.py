@@ -48,6 +48,8 @@ assert len(max_epoch.unique()) == 1, "It seems that different setups ran for dif
 
 if cutoff is None:
     cutoff_epoch = (max_epoch[0], max_epoch[0])
+else:
+    cutoff_epoch = (cutoff, max_epoch[0])
 
 # filter epochs
 sub_df = base_df[(base_df.epoch >= cutoff_epoch[0]) & (base_df.epoch <= cutoff_epoch[1])] 
@@ -73,10 +75,9 @@ for m in df.index.unique():
     y = this_df[s]
     y2 = this_df[s+'_std']
     
-    label = ", ".join([k+"="+v for k,v in zip(df.index.names,m) if v != 'none'])
+    label = name + ", " + ", ".join([k+"="+v for k,v in zip(df.index.names,m) if (v!='none') and (k!='name')])
     ax.plot(x,y, c=R.aes.get(name, R.aes['default'])['color'], label=label,
             marker=next(R.aes.get(name, R.aes['default']).get('marker_cycle')), 
-            #markevery=(1,5),
             zorder=R.aes.get(name, R.aes['default']).get('zorder')
             )
     
