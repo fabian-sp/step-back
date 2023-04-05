@@ -6,9 +6,15 @@ import itertools
 
 from stepback.record import Record, score_names, id_to_dict, create_label
 
+#########################################################
 exp_id = 'cifar10_resnet20'
 output_names = ['cifar10_resnet20', 'cifar10_resnet20-2', 
                 'cifar10_resnet20-3', 'cifar10_resnet20-4'] # file names of config
+#########################################################
+exp_id = 'cifar10_vgg16'
+output_names = ['cifar10_vgg16', 'cifar10_vgg16-2', 
+                'cifar10_vgg16-3'] # file names of config
+
 
 R = Record(output_names)
 raw_df = R.raw_df 
