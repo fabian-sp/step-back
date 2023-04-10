@@ -75,7 +75,16 @@ def get_optimizer(opt_config: dict) -> (torch.optim.Optimizer, dict):
                   'bias_correction': opt_config.get('bias_correction', False),
                   'use_fstar': False
                   }
-    
+    elif name == 'momofs':
+        opt_obj = MoMoFs
+        hyperp = {'lr': opt_config.get('lr', 1e-3),
+                  'weight_decay': opt_config.get('weight_decay', 0),
+                  'beta': opt_config.get('beta', 0.9),
+                  'lb': opt_config.get('lb', 0.),
+                  'bias_correction': opt_config.get('bias_correction', False),
+                  'use_f_star': opt_config.get('use_f_star', True)
+                  }
+            
     elif name == 'momo-adam':
         opt_obj = MomoAdam
         hyperp = {'lr': opt_config.get('lr', 1e-3),

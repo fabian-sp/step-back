@@ -17,9 +17,10 @@ score_names = {'train_loss': 'Training loss',
                'train_score': 'Training score', 
                'val_score': 'Validation score',
                'model_norm': r'$\|x^k\|$',
-               'grad_norm': r'$\|g_k\|$'
+               'grad_norm': r'$\|g_k\|$',
+               'h' : 'h',
+               'f_star' : r'$f_k^*$'
                }
-
 
 aes = {'sgd': {'color': '#7fb285', 'markevery': 15, 'zorder': 7},
         'sgd-m': {'color': '#de9151', 'markevery': 8, 'zorder': 8},
@@ -162,7 +163,6 @@ class Record:
         
         # has to be set freshly every time
         self._reset_marker_cycle()
-        
         if ax is None:
             fig, ax = plt.subplots(figsize=figsize)
         else:
@@ -174,7 +174,6 @@ class Record:
         else:
             alpha = .65
             markersize = 4
-            
         for m in df.id.unique():
             this_df = df[df.id==m]
             x = this_df.loc[:,'epoch']

@@ -110,6 +110,10 @@ class MomoAdam(torch.optim.Optimizer):
                 grad_avg, grad_avg_sq = state['grad_avg'], state['grad_avg_sq']
                 grad_dot_w = state['grad_dot_w']
 
+                if self.use_f_star:
+                    with torch.no_grad():
+                        Dk_minus_1 = grad_avg_sq.div(bias_correction2).sqrt().add(eps) ### ADDED THIS FOR ADAPTIVE LOWER BOUND
+
                 # Adam EMA updates
                 grad_avg.mul_(beta1).add_(grad, alpha=1-beta1) # = d_k
                 grad_avg_sq.mul_(beta2).addcmul_(grad, grad, value=1-beta2) # = v_k
@@ -174,7 +178,7 @@ class MomoAdam(torch.optim.Optimizer):
                 Dk = grad_avg_sq.div(bias_correction2).sqrt().add(eps)
                 
                 # AdamW-Pytorch way of weight decay
-                if lmbda > 0 and not self.divide:
+                if lmbda > 0 and not self.divide and self.use_f_star == False:
                     p.data.mul_(1-lmbda*lr)
 
                 # gradient step

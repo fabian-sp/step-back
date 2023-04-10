@@ -171,7 +171,6 @@ class Base:
 
                 # Add score_dict to score_list
                 score_list += [score_dict]
-            
             self._epochs_trained += 1
         
         end_time = str(datetime.datetime.now())
