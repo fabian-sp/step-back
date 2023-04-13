@@ -30,6 +30,8 @@ class Momo(torch.optim.Optimizer):
         self.bias_correction = bias_correction
         self.use_fstar = use_fstar
         
+        self.use_fstar = use_fstar
+
         # Initialization
         self._number_steps = 0
         self.state['step_size_list'] = list() # for storing
