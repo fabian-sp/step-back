@@ -2,7 +2,7 @@ import torch
 import warnings
 
 from .basic_models import MLP, MatrixFac
-from .vgg import get_cifar10_vgg, get_imagenet32_vgg
+from .vgg import get_cifar_vgg, get_imagenet32_vgg
 from .resnet import get_cifar_resnet, get_imagenet32_resnet
 
 def get_model(config: dict={}) -> torch.nn.Module:
