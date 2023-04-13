@@ -104,7 +104,11 @@ if xaxis == 'lr':
 else:
     ax.set_xlabel(xaxis)
 
-#ax.set_ylim(0,1)    
+if s == 'val_score':
+    ax.set_ylim(0,1)    
+elif s == 'train_loss':
+    ax.set_yscale('log')
+
 ax.set_ylabel(score_names[s])
 ax.set_xscale('log')
 ax.grid(axis='y', lw=0.2, ls='--', zorder=-10)
@@ -211,8 +215,9 @@ for _id in df.id.unique():
 
     counter += 1
 
-fig.tight_layout()
+
 fig.subplots_adjust(hspace=0.2, wspace=0.2)
+fig.tight_layout()
 
 if save:
     fig.savefig('output/plots/' + exp_id + f'/step_sizes_'+ method + '.png', dpi=500)
