@@ -162,16 +162,16 @@ class MomoAdam(torch.optim.Optimizer):
             bias_correction1 = 1 - beta1 ** self._number_steps
             bias_correction2 = 1 - beta2 ** self._number_steps
 
-            h = ((1+lr*lmbda) * self.loss_avg  + _dot - (1+lr*lmbda)*_gamma).item()
-            if _use_fstar_this_iter:                
+            if _use_fstar_this_iter:  
+                h = (self.loss_avg  +  _dot - _gamma).item()              
                 # RESET
-                if (1-1./np.sqrt(self._number_steps))*h < (1+lr*lmbda)*bias_correction1*self.lb:
+                if (1-1./np.sqrt(self._number_steps))*h < bias_correction1*self.lb:
                     self.lb = 0. 
                     self.eta = 1.
                     self.omega = 0.
                     
-            nom = h - (1+lr*lmbda)*bias_correction1*self.lb
-            
+            nom = (1+lr*lmbda) * (self.loss_avg - bias_correction1*self.lb)  + _dot - (1+lr*lmbda) * _gamma
+                
             t1 = (max(nom, 0.)/_grad_norm).item()
             tau = min(lr/bias_correction1, t1)
             
