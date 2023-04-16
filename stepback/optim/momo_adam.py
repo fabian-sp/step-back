@@ -7,7 +7,7 @@ import warnings
 import torch
 import torch.optim
 from ..types import Params, LossClosure, OptFloat
-
+import numpy as np
 
 class MomoAdam(torch.optim.Optimizer):
     r"""
@@ -20,7 +20,8 @@ class MomoAdam(torch.optim.Optimizer):
                 eps:float=1e-8,
                 weight_decay:float=0,
                 lb: float=0,
-                divide: bool=True):
+                divide: bool=True,
+                use_fstar: bool=False):
 
         if not 0.0 <= lr:
             raise ValueError("Invalid learning rate: {}".format(lr))
@@ -40,7 +41,10 @@ class MomoAdam(torch.optim.Optimizer):
 
         self.lb = lb
         self.divide = divide 
-
+        self.eta = 1.0
+        self.omega = 0.0
+        self.use_fstar = use_fstar
+        
         # initialize
         self._number_steps = 0
         self.loss_avg = 0.
@@ -63,32 +67,25 @@ class MomoAdam(torch.optim.Optimizer):
             warnings.warn("More than one param group. step_size_list contains adaptive term of last group.")
             warnings.warn("More than one param group. This might cause issues for the step method.")
 
-        beta1, beta2 = self.param_groups[0]['betas']
-        
         _dot = 0. # = <d_k,x_k>
-        _gamma = 0. # = gamma_l
-        _norm = 0. # = ||d_k||^2_{D_k^-1}
-
-        # Exponential moving average of function value
-        self.loss_avg = (1-beta1)*loss +  beta1*self.loss_avg 
-        
-        # OLD: NO BIAS CORRECTION
-        # if self._number_steps >= 1:
-        #     self.loss_avg = (1-beta1)*loss +  beta1*self.loss_avg  
-        # else:
-        #     self.loss_avg = loss.clone().detach() # initialize
+        _gamma = 0. 
+        _grad_norm = 0. # = ||d_k||^2_{D_k^-1}
+        _delta = 1.
 
         self._number_steps += 1
+        _use_fstar_this_iter = self.use_fstar and (self._number_steps >= 2)
 
         for group in self.param_groups:
             eps = group['eps']
             beta1, beta2 = group['betas']
-
+  
+            bias_correction1 = 1 - beta1 ** self._number_steps
+            bias_correction2 = 1 - beta2 ** self._number_steps
+        
             for p in group['params']:
                 if p.grad is None:
                     continue
-
-                grad = p.grad.data                
+                grad = p.grad.data           
                 state = self.state[p]
 
                 # OLD: NO BIAS CORRECTION
@@ -112,10 +109,14 @@ class MomoAdam(torch.optim.Optimizer):
                     # Exponential moving average of inner product <grad, weight>
                     state['grad_dot_w'] = torch.tensor(0.).to(p.device)
                 
-                state['step'] += 1 # increment iteration counter
 
+                state['step'] += 1 # increment iteration counter
                 grad_avg, grad_avg_sq = state['grad_avg'], state['grad_avg_sq']
                 grad_dot_w = state['grad_dot_w']
+
+                if _use_fstar_this_iter:
+                    # compute before updating EMA
+                    Dk_minus_1 = grad_avg_sq.div(1 - beta2**(self._number_steps-1)).sqrt().add(eps) 
 
                 # Adam EMA updates
                 grad_avg.mul_(beta1).add_(grad, alpha=1-beta1) # = d_k
@@ -125,32 +126,62 @@ class MomoAdam(torch.optim.Optimizer):
                 bias_correction2 = 1 - beta2 ** state['step']
                 Dk = grad_avg_sq.div(bias_correction2).sqrt().add(eps) # = D_k
                 
-                _dot += torch.sum(torch.mul(p.data, grad_avg))
-                _gamma += grad_dot_w
-                _norm += torch.sum(grad_avg.mul(grad_avg.div(Dk)))
+                with torch.no_grad():
+                    _dot += torch.sum(torch.mul(p.data, grad_avg))
+                    _gamma += grad_dot_w
+                    _grad_norm += torch.sum(grad_avg.mul(grad_avg.div(Dk)))
+                    
+                    if _use_fstar_this_iter:
+                        ratio = Dk_minus_1/Dk
+                        _delta_this_param = torch.min(ratio).item()                
+                        _delta = min(_delta_this_param, _delta)
+        
+        if _use_fstar_this_iter:
+            self.eta *= _delta
+
+        # Exponential moving average of function value
+        # Uses beta1 of last param_group! 
+        self.loss_avg = (1-beta1)*loss +  beta1*self.loss_avg 
+        
+        # OLD: NO BIAS CORRECTION
+        # if self._number_steps >= 1:
+        #     self.loss_avg = (1-beta1)*loss +  beta1*self.loss_avg  
+        # else:
+        #     self.loss_avg = loss.clone().detach() # initialize
 
         #################   
         # Update
-        
         for group in self.param_groups:
             
+            ### Compute adaptive step size
             lr = group['lr']
             lmbda = group['weight_decay']
             eps = group['eps']
-            beta1, _ = group['betas']
+            beta1, beta2 = group['betas']
 
-            bias_correction1 = 1 - beta1 ** state['step']
+            bias_correction1 = 1 - beta1 ** self._number_steps
+            bias_correction2 = 1 - beta2 ** self._number_steps
 
-            if lmbda > 0:
-                nom = max((1+lmbda*lr)*(self.loss_avg - bias_correction1*self.lb) + _dot - (1+lmbda*lr)*_gamma, 0)
-                denom = _norm
-            else:
-                nom = max(self.loss_avg - bias_correction1*self.lb + _dot - _gamma, 0)
-                denom = _norm
+            h = ((1+lr*lmbda) * self.loss_avg  + _dot - (1+lr*lmbda)*_gamma).item()
+            if _use_fstar_this_iter:                
+                # RESET
+                if (1-1./np.sqrt(self._number_steps))*h < (1+lr*lmbda)*bias_correction1*self.lb:
+                    self.lb = 0. 
+                    self.eta = 1.
+                    self.omega = 0.
+                    
+            nom = h - (1+lr*lmbda)*bias_correction1*self.lb
             
-            t1 = (nom/denom).item()
+            t1 = (max(nom, 0.)/_grad_norm).item()
             tau = min(lr/bias_correction1, t1)
             
+            ### Update lb estimator
+            if _use_fstar_this_iter:
+                omega_tmp = self.omega # omega_k
+                self.omega += self.eta * tau * bias_correction1 # omega_{k+1}
+                self.lb = ((self.lb*omega_tmp + self.eta*tau*(2*h - tau*_grad_norm)) / self.omega).item()
+
+            ### Update params
             for p in group['params']:
                 if p.grad is None:
                     continue
@@ -169,11 +200,14 @@ class MomoAdam(torch.optim.Optimizer):
 
                 # Proximal way of weight decay
                 if lmbda > 0 and self.divide:
-                    p.data.div_(1+lmbda*lr) # decay
+                    p.data.div_(1+lmbda*lr)
 
         #############################
         ## Maintenance
-
+        if _use_fstar_this_iter:
+            self.state['h'] = h
+            self.state['f_star'] = self.lb
+        
         self.state['step_size_list'].append(t1)
 
         return loss
