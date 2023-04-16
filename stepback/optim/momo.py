@@ -1,5 +1,6 @@
 import torch
 import warnings
+from math import sqrt
 
 from ..types import Params, LossClosure, OptFloat
 
@@ -10,7 +11,8 @@ class MoMo(torch.optim.Optimizer):
                  weight_decay: float=0,
                  beta: float=0.9,
                  lb: float=0,
-                 bias_correction: bool=False) -> None:
+                 bias_correction: bool=False,
+                 use_fstar: bool=False) -> None:
         
         if lr < 0.0:
             raise ValueError("Invalid learning rate: {}".format(lr))
@@ -23,14 +25,12 @@ class MoMo(torch.optim.Optimizer):
         
         super(MoMo, self).__init__(params, defaults)
         
-        self.lr = lr
-        self.beta = beta # weight for newest element in all averages
+        self.beta = beta
         self.lb = lb
-        self._weight_decay_flag = (weight_decay > 0)
-        
-        # how to do exp. averaging
         self.bias_correction = bias_correction
-        
+        self.use_fstar = use_fstar
+        self.omega = 0.
+
         # Initialization
         self._number_steps = 0
         self.state['step_size_list'] = list() # for storing
@@ -42,11 +42,15 @@ class MoMo(torch.optim.Optimizer):
         with torch.enable_grad():
             loss = closure()
 
+        if len(self.param_groups) > 1:
+            warnings.warn("More than one param group. step_size_list contains adaptive term of last group.")
+            warnings.warn("More than one param group. This might cause issues for the step method.")
+
         self._number_steps += 1
         beta = self.beta  
         
         ###### Preliminaries
-        if self._number_steps == 1:
+        if self._number_steps == 1:    
             if self.bias_correction:
                 self.loss_avg = 0.
             else:
@@ -98,8 +102,15 @@ class MoMo(torch.optim.Optimizer):
             lr = group['lr']
             lmbda = group['weight_decay']
             
+            if self.use_fstar:
+                h = (self.loss_avg  +  _dot - _gamma).item()
+                # RESET
+                if (1-1./sqrt(self._number_steps))*h < rho*self.lb:
+                    self.lb = 0. 
+                    self.omega = 0.
+
             if lmbda > 0:
-                nom = (1+lr*lmbda) * (self.loss_avg - rho*self.lb)  + _dot - (1+lr*lmbda) * _gamma
+                nom = (1+lr*lmbda)*(self.loss_avg - rho*self.lb) + _dot - (1+lr*lmbda)*_gamma
                 t1 = max(nom, 0.)/_norm
             else:
                 t1 = max(self.loss_avg - rho*self.lb + _dot - _gamma, 0.)/_norm
@@ -108,7 +119,12 @@ class MoMo(torch.optim.Optimizer):
             
             # step size 
             tau = min(lr/rho, t1)
-                
+
+            if self.use_fstar:
+                omega_tmp = self.omega 
+                self.omega += tau * rho 
+                self.lb = (max(self.lb*omega_tmp + tau*(2*h - tau*_norm), 0) / self.omega).item() 
+
             for p in group['params']:   
                 state = self.state[p]
                 grad_avg = state['grad_avg']          
@@ -118,7 +134,11 @@ class MoMo(torch.optim.Optimizer):
                     p.data.div_(1+lr*lmbda)
                     
         ############################################################
-        
+        if self.use_fstar:
+            self.state['h'] = h
+            self.state['fstar'] = self.lb
+            #print(f"hk: {h}, fstar: {self.lb}, omega {self.omega}")
+
         self.state['step_size_list'].append(t1)
         
         return loss
