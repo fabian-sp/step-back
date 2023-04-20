@@ -12,7 +12,7 @@ output_names = ['cifar10_resnet20', 'cifar10_resnet20-2',
                 'cifar10_resnet20-3', 'cifar10_resnet20-4'] # file names of config
 #########################################################
 exp_id = 'cifar10_vgg16'
-output_names = ['cifar10_vgg16'] # file names of config
+output_names = ['cifar10_vgg16', 'cifar10_vgg16-2'] # file names of config
 #########################################################
 exp_id = 'mnist_mlp'
 output_names = ['mnist_mlp', 'mnist_mlp-2'] 
@@ -39,7 +39,7 @@ plt.rc('text', usetex=True)
 #%% if you only want to plot good settings:
 ixx =  base_df[base_df['val_score'] >= 0.5].id.unique()
 df1 = base_df.loc[base_df.id.isin(ixx),:]
-fig = R.plot_metric(df=df1, s='val_score', ylim = (0.5, 0.9), log_scale=False, legend=False)
+fig = R.plot_metric(df=df1, s='val_score', ylim = (0.5, 0.95), log_scale=False, legend=False)
 #fig.savefig('output/plots/' + exp_id + f'/all_val_score.pdf')
 
 #%% stability plots
