@@ -29,8 +29,7 @@ class MoMo(torch.optim.Optimizer):
         self.lb = lb
         self.bias_correction = bias_correction
         self.use_fstar = use_fstar
-        self.omega = 0.
-
+        
         # Initialization
         self._number_steps = 0
         self.state['step_size_list'] = list() # for storing
@@ -103,11 +102,11 @@ class MoMo(torch.optim.Optimizer):
             lmbda = group['weight_decay']
             
             if self.use_fstar:
-                h = (self.loss_avg  +  _dot - _gamma).item()
+                cap = ((1+lr*lmbda)*self.loss_avg + _dot - (1+lr*lmbda)*_gamma).item()
                 # RESET
-                if (1-1./sqrt(self._number_steps))*h < rho*self.lb:
-                    self.lb = 0. 
-                    self.omega = 0.
+                if cap < (1+lr*lmbda)*rho*self.lb:
+                    self.lb = cap/(2*(1+lr*lmbda)*rho) 
+                    self.lb = max(self.lb, 0) # safeguard
 
             if lmbda > 0:
                 nom = (1+lr*lmbda)*(self.loss_avg - rho*self.lb) + _dot - (1+lr*lmbda)*_gamma
@@ -121,9 +120,9 @@ class MoMo(torch.optim.Optimizer):
             tau = min(lr/rho, t1)
 
             if self.use_fstar:
-                omega_tmp = self.omega 
-                self.omega += tau * rho 
-                self.lb = (max(self.lb*omega_tmp + tau*(2*h - tau*_norm), 0) / self.omega).item() 
+                h = (self.loss_avg  + _dot -  _gamma).item()
+                self.lb = ((h - (1/2)*tau*_norm)/rho).item() 
+                self.lb = max(self.lb, 0) # safeguard
 
             for p in group['params']:   
                 state = self.state[p]
@@ -137,8 +136,7 @@ class MoMo(torch.optim.Optimizer):
         if self.use_fstar:
             self.state['h'] = h
             self.state['fstar'] = self.lb
-            #print(f"hk: {h}, fstar: {self.lb}, omega {self.omega}")
-
+            
         self.state['step_size_list'].append(t1)
         
         return loss

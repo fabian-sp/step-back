@@ -41,8 +41,6 @@ class MomoAdam(torch.optim.Optimizer):
 
         self.lb = lb
         self.divide = divide 
-        self.eta = 1.0
-        self.omega = 0.0
         self.use_fstar = use_fstar
         
         # initialize
@@ -70,11 +68,9 @@ class MomoAdam(torch.optim.Optimizer):
         _dot = 0. # = <d_k,x_k>
         _gamma = 0. 
         _grad_norm = 0. # = ||d_k||^2_{D_k^-1}
-        _delta = 1.
-
+        
         self._number_steps += 1
-        _use_fstar_this_iter = self.use_fstar and (self._number_steps >= 2)
-
+        
         for group in self.param_groups:
             eps = group['eps']
             beta1, beta2 = group['betas']
@@ -114,10 +110,6 @@ class MomoAdam(torch.optim.Optimizer):
                 grad_avg, grad_avg_sq = state['grad_avg'], state['grad_avg_sq']
                 grad_dot_w = state['grad_dot_w']
 
-                if _use_fstar_this_iter:
-                    # compute before updating EMA
-                    Dk_minus_1 = grad_avg_sq.div(1 - beta2**(self._number_steps-1)).sqrt().add(eps) 
-
                 # Adam EMA updates
                 grad_avg.mul_(beta1).add_(grad, alpha=1-beta1) # = d_k
                 grad_avg_sq.mul_(beta2).addcmul_(grad, grad, value=1-beta2) # = v_k
@@ -126,19 +118,10 @@ class MomoAdam(torch.optim.Optimizer):
                 bias_correction2 = 1 - beta2 ** state['step']
                 Dk = grad_avg_sq.div(bias_correction2).sqrt().add(eps) # = D_k
                 
-                with torch.no_grad():
-                    _dot += torch.sum(torch.mul(p.data, grad_avg))
-                    _gamma += grad_dot_w
-                    _grad_norm += torch.sum(grad_avg.mul(grad_avg.div(Dk)))
+                _dot += torch.sum(torch.mul(p.data, grad_avg))
+                _gamma += grad_dot_w
+                _grad_norm += torch.sum(grad_avg.mul(grad_avg.div(Dk)))
                     
-                    if _use_fstar_this_iter:
-                        ratio = Dk_minus_1/Dk
-                        _delta_this_param = torch.min(ratio).item()                
-                        _delta = min(_delta_this_param, _delta)
-        
-        if _use_fstar_this_iter:
-            self.eta *= _delta
-
         # Exponential moving average of function value
         # Uses beta1 of last param_group! 
         self.loss_avg = (1-beta1)*loss +  beta1*self.loss_avg 
@@ -162,25 +145,24 @@ class MomoAdam(torch.optim.Optimizer):
             bias_correction1 = 1 - beta1 ** self._number_steps
             bias_correction2 = 1 - beta2 ** self._number_steps
 
-            if _use_fstar_this_iter:  
-                h = (self.loss_avg  +  _dot - _gamma).item()              
+            if self.use_fstar:  
+                cap = ((1+lr*lmbda)*self.loss_avg + _dot - (1+lr*lmbda)*_gamma).item()         
                 # RESET
-                if (1-1./np.sqrt(self._number_steps))*h < bias_correction1*self.lb:
-                    self.lb = 0. 
-                    self.eta = 1.
-                    self.omega = 0.
+                if cap < (1+lr*lmbda)*bias_correction1*self.lb:
+                    self.lb = cap/(2*(1+lr*lmbda)*bias_correction1) 
+                    self.lb = max(self.lb, 0) # safeguard 
                     
-            nom = (1+lr*lmbda) * (self.loss_avg - bias_correction1*self.lb)  + _dot - (1+lr*lmbda) * _gamma
+            nom = (1+lr*lmbda)*(self.loss_avg - bias_correction1*self.lb) + _dot - (1+lr*lmbda)*_gamma
                 
             t1 = (max(nom, 0.)/_grad_norm).item()
             tau = min(lr/bias_correction1, t1)
             
             ### Update lb estimator
-            if _use_fstar_this_iter:
-                omega_tmp = self.omega # omega_k
-                self.omega += self.eta * tau * bias_correction1 # omega_{k+1}
-                self.lb = ((self.lb*omega_tmp + self.eta*tau*(2*h - tau*_grad_norm)) / self.omega).item()
-
+            if self.use_fstar:
+                h = (self.loss_avg  + _dot -  _gamma).item()
+                self.lb = ((h - (1/2)*tau*_grad_norm)/bias_correction1).item() 
+                self.lb = max(self.lb, 0) # safeguard
+                
             ### Update params
             for p in group['params']:
                 if p.grad is None:
@@ -204,7 +186,7 @@ class MomoAdam(torch.optim.Optimizer):
 
         #############################
         ## Maintenance
-        if _use_fstar_this_iter:
+        if self.use_fstar:
             self.state['h'] = h
             self.state['f_star'] = self.lb
         
