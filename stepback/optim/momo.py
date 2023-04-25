@@ -4,7 +4,7 @@ from math import sqrt
 
 from ..types import Params, LossClosure, OptFloat
 
-class MoMo(torch.optim.Optimizer):
+class Momo(torch.optim.Optimizer):
     def __init__(self, 
                  params: Params, 
                  lr: float=1e-1,
@@ -23,7 +23,7 @@ class MoMo(torch.optim.Optimizer):
         
         defaults = dict(lr=lr, weight_decay=weight_decay)
         
-        super(MoMo, self).__init__(params, defaults)
+        super(Momo, self).__init__(params, defaults)
         
         self.beta = beta
         self.lb = lb
