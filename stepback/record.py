@@ -155,7 +155,7 @@ class Record:
             self.aes[m]['marker_cycle'] = itertools.cycle(ALL_MARKER)  
         return
     
-    def plot_metric(self, s, df=None, log_scale=False, ylim=None, legend=True, ax=None):
+    def plot_metric(self, s, df=None, log_scale=False, ylim=None, legend=True, figsize=(4,4), ax=None):
         
         if df is None:
             df = self.base_df.copy()
@@ -164,7 +164,7 @@ class Record:
         self._reset_marker_cycle()
         
         if ax is None:
-            fig, ax = plt.subplots()
+            fig, ax = plt.subplots(figsize=figsize)
         else:
             fig = ax.get_figure()
 
@@ -215,6 +215,8 @@ class Record:
                 handles = [Line2D([0], [0], color=aes.get(n, self.aes['default']).get('color'), lw=4) for n in df.name.unique()]
                 names = list(df.name.unique())
                 ax.legend(handles, names, loc='lower left').set_zorder(100)
+
+        fig.tight_layout()
         return fig
 
     

@@ -1,3 +1,6 @@
+"""
+Script for generating plots.
+"""
 from matplotlib import pyplot as plt
 import seaborn as sns
 import pandas as pd
@@ -5,9 +8,23 @@ import numpy as np
 import itertools
 
 from stepback.record import Record, score_names, id_to_dict, create_label
+from stepback.utils import get_output_filenames
 
+save = False
+
+#%%
+%matplotlib qt5
+
+plt.rcParams["font.family"] = "serif"
+plt.rcParams['font.size'] = 13
+plt.rcParams['axes.linewidth'] = 1
+plt.rc('text', usetex=True)
+
+#%%
 #########################################################
 exp_id = 'cifar10_resnet20'
+output_names = get_output_filenames(exp_id)
+
 output_names = ['cifar10_resnet20', 'cifar10_resnet20-2', 
                 'cifar10_resnet20-3', 'cifar10_resnet20-4'] # file names of config
 #########################################################
@@ -18,206 +35,240 @@ exp_id = 'mnist_mlp'
 output_names = ['mnist_mlp', 'mnist_mlp-2'] 
 
 
-R = Record(output_names)
-raw_df = R.raw_df 
-base_df = R.base_df # mean over runs
-id_df = R.id_df # dataframe with the optimizer setups that were run
-
-#base_df, id_df = R.filter(exclude=['prox-sps'])
-
-fig = R.plot_metric(s='val_score', log_scale=False, legend=True)
-save = False
-
 #%%
-%matplotlib qt5
+R = Record(output_names)
+base_df = R.base_df                                 # base dataframe for all plots
+id_df = R.id_df                                     # dataframe with the optimizer setups that were run
+base_df, id_df = R.filter(exclude=['prox-sps'])     # filter out a method
 
-plt.rcParams["font.family"] = "serif"
-plt.rcParams['font.size'] = 12
-plt.rcParams['axes.linewidth'] = 1
-plt.rc('text', usetex=True)
+#fig = R.plot_metric(s='val_score', log_scale=False, legend=True)
 
-#%% if you only want to plot good settings:
-ixx =  base_df[base_df['val_score'] >= 0.5].id.unique()
+#%% plot training curves for a subset of runs:
+
+#ixx =  base_df[base_df['val_score'] >= 0.5].id.unique()
+#df1 = base_df.loc[base_df.id.isin(ixx),:]
+
+# takes 3 best runs per methods
+best = base_df[base_df.epoch==base_df.epoch.max()].groupby('name')['val_score'].nlargest(3)
+ixx = base_df.id[best.index.levels[1]]
 df1 = base_df.loc[base_df.id.isin(ixx),:]
-fig = R.plot_metric(df=df1, s='val_score', ylim = (0.5, 0.95), log_scale=False, legend=False)
-#fig.savefig('output/plots/' + exp_id + f'/all_val_score.pdf')
+
+fig = R.plot_metric(df=df1, s='val_score', ylim = (0.5, 0.95), log_scale=False, figsize=(4,3.5), legend=False)
+fig.subplots_adjust(top=0.975,bottom=0.16,left=0.155,right=0.975)
+if save:
+    fig.savefig('output/plots/' + exp_id + f'/all_val_score.pdf')
 
 #%% stability plots
 
-s = 'val_score' # the score that should be the y-axis
-xaxis = 'lr' # the parameter that should be the x-axis
-sigma = 1 # number of standard deviations to show (in one direction)
-cutoff = None
+def plot_stability(base_df, score='val_score', xaxis='lr', sigma=1, cutoff=None, full_legend=True, figsize=(6,5), save=False):
+    """
+    Generates stability plot.
 
-#############
-grouped = base_df.groupby(['name', xaxis])
-max_epoch = grouped['epoch'].max()
-assert len(max_epoch.unique()) == 1, "It seems that different setups ran for different number of epochs."
+    Arguments:
+        score: name of the score on y-axis, for example 'val_score' or 'train_loss'
+        xaxis: parameter to group by, for example 'lr' for initial learning rate
+        sigma: number of standard deviations to show (in one direction)
+        cutoff: if not None, score is aggregated over [cutoff, max_epoch]
 
-if cutoff is None:
-    cutoff_epoch = (max_epoch[0], max_epoch[0])
-else:
-    cutoff_epoch = (cutoff, max_epoch[0])
 
-# filter epochs
-sub_df = base_df[(base_df.epoch >= cutoff_epoch[0]) & (base_df.epoch <= cutoff_epoch[1])] 
-# group by all id_cols 
-df = sub_df.groupby(list(id_df.columns))[s, s+'_std'].mean() # use dropna=False if we would have nan values
-# move xaxis out of grouping
-df = df.reset_index(level=xaxis)
-# make xaxis float
-df[xaxis] = df[xaxis].astype('float')
-# get method and learning rate with best score
-# best_ind, best_x = df.index[df[s].argmax()], df[xaxis][df[s].argmax()]
+    """
+    grouped = base_df.groupby(['name', xaxis])
+    max_epoch = grouped['epoch'].max()
+    assert len(max_epoch.unique()) == 1, "It seems that different setups ran for different number of epochs."
 
-R._reset_marker_cycle()
+    if cutoff is None:
+        cutoff_epoch = (max_epoch[0], max_epoch[0])
+    else:
+        cutoff_epoch = (cutoff, max_epoch[0])
 
-fig, ax = plt.subplots(figsize=(6,5))
-# .unique(level=) might be useful at some point
-for m in df.index.unique():
-    this_df = df.loc[m,:]
-    this_df = this_df.sort_values(xaxis) # sort!
-    name = this_df.index.get_level_values('name')[0]
-    
-    x = this_df[xaxis]
-    y = this_df[s]
-    y2 = this_df[s+'_std']
-    
-    label = name + ", " + ", ".join([k+"="+v for k,v in zip(df.index.names,m) if (v!='none') and (k!='name')])
-    ax.plot(x,y, c=R.aes.get(name, R.aes['default'])['color'], label=label,
-            marker=next(R.aes.get(name, R.aes['default']).get('marker_cycle')), 
-            zorder=R.aes.get(name, R.aes['default']).get('zorder')
-            )
-    
-    if sigma > 0:
-        ax.fill_between(x, y-sigma*y2, y+sigma*y2,
-                        color=R.aes.get(name, R.aes['default'])['color'],
-                        alpha=0.1, zorder=-10)
-    
-    # mark overall best
-    #if m == best_ind:
-    #    ax.scatter(best_x, df[s].max(), s=40, marker='o', c='k', zorder=100)
+    # filter epochs
+    sub_df = base_df[(base_df.epoch >= cutoff_epoch[0]) & (base_df.epoch <= cutoff_epoch[1])] 
+    # group by all id_cols 
+    df = sub_df.groupby(list(id_df.columns))[score, score+'_std'].mean() # use dropna=False if we would have nan values
+    # move xaxis out of grouping
+    df = df.reset_index(level=xaxis)
+    # make xaxis float
+    df[xaxis] = df[xaxis].astype('float')
+    # get method and learning rate with best score
+    # best_ind, best_x = df.index[df[s].argmax()], df[xaxis][df[s].argmax()]
+
+    R._reset_marker_cycle()
+
+    fig, ax = plt.subplots(figsize=figsize)
+    # .unique(level=) might be useful at some point
+    for m in df.index.unique():
+        this_df = df.loc[m,:]
+        this_df = this_df.sort_values(xaxis) # sort!
+        name = this_df.index.get_level_values('name')[0]
         
-if xaxis == 'lr':
-    ax.set_xlabel('learning rate')
-else:
-    ax.set_xlabel(xaxis)
+        x = this_df[xaxis]
+        y = this_df[score]
+        y2 = this_df[score+'_std']
+        
+        if full_legend:
+            label = name + ", " + ", ".join([k+"="+v for k,v in zip(df.index.names,m) if (v!='none') and (k!='name')])
+        else:
+            label = name
+           
+        ax.plot(x,y, c=R.aes.get(name, R.aes['default'])['color'], label=label,
+                marker=next(R.aes.get(name, R.aes['default']).get('marker_cycle')), 
+                zorder=R.aes.get(name, R.aes['default']).get('zorder')
+                )
+        
+        if sigma > 0:
+            ax.fill_between(x, y-sigma*y2, y+sigma*y2,
+                            color=R.aes.get(name, R.aes['default'])['color'],
+                            alpha=0.1, zorder=-10)
+        
+        # mark overall best
+        #if m == best_ind:
+        #    ax.scatter(best_x, df[s].max(), s=40, marker='o', c='k', zorder=100)
+            
+    if xaxis == 'lr':
+        ax.set_xlabel('Learning rate')
+    else:
+        ax.set_xlabel(xaxis)
 
-if s == 'val_score':
-    ax.set_ylim(0,1)    
-elif s == 'train_loss':
-    ax.set_yscale('log')
+    if score == 'val_score':
+        ax.set_ylim(0,1)    
+    elif score == 'train_loss':
+        ax.set_yscale('log')
 
-ax.set_ylabel(score_names[s])
-ax.set_xscale('log')
-ax.grid(axis='y', lw=0.2, ls='--', zorder=-10)
-fig.legend(fontsize=9, loc='upper right')
+    ax.set_ylabel(score_names[score])
+    ax.set_xscale('log')
+    ax.grid(axis='y', lw=0.2, ls='--', zorder=-10)
+    
+    if full_legend:
+        # legend has all specifiec opt arguments
+        fig.legend(fontsize=9, loc='upper right')
+    else:
+        # legend only has name
+        fig.legend(fontsize=11, loc='upper right', 
+                   ncol=len(sub_df.name.unique()), columnspacing=0.8)
 
-#fig.tight_layout()
-fig.subplots_adjust(top=0.8,bottom=0.09,left=0.12,right=0.97)
-#grouped.indices.keys()
+    fig.tight_layout()
+    fig.subplots_adjust(top=0.91,bottom=0.115,left=0.145,right=0.98)
+    #grouped.indices.keys()
 
-if save:
-    fig.savefig('output/plots/' + exp_id + f'/stability_{xaxis}_{s}.pdf')
+    if save:
+        fig.savefig('output/plots/' + exp_id + f'/stability_{xaxis}_{score}.pdf')
+    
+    return fig
+
+FIGSIZE = (4.8,4)
+
+fig = plot_stability(base_df, score='val_score', xaxis='lr', sigma=1, full_legend=False, cutoff=None, figsize=FIGSIZE, save=save)
+fig = plot_stability(base_df, score='train_loss', xaxis='lr', sigma=1, full_legend=False, cutoff=None, figsize=FIGSIZE, save=save)
 
 #%% plots the adaptive step size
-###################################
 ### THIS PLOT IS ONLY RELEVANT FOR METHODS WITH ADAPTIVE STEP SIZE
 ###################################
 
-method = 'momo' # choose which method to plot
-
-df = R._build_base_df(agg='first')
-df = df[df['name'] == method]
-
-counter = 0
-nrow, ncol = 3,3
-
-fig, axs = plt.subplots(nrow, ncol, figsize=(ncol*2,nrow*1.5))
-
-for _id in df.id.unique():
-    ax = axs.ravel()[counter]
-    this_df = df[df.id == _id]
+def plot_step_sizes(R, method='momo', grid=(3,3), figsize=None, start=None, stop=None, save=False):
+    nrow, ncol = grid
+    if figsize is None:
+        figsize = (ncol*2,nrow*1.5)
     
-    iter_per_epoch = len(this_df['step_size_list'].iloc[0])
-    upsampled = np.linspace(this_df.epoch.values[0], this_df.epoch.values[-1],\
-                            len(this_df)*iter_per_epoch)
-    
-    if method == 'momo':
-        # TODO: read the defaults from package
-        if id_to_dict(_id)['beta']== 'none':
-            _beta = 0.9
-        else:
-            _beta = float(id_to_dict(_id)['beta'])
+    df = R._build_base_df(agg='first').copy()
+    df = df[df['name'] == method]
+   
+    fig, axs = plt.subplots(nrow, ncol, figsize=figsize)
+    counter = 0
+
+    if (start is not None) and (stop is not None):
+        ids_to_plot = df.id.unique()[start:stop]
+    else:
+        ids_to_plot = df.id.unique()
+
+    for _id in ids_to_plot:
+        ax = axs.ravel()[counter]
+        this_df = df[df.id == _id]
         
-        _bias_correction = id_to_dict(_id).get('bias_correction', 'none')
-        if _bias_correction == 'none':
-            _bias_correction = False
-        elif _bias_correction == 'True':
-            _bias_correction = True
+        iter_per_epoch = len(this_df['step_size_list'].iloc[0])
+        upsampled = np.linspace(this_df.epoch.values[0], this_df.epoch.values[-1],\
+                                len(this_df)*iter_per_epoch)
+        
+        if method == 'momo':
+            # TODO: read the defaults from package
+            if id_to_dict(_id)['beta']== 'none':
+                _beta = 0.9
+            else:
+                _beta = float(id_to_dict(_id)['beta'])
+            
+            _bias_correction = id_to_dict(_id).get('bias_correction', 'none')
+            if _bias_correction == 'none':
+                _bias_correction = False
+            elif _bias_correction == 'True':
+                _bias_correction = True
+            else:
+                _bias_correction = False
+
+            rho = 1 - _beta**(np.arange(len(this_df)*iter_per_epoch)+1)
+        
         else:
             _bias_correction = False
+            _beta = None
 
-        rho = 1 - _beta**(np.arange(len(this_df)*iter_per_epoch)+1)
-    
-    else:
-        _bias_correction = False
-        _beta = None
-
-    all_s = []
-    all_s_median = []
-    for j in this_df.index:
-        all_s_median.append(np.median(this_df.loc[j,'step_size_list']))
-        all_s += this_df.loc[j,'step_size_list'] 
-    
-    # plot adaptive term
-    ax.scatter(upsampled, all_s, c=R.aes[method]['color'], s=5, alpha=0.25)
-    ax.plot(this_df.epoch, all_s_median, c='gainsboro', marker='o', markevery=(5,7),\
-            markerfacecolor=R.aes[method]['color'], 
-            markeredgecolor='gainsboro', lw=2.5,
-            label=r"$\zeta_k$")
-    
-
-    # plot LR
-    if _bias_correction:
-        y = np.repeat(this_df.learning_rate, iter_per_epoch) / rho
-        ax.plot(upsampled, y, c='silver', lw=2.5, label=r"$\alpha_k/\rho_k$")
-    else:
-        ax.plot(this_df.epoch, this_df.learning_rate, c='silver', lw=2.5, label=r"$\alpha_k$")
-    
-
-    ax.set_xlim(0, )
-    ax.set_ylim(1e-5, 1e3)
-    ax.set_yscale('log')
-    
-    if counter%ncol == 0:
-        ax.set_ylabel('Step size', fontsize=10)
-        ax.tick_params(axis='y', which='major', labelsize=9)
-        ax.tick_params(axis='y', which='minor', labelsize=6)    
-    else:
-        ax.set_yticks([])
+        all_s = []
+        all_s_median = []
+        for j in this_df.index:
+            all_s_median.append(np.median(this_df.loc[j,'step_size_list']))
+            all_s += this_df.loc[j,'step_size_list'] 
         
-    if counter >= ncol*(nrow-1):
-        ax.set_xlabel('Epoch', fontsize=10)
-        ax.tick_params(axis='x', which='both', labelsize=9)
-    else:
-        ax.set_xticks([])
-    
-    # plot legend only once
-    if counter == 0:
-        ax.legend(loc='upper right', fontsize=10)
-    
-    if method == 'momo':
-        ax.set_title(create_label(_id, subset=['lr','beta']), fontsize=8)
-    else:
-        ax.set_title(create_label(_id, subset=['lr']), fontsize=8)
+        # plot adaptive term
+        ax.scatter(upsampled, all_s, c=R.aes[method]['color'], s=5, alpha=0.25)
+        ax.plot(this_df.epoch, all_s_median, 
+                c='gainsboro', 
+                marker='o', 
+                markevery=(5,7),
+                markerfacecolor=R.aes[method]['color'], 
+                markeredgecolor='gainsboro', 
+                lw=2.5,
+                label=r"$\zeta_k$")
+        
+        # plot LR
+        if _bias_correction:
+            y = np.repeat(this_df.learning_rate, iter_per_epoch) / rho
+            ax.plot(upsampled, y, c='silver', lw=2.5, label=r"$\alpha_k/\rho_k$")
+        else:
+            ax.plot(this_df.epoch, this_df.learning_rate, c='silver', lw=2.5, label=r"$\alpha_k$")
+        
+        ax.set_xlim(0, )
+        ax.set_ylim(1e-5, 1e3)
+        ax.set_yscale('log')
+        
+        if counter%ncol == 0:
+            ax.set_ylabel('Step size', fontsize=10)
+            ax.tick_params(axis='y', which='major', labelsize=9)
+            ax.tick_params(axis='y', which='minor', labelsize=6)    
+        else:
+            ax.set_yticks([])
+            
+        if counter >= ncol*(nrow-1):
+            ax.set_xlabel('Epoch', fontsize=10)
+            ax.tick_params(axis='x', which='both', labelsize=9)
+        else:
+            ax.set_xticks([])
+        
+        # plot legend only once
+        if counter == 0:
+            ax.legend(loc='upper right', fontsize=10)
+        
+        if method == 'momo':
+            ax.set_title(create_label(_id, subset=['lr','beta']), fontsize=8)
+        else:
+            ax.set_title(create_label(_id, subset=['lr']), fontsize=8)
 
-    counter += 1
+        counter += 1
 
+    fig.subplots_adjust(hspace=0.2, wspace=0.2)
+    fig.tight_layout()
 
-fig.subplots_adjust(hspace=0.2, wspace=0.2)
-fig.tight_layout()
+    if save:
+        fig.savefig('output/plots/'+exp_id+f'/step_sizes_'+method+'.png', dpi=500)
 
-if save:
-    fig.savefig('output/plots/' + exp_id + f'/step_sizes_'+ method + '.png', dpi=500)
+    return fig
+
+plot_step_sizes(R, method='momo', grid=(3,3), start=None, stop=None, save=False)
+plot_step_sizes(R, method='momo-adam', grid=(3,3), start=None, stop=None, save=False)
 
