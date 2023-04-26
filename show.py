@@ -6,34 +6,30 @@ import seaborn as sns
 import pandas as pd
 import numpy as np
 import itertools
+import argparse
+from ast import literal_eval as make_tuple
 
 from stepback.record import Record, score_names, id_to_dict, create_label
 from stepback.utils import get_output_filenames
 
+################# Main setup ###############################
+parser = argparse.ArgumentParser(description='Generate step-back plots.')
+parser.add_argument('-i', '--id', nargs='?', type=str, default='test1', help="The id of the config (its file name).")
+args = parser.parse_args()
+exp_id = args.id
+#exp_id = 'cifar10_resnet20'
+
 save = False
+output_names = get_output_filenames(exp_id)
+############################################################
 
 #%%
-%matplotlib qt5
+#%matplotlib qt5
 
 plt.rcParams["font.family"] = "serif"
 plt.rcParams['font.size'] = 13
 plt.rcParams['axes.linewidth'] = 1
 plt.rc('text', usetex=True)
-
-#%%
-#########################################################
-exp_id = 'cifar10_resnet20'
-output_names = get_output_filenames(exp_id)
-
-output_names = ['cifar10_resnet20', 'cifar10_resnet20-2', 
-                'cifar10_resnet20-3', 'cifar10_resnet20-4'] # file names of config
-#########################################################
-exp_id = 'cifar10_vgg16'
-output_names = ['cifar10_vgg16', 'cifar10_vgg16-2'] # file names of config
-#########################################################
-exp_id = 'mnist_mlp'
-output_names = ['mnist_mlp', 'mnist_mlp-2'] 
-
 
 #%%
 R = Record(output_names)
@@ -53,7 +49,7 @@ best = base_df[base_df.epoch==base_df.epoch.max()].groupby('name')['val_score'].
 ixx = base_df.id[best.index.levels[1]]
 df1 = base_df.loc[base_df.id.isin(ixx),:]
 
-fig = R.plot_metric(df=df1, s='val_score', ylim = (0.5, 0.95), log_scale=False, figsize=(4,3.5), legend=False)
+fig = R.plot_metric(df=df1, s='val_score', ylim = (0.6, 1.1*df1.val_score.max()), log_scale=False, figsize=(4,3.5), legend=False)
 fig.subplots_adjust(top=0.975,bottom=0.16,left=0.155,right=0.975)
 if save:
     fig.savefig('output/plots/' + exp_id + f'/all_val_score.pdf')
@@ -139,15 +135,18 @@ def plot_stability(base_df, score='val_score', xaxis='lr', sigma=1, cutoff=None,
     ax.grid(axis='y', lw=0.2, ls='--', zorder=-10)
     
     if full_legend:
-        # legend has all specifiec opt arguments
-        fig.legend(fontsize=9, loc='upper right')
+        # legend has all specific opt arguments
+        fig.legend(fontsize=8, loc='upper right')
     else:
         # legend only has name
         fig.legend(fontsize=11, loc='upper right', 
-                   ncol=len(sub_df.name.unique()), columnspacing=0.8)
+                   ncol=min(len(ax.get_legend_handles_labels()[0]),4), columnspacing=0.6)
 
     fig.tight_layout()
-    fig.subplots_adjust(top=0.91,bottom=0.115,left=0.145,right=0.98)
+    if full_legend:
+        fig.subplots_adjust(top=0.75,bottom=0.125,left=0.14,right=0.97)
+    else:
+        fig.subplots_adjust(top=0.85,bottom=0.115,left=0.145,right=0.98)
     #grouped.indices.keys()
 
     if save:
@@ -164,21 +163,27 @@ fig = plot_stability(base_df, score='train_loss', xaxis='lr', sigma=1, full_lege
 ### THIS PLOT IS ONLY RELEVANT FOR METHODS WITH ADAPTIVE STEP SIZE
 ###################################
 
-def plot_step_sizes(R, method='momo', grid=(3,3), figsize=None, start=None, stop=None, save=False):
+def plot_step_sizes(R, method='momo', ylim=(1e-5,1e3), xlim = None, grid=(3,3), figsize=None, start=None, stop=None, save=False):
     nrow, ncol = grid
     if figsize is None:
         figsize = (ncol*2,nrow*1.5)
     
     df = R._build_base_df(agg='first').copy()
     df = df[df['name'] == method]
-   
+    # make lr to float and sort
+    df.lr = df.lr.astype(float)
+    df = df.sort_values(['lr', 'epoch'], ascending=True)
+
+    add_beta_to_title = False
+    if 'beta' in df.columns:
+        if len(df.beta.unique()) > 1:
+            add_beta_to_title = True
+        
     fig, axs = plt.subplots(nrow, ncol, figsize=figsize)
     counter = 0
 
-    if (start is not None) and (stop is not None):
-        ids_to_plot = df.id.unique()[start:stop]
-    else:
-        ids_to_plot = df.id.unique()
+    # filter
+    ids_to_plot = df.id.unique()[start:stop]
 
     for _id in ids_to_plot:
         ax = axs.ravel()[counter]
@@ -188,27 +193,20 @@ def plot_step_sizes(R, method='momo', grid=(3,3), figsize=None, start=None, stop
         upsampled = np.linspace(this_df.epoch.values[0], this_df.epoch.values[-1],\
                                 len(this_df)*iter_per_epoch)
         
-        if method == 'momo':
-            # TODO: read the defaults from package
-            if id_to_dict(_id)['beta']== 'none':
-                _beta = 0.9
-            else:
-                _beta = float(id_to_dict(_id)['beta'])
-            
-            _bias_correction = id_to_dict(_id).get('bias_correction', 'none')
-            if _bias_correction == 'none':
-                _bias_correction = False
-            elif _bias_correction == 'True':
-                _bias_correction = True
-            else:
-                _bias_correction = False
-
-            rho = 1 - _beta**(np.arange(len(this_df)*iter_per_epoch)+1)
+        if method in ['momo', 'momo-star']:
+            # caution as id_df contains strings!
+            _beta = 0.9 if id_to_dict(_id).get('beta', 'none') == 'none' else float(id_to_dict(_id)['beta'])
+            _bias_correction = True if id_to_dict(_id).get('bias_correction') == 'True' else False
+            rho = 1 - _bias_correction*_beta**(np.arange(len(this_df)*iter_per_epoch)+1)
         
-        else:
-            _bias_correction = False
-            _beta = None
+        elif method in ['momo-adam', 'momo-adam-star']:
+            _beta = 0.9 if id_to_dict(_id).get('betas', 'none') == 'none' else make_tuple(id_to_dict(_id)['betas'])[0]
+            rho = 1 - _beta**(np.arange(len(this_df)*iter_per_epoch)+1)
 
+        else:
+            rho = None
+
+        # compute median
         all_s = []
         all_s_median = []
         for j in this_df.index:
@@ -227,14 +225,18 @@ def plot_step_sizes(R, method='momo', grid=(3,3), figsize=None, start=None, stop
                 label=r"$\zeta_k$")
         
         # plot LR
-        if _bias_correction:
+        if rho is not None:
             y = np.repeat(this_df.learning_rate, iter_per_epoch) / rho
             ax.plot(upsampled, y, c='silver', lw=2.5, label=r"$\alpha_k/\rho_k$")
         else:
             ax.plot(this_df.epoch, this_df.learning_rate, c='silver', lw=2.5, label=r"$\alpha_k$")
         
-        ax.set_xlim(0, )
-        ax.set_ylim(1e-5, 1e3)
+        if xlim is None:
+            ax.set_xlim(0, )
+        else:
+            ax.set_xlim(xlim)
+
+        ax.set_ylim(ylim)
         ax.set_yscale('log')
         
         if counter%ncol == 0:
@@ -254,7 +256,7 @@ def plot_step_sizes(R, method='momo', grid=(3,3), figsize=None, start=None, stop
         if counter == 0:
             ax.legend(loc='upper right', fontsize=10)
         
-        if method == 'momo':
+        if method in ['momo','momo-star'] and add_beta_to_title:
             ax.set_title(create_label(_id, subset=['lr','beta']), fontsize=8)
         else:
             ax.set_title(create_label(_id, subset=['lr']), fontsize=8)
@@ -269,6 +271,13 @@ def plot_step_sizes(R, method='momo', grid=(3,3), figsize=None, start=None, stop
 
     return fig
 
-plot_step_sizes(R, method='momo', grid=(3,3), start=None, stop=None, save=False)
-plot_step_sizes(R, method='momo-adam', grid=(3,3), start=None, stop=None, save=False)
+if exp_id == 'cifar10_resnet20':
+    plot_step_sizes(R, method='momo', grid=(3,3), start=None, stop=None, save=save)
+    plot_step_sizes(R, method='momo-adam', grid=(2,3), start=1, stop=None, save=save)
+elif exp_id == 'cifar10_vgg16':
+    plot_step_sizes(R, method='momo', grid=(3,3), start=2, stop=11, save=save)
+    plot_step_sizes(R, method='momo-adam', grid=(3,3), start=2, stop=11, save=save)
+elif exp_id == 'mnist_mlp':
+    plot_step_sizes(R, method='momo', grid=(3,4), start=2, stop=None, save=save)
+    plot_step_sizes(R, method='momo-adam', grid=(3,2), start=None, stop=None, save=save)
 

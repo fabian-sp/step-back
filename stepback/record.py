@@ -41,7 +41,7 @@ aes = {'sgd': {'color': '#7fb285', 'markevery': 15, 'zorder': 7},
 #
 #7ea2aa
 
-ALL_MARKER = ('o', 'H', 's', '>', 'v', '<' , '^', 'D', 'x')
+ALL_MARKER = ('o', 'v', 'H', 's', '>', '<' , '^', 'D', 'x')
 
 
 #%%
@@ -244,7 +244,6 @@ def key_to_math(k):
         k2 = r'$\alpha_0$'
     elif k == 'beta':
         k2 = r'$\beta$'
-        #v2 = None if v == 'none' else float(v)
-    if k == 'weight_decay':
+    elif k == 'weight_decay':
         k2 = r'$\lambda$'
     return k2
