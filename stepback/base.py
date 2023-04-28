@@ -159,11 +159,16 @@ class Base:
                 score_dict.update(train_dict)
                 score_dict.update(val_dict)
                 
-                # Reset 
+                # Record metrics specific to MoMo methods 
                 if self.opt.state.get('step_size_list'):
                     score_dict['step_size_list'] = [float(np.format_float_scientific(t,5)) for t in self.opt.state['step_size_list']] 
                     self.opt.state['step_size_list'] = list()
-                
+                # fstar estimator
+                if self.opt.state.get('fstar'):
+                    score_dict['fstar'] = self.opt.state['fstar']
+                if self.opt.state.get('h'):
+                    score_dict['h'] = self.opt.state['h']
+
                 # Add score_dict to score_list
                 score_list += [score_dict]
             
