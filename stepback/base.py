@@ -116,10 +116,6 @@ class Base:
         """Initializes the opt object. If your optimizer needs custom commands, add them here."""
         
         self.opt = opt_obj(params=self.model.parameters(), **hyperp)         
-        self._custom_closure = False
-        
-        ### Set self._custom_closure=True if your optimizer needs a custom closure function
-        # in that case, self.opt.closure(out, targets) will be executed in .step()
         
         print(self.opt)        
         return
@@ -199,10 +195,7 @@ class Base:
             if len(out.shape) <= 1:
                 warnings.warn(f"Shape of model output is {out.shape}, recommended to have shape [batch_size, ..].")
                
-            if not self._custom_closure:
-                closure = lambda: self.training_loss.compute(out, targets)
-            else:
-                closure = lambda: self.opt.closure(out, targets)
+            closure = lambda: self.training_loss.compute(out, targets)
             
             # see optim/README.md for explanation 
             if hasattr(self.opt,"prestep"):
