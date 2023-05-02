@@ -17,7 +17,7 @@ parser = argparse.ArgumentParser(description='Generate step-back plots.')
 parser.add_argument('-i', '--id', nargs='?', type=str, default='test1', help="The id of the config (its file name).")
 args = parser.parse_args()
 exp_id = args.id
-#exp_id = 'cifar10_resnet20'
+#exp_id = 'cifar100_resnet110'
 
 save = False
 output_names = get_output_filenames(exp_id)
@@ -35,7 +35,7 @@ plt.rc('text', usetex=True)
 R = Record(output_names)
 base_df = R.base_df                                 # base dataframe for all plots
 id_df = R.id_df                                     # dataframe with the optimizer setups that were run
-base_df, id_df = R.filter(exclude=['prox-sps'])     # filter out a method
+base_df, id_df = R.filter(exclude=['momo-adam-star', 'momo-star', 'momo-adam-max', 'momo-max'])     # filter out a method
 
 #fig = R.plot_metric(s='val_score', log_scale=False, legend=True)
 
@@ -49,7 +49,7 @@ best = base_df[base_df.epoch==base_df.epoch.max()].groupby('name')['val_score'].
 ixx = base_df.id[best.index.levels[1]]
 df1 = base_df.loc[base_df.id.isin(ixx),:]
 
-fig = R.plot_metric(df=df1, s='val_score', ylim = (0.6, 1.1*df1.val_score.max()), log_scale=False, figsize=(4,3.5), legend=False)
+fig = R.plot_metric(df=df1, s='val_score', ylim = (0.6, 1.05*df1.val_score.max()), log_scale=False, figsize=(4,3.5), legend=False)
 fig.subplots_adjust(top=0.975,bottom=0.16,left=0.155,right=0.975)
 if save:
     fig.savefig('output/plots/' + exp_id + f'/all_val_score.pdf')
@@ -280,4 +280,9 @@ elif exp_id == 'cifar10_vgg16':
 elif exp_id == 'mnist_mlp':
     plot_step_sizes(R, method='momo', grid=(3,4), start=2, stop=None, save=save)
     plot_step_sizes(R, method='momo-adam', grid=(3,2), start=None, stop=None, save=save)
+elif exp_id == 'cifar100_resnet110':
+    plot_step_sizes(R, method='momo', grid=(3,2), start=1, stop=7, save=save)
+    plot_step_sizes(R, method='momo-adam', grid=(3,2), start=1, stop=7, save=save)
 
+
+# %%
