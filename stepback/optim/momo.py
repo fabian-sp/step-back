@@ -30,7 +30,7 @@ class Momo(torch.optim.Optimizer):
         weight_decay : float, optional
             Weight decay parameter, by default 0.
         beta : float, optional
-            Momentu parameter, should be in [0,1), by default 0.9.
+            Momentum parameter, should be in [0,1), by default 0.9.
         lb : float, optional
             Lower bound for loss. Zero is often a good guess.
             If no good estimate for the minimal loss value is available, you can set use_fstar=True.
