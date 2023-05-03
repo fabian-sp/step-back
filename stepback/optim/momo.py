@@ -1,3 +1,8 @@
+"""
+Implements the MoMo algorithm.
+
+Authors: Fabian Schaipp, Ruben Ohana, Michael Eickenberg, Aaron Defazio, Robert Gower
+"""
 import torch
 import warnings
 from math import sqrt
@@ -13,6 +18,30 @@ class Momo(torch.optim.Optimizer):
                  lb: float=0,
                  bias_correction: bool=False,
                  use_fstar: bool=False) -> None:
+        """
+        MoMo optimizer
+
+        Parameters
+        ----------
+        params : Params
+            Model parameters.
+        lr : float, optional
+            Learning rate, by default 1e-1.
+        weight_decay : float, optional
+            Weight decay parameter, by default 0.
+        beta : float, optional
+            Momentu parameter, should be in [0,1), by default 0.9.
+        lb : float, optional
+            Lower bound for loss. Zero is often a good guess.
+            If no good estimate for the minimal loss value is available, you can set use_fstar=True.
+            By default 0.
+        bias_correction : bool, optional
+            Which averaging scheme is used, see details in the paper. By default False.
+        use_fstar : bool, optional
+            Whether to use online estimation of loss lower bound. 
+            Can be used if no good estimate is available, by default False.
+
+        """
         
         if lr < 0.0:
             raise ValueError("Invalid learning rate: {}".format(lr))
@@ -32,12 +61,23 @@ class Momo(torch.optim.Optimizer):
         
         # Initialization
         self._number_steps = 0
-        self.state['step_size_list'] = list() # for storing
+        self.state['step_size_list'] = list() # for storing the adaptive step size term
         
         return
         
     def step(self, closure: LossClosure=None) -> OptFloat:
-        
+        """
+        Performs a single optimization step.
+
+        Parameters
+        ----------
+        closure : LossClosure, optional
+            A callable that evaluates the model (possibly with backprop) and returns the loss, by default None.
+
+        Returns
+        -------
+        (Stochastic) Loss function value.
+        """
         with torch.enable_grad():
             loss = closure()
 
@@ -67,8 +107,7 @@ class Momo(torch.optim.Optimizer):
         _norm = 0.
         
         ############################################################
-        # Compute all quantities
-        # notation in PDF translation:
+        # Notation
         # d_k: p.grad_avg, gamma_k: _gamma, \bar f_k: self.loss_avg
         for group in self.param_groups:
             for p in group['params']:
@@ -96,18 +135,20 @@ class Momo(torch.optim.Optimizer):
                 _gamma += grad_dot_w
                 _norm += torch.sum(torch.mul(grad_avg, grad_avg))
 
-        ###### Update weights
+        #################   
+        # Update
         for group in self.param_groups:
             lr = group['lr']
             lmbda = group['weight_decay']
             
             if self.use_fstar:
                 cap = ((1+lr*lmbda)*self.loss_avg + _dot - (1+lr*lmbda)*_gamma).item()
-                # RESET
+                # Reset
                 if cap < (1+lr*lmbda)*rho*self.lb:
                     self.lb = cap/(2*(1+lr*lmbda)*rho) 
                     self.lb = max(self.lb, 0) # safeguard
 
+            ### Compute adaptive step size
             if lmbda > 0:
                 nom = (1+lr*lmbda)*(self.loss_avg - rho*self.lb) + _dot - (1+lr*lmbda)*_gamma
                 t1 = max(nom, 0.)/_norm
@@ -116,14 +157,15 @@ class Momo(torch.optim.Optimizer):
             
             t1 = t1.item() # make scalar
             
-            # step size 
-            tau = min(lr/rho, t1)
+            tau = min(lr/rho, t1) # step size
 
+            ### Update lb estimator
             if self.use_fstar:
                 h = (self.loss_avg  + _dot -  _gamma).item()
                 self.lb = ((h - (1/2)*tau*_norm)/rho).item() 
                 self.lb = max(self.lb, 0) # safeguard
 
+            ### Update params
             for p in group['params']:   
                 state = self.state[p]
                 grad_avg = state['grad_avg']          

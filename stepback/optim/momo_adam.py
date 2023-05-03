@@ -1,18 +1,15 @@
 """
-Some parts of the code are adapted from:
-    Defazio, Aaron: https://github.com/facebookresearch/dadaptation/blob/main/dadaptation/dadapt_adam.py.
+Implements the MoMo-Adam algorithm.
+
+Authors: Fabian Schaipp, Ruben Ohana, Michael Eickenberg, Aaron Defazio, Robert Gower
 """
 import math
 import warnings
 import torch
 import torch.optim
 from ..types import Params, LossClosure, OptFloat
-import numpy as np
 
 class MomoAdam(torch.optim.Optimizer):
-    r"""
-    Implements Adam with adaptive step sizes.
-    """
     def __init__(self, 
                 params: Params, 
                 lr: float=1.0, 
@@ -22,6 +19,32 @@ class MomoAdam(torch.optim.Optimizer):
                 lb: float=0,
                 divide: bool=True,
                 use_fstar: bool=False):
+        """
+        Momo-Adam optimizer
+
+        Parameters
+        ----------
+        params : Params
+            Model parameters.
+        lr : float, optional
+            Learning rate, by default 1.0.
+        betas : tuple, optional
+            Momentum parameters for running avergaes and its square. By default (0.9, 0.999).
+        eps : float, optional
+            Term added to the denominator of Dk to improve numerical stability, by default 1e-8.
+        weight_decay : float, optional
+            Weight decay parameter, by default 0.
+        lb : float, optional
+            Lower bound for loss. Zero is often a good guess.
+            If no good estimate for the minimal loss value is available, you can set use_fstar=True.
+            By default 0.
+        divide : bool, optional
+            Whether to do proximal update (divide=True) or the AdamW approximation (divide=False), by default True.
+        use_fstar : bool, optional
+            Whether to use online estimation of loss lower bound. 
+            Can be used if no good estimate is available, by default False.
+
+        """
 
         if not 0.0 <= lr:
             raise ValueError("Invalid learning rate: {}".format(lr))
@@ -46,16 +69,22 @@ class MomoAdam(torch.optim.Optimizer):
         # initialize
         self._number_steps = 0
         self.loss_avg = 0.
-        self.state['step_size_list'] = list() # for storing
+        self.state['step_size_list'] = list() # for storing the adaptive step size term
 
         return
 
     def step(self, closure: LossClosure=None) -> OptFloat:
-        """Performs a single optimization step.
+        """
+        Performs a single optimization step.
 
-        Arguments:
-            closure (callable, optional): A closure that reevaluates the model
-                and returns the loss.
+        Parameters
+        ----------
+        closure : LossClosure, optional
+            A callable that evaluates the model (possibly with backprop) and returns the loss, by default None.
+
+        Returns
+        -------
+        (Stochastic) Loss function value.
         """
         
         with torch.enable_grad():
@@ -66,7 +95,7 @@ class MomoAdam(torch.optim.Optimizer):
             warnings.warn("More than one param group. This might cause issues for the step method.")
 
         _dot = 0. # = <d_k,x_k>
-        _gamma = 0. 
+        _gamma = 0. # = gamma_k
         _grad_norm = 0. # = ||d_k||^2_{D_k^-1}
         
         self._number_steps += 1
@@ -106,7 +135,7 @@ class MomoAdam(torch.optim.Optimizer):
                     state['grad_dot_w'] = torch.tensor(0.).to(p.device)
                 
 
-                state['step'] += 1 # increment iteration counter
+                state['step'] += 1 
                 grad_avg, grad_avg_sq = state['grad_avg'], state['grad_avg_sq']
                 grad_dot_w = state['grad_dot_w']
 
@@ -147,7 +176,7 @@ class MomoAdam(torch.optim.Optimizer):
 
             if self.use_fstar:  
                 cap = ((1+lr*lmbda)*self.loss_avg + _dot - (1+lr*lmbda)*_gamma).item()         
-                # RESET
+                # Reset
                 if cap < (1+lr*lmbda)*bias_correction1*self.lb:
                     self.lb = cap/(2*(1+lr*lmbda)*bias_correction1) 
                     self.lb = max(self.lb, 0) # safeguard 
@@ -177,7 +206,7 @@ class MomoAdam(torch.optim.Optimizer):
                 if lmbda > 0 and not self.divide:
                     p.data.mul_(1-lmbda*lr)
 
-                # gradient step
+                # Gradient step
                 p.data.addcdiv_(grad_avg, Dk, value=-tau) # x_k - tau*(d_k/D_k)
 
                 # Proximal way of weight decay
