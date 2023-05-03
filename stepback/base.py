@@ -287,6 +287,8 @@ class Base:
                                             lmbda = self.config['opt'].get('weight_decay', 0),
                                             fit_intercept = False
                                             )
+            else:
+                opt_val = None
         else:
             opt_val = None
             
