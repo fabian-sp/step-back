@@ -300,7 +300,7 @@ def plot_step_sizes(R, method='momo', ylim=(1e-5,1e3), xlim = None, grid=(3,3), 
 
 if exp_id == 'cifar10_resnet20':
     plot_step_sizes(R, method='momo', grid=(3,3), start=None, stop=None, save=save)
-    plot_step_sizes(R, method='momo-adam', grid=(2,3), start=1, stop=None, save=save)
+    plot_step_sizes(R, method='momo-adam', grid=(3,2), start=1, stop=None, save=save)
 elif exp_id == 'cifar10_vgg16':
     plot_step_sizes(R, method='momo', grid=(3,3), start=2, stop=11, save=save)
     plot_step_sizes(R, method='momo-adam', grid=(3,3), start=2, stop=11, save=save)
