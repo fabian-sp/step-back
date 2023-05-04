@@ -1,14 +1,12 @@
 # copied and pasted from https://github.com/kuangliu/pytorch-cifar/blob/master/models/resnet.py
-
-
-'''ResNet in PyTorch.
+"""ResNet in PyTorch.
 
 For Pre-activation ResNet, see 'preact_resnet.py'.
 
 Reference:
 [1] Kaiming He, Xiangyu Zhang, Shaoqing Ren, Jian Sun
     Deep Residual Learning for Image Recognition. arXiv:1512.03385
-'''
+"""
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -132,4 +130,3 @@ def test():
     y = net(torch.randn(1, 3, 32, 32))
     print(y.size())
 
-# test()

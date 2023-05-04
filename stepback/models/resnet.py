@@ -1,7 +1,7 @@
 """
 This script has been taken from: https://github.com/akamaster/pytorch_resnet_cifar10/blob/master/resnet.py
 We added the option to remove BatchNorm. 
-We also use the model for CIFAR100, only changing the dimension of the last linear layer.
+We also use the model for CIFAR100 and Imagenet32, only changing the dimension of the last linear layer.
 
     Properly implemented ResNet-s for CIFAR10 as described in paper [1].
     The implementation and structure of this file is hugely influenced by [2]
@@ -124,9 +124,7 @@ class ResNet(nn.Module):
 
 
 
-def get_cifar_resnet(name, num_classes, batch_norm=True):
-    
-    assert num_classes in [10,100]
+def _get_resnet(name, num_classes, batch_norm=True):
     
     if name == 'resnet20':
         m= ResNet(BasicBlock, [3, 3, 3], num_classes=num_classes, batch_norm=batch_norm)
@@ -148,8 +146,15 @@ def get_cifar_resnet(name, num_classes, batch_norm=True):
     
     return m
 
+def get_cifar_resnet(name, num_classes, batch_norm=True):
+    assert num_classes in [10,100]
+    m = _get_resnet(name, num_classes, batch_norm)
+    return m
 
-get_imagenet32_resnet = get_cifar_resnet
+def get_imagenet32_resnet(name, num_classes, batch_norm=True):
+    assert num_classes in [1000]
+    m = _get_resnet(name, num_classes, batch_norm)
+    return m
 
 
 def test(net):

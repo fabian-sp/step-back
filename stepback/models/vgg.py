@@ -4,11 +4,11 @@ from torch import nn
 import math
 
 """
-VGG architectures for CIFAR-10 and CIFAR-100
+VGG architectures for CIFAR-10 and CIFAR-100 and Imagenet32
 
 Adapted from https://github.com/chengyangfu/pytorch-vgg-cifar10/blob/master/vgg.py
 
-For CIFAR-100, we simply use the same architecture as for CIFAR-10 but with the last layer being of size 100.
+For CIFAR-100 and Imagenet32, we simply use the same architecture as for CIFAR-10 but with the last layer adapted.
 """
 
 class VGG_CIFAR(nn.Module):
@@ -65,7 +65,7 @@ cfg = {
 }
 
 
-def get_cifar_vgg(name, batch_norm=False, num_classes=10):
+def _get_vgg(name, batch_norm=False, num_classes=10):
     if name == 'vgg11':
         m = VGG_CIFAR(make_layers(cfg['A'], batch_norm=batch_norm), num_classes=num_classes)
     elif name == 'vgg13':
@@ -77,6 +77,11 @@ def get_cifar_vgg(name, batch_norm=False, num_classes=10):
     
     return m
 
+def get_cifar_vgg(name, batch_norm=False, num_classes=10):
+    assert num_classes in [10,100]
+    m = _get_vgg(name, batch_norm, num_classes)
+    return m
 
 def get_imagenet32_vgg(name, batch_norm=False):
-    return get_cifar_vgg(name, batch_norm=batch_norm, num_classes=1000)
+    m = _get_vgg(name, batch_norm, num_classes=1000)
+    return m
