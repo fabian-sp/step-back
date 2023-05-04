@@ -35,7 +35,8 @@ plt.rc('text', usetex=True)
 R = Record(output_names)
 base_df = R.base_df                                 # base dataframe for all plots
 id_df = R.id_df                                     # dataframe with the optimizer setups that were run
-base_df, id_df = R.filter(exclude=['momo-adam-star', 'momo-star', 'momo-adam-max', 'momo-max'])     # filter out a method
+#base_df, id_df = R.filter(exclude=['momo-adam-star', 'momo-star', 'momo-adam-max', 'momo-max'])     # filter out a method
+base_df, id_df = R.filter(exclude=['prox-sps'])     # filter out a method
 
 #fig = R.plot_metric(s='val_score', log_scale=False, legend=True)
 
@@ -53,6 +54,12 @@ fig = R.plot_metric(df=df1, s='val_score', ylim = (0.6, 1.05*df1.val_score.max()
 fig.subplots_adjust(top=0.975,bottom=0.16,left=0.155,right=0.975)
 if save:
     fig.savefig('output/plots/' + exp_id + f'/all_val_score.pdf')
+
+fig = R.plot_metric(df=df1, s='train_loss', log_scale=True, figsize=(4,3.5), legend=False)
+fig.subplots_adjust(top=0.975,bottom=0.16,left=0.17,right=0.975)
+if save:
+    fig.savefig('output/plots/' + exp_id + f'/all_train_loss.pdf')
+
 
 #%% stability plots
 
@@ -163,6 +170,54 @@ fig = plot_stability(base_df, score='train_loss', xaxis='lr', sigma=1, full_lege
 ### THIS PLOT IS ONLY RELEVANT FOR METHODS WITH ADAPTIVE STEP SIZE
 ###################################
 
+def plot_single_step_sizes(this_df, ax):
+    method = this_df.name.iloc[0]
+    _id = this_df.id.iloc[0]
+
+    iter_per_epoch = len(this_df['step_size_list'].iloc[0])
+    upsampled = np.linspace(this_df.epoch.values[0], this_df.epoch.values[-1],\
+                            len(this_df)*iter_per_epoch)
+    
+    if method in ['momo', 'momo-star']:
+        # caution as id_df contains strings!
+        _beta = 0.9 if id_to_dict(_id).get('beta', 'none') == 'none' else float(id_to_dict(_id)['beta'])
+        _bias_correction = True if id_to_dict(_id).get('bias_correction') == 'True' else False
+        rho = 1 - _bias_correction*_beta**(np.arange(len(this_df)*iter_per_epoch)+1)
+    
+    elif method in ['momo-adam', 'momo-adam-star']:
+        _beta = 0.9 if id_to_dict(_id).get('betas', 'none') == 'none' else make_tuple(id_to_dict(_id)['betas'])[0]
+        rho = 1 - _beta**(np.arange(len(this_df)*iter_per_epoch)+1)
+
+    else:
+        rho = None
+
+    # compute median
+    all_s = []
+    all_s_median = []
+    for j in this_df.index:
+        all_s_median.append(np.median(this_df.loc[j,'step_size_list']))
+        all_s += this_df.loc[j,'step_size_list'] 
+    
+    # plot adaptive term
+    ax.scatter(upsampled, all_s, c=R.aes[method]['color'], s=5, alpha=0.25)
+    ax.plot(this_df.epoch, all_s_median, 
+            c='gainsboro', 
+            marker='o', 
+            markevery=(5,7),
+            markerfacecolor=R.aes[method]['color'], 
+            markeredgecolor='gainsboro', 
+            lw=2.5,
+            label=r"$\zeta_k$")
+    
+    # plot LR
+    if rho is not None:
+        y = np.repeat(this_df.learning_rate, iter_per_epoch) / rho
+        ax.plot(upsampled, y, c='silver', lw=2.5, label=r"$\alpha_k/\rho_k$")
+    else:
+        ax.plot(this_df.epoch, this_df.learning_rate, c='silver', lw=2.5, label=r"$\alpha_k$")
+    
+    return ax
+
 def plot_step_sizes(R, method='momo', ylim=(1e-5,1e3), xlim = None, grid=(3,3), figsize=None, start=None, stop=None, save=False):
     nrow, ncol = grid
     if figsize is None:
@@ -189,48 +244,8 @@ def plot_step_sizes(R, method='momo', ylim=(1e-5,1e3), xlim = None, grid=(3,3), 
         ax = axs.ravel()[counter]
         this_df = df[df.id == _id]
         
-        iter_per_epoch = len(this_df['step_size_list'].iloc[0])
-        upsampled = np.linspace(this_df.epoch.values[0], this_df.epoch.values[-1],\
-                                len(this_df)*iter_per_epoch)
-        
-        if method in ['momo', 'momo-star']:
-            # caution as id_df contains strings!
-            _beta = 0.9 if id_to_dict(_id).get('beta', 'none') == 'none' else float(id_to_dict(_id)['beta'])
-            _bias_correction = True if id_to_dict(_id).get('bias_correction') == 'True' else False
-            rho = 1 - _bias_correction*_beta**(np.arange(len(this_df)*iter_per_epoch)+1)
-        
-        elif method in ['momo-adam', 'momo-adam-star']:
-            _beta = 0.9 if id_to_dict(_id).get('betas', 'none') == 'none' else make_tuple(id_to_dict(_id)['betas'])[0]
-            rho = 1 - _beta**(np.arange(len(this_df)*iter_per_epoch)+1)
+        ax = plot_single_step_sizes(this_df, ax)
 
-        else:
-            rho = None
-
-        # compute median
-        all_s = []
-        all_s_median = []
-        for j in this_df.index:
-            all_s_median.append(np.median(this_df.loc[j,'step_size_list']))
-            all_s += this_df.loc[j,'step_size_list'] 
-        
-        # plot adaptive term
-        ax.scatter(upsampled, all_s, c=R.aes[method]['color'], s=5, alpha=0.25)
-        ax.plot(this_df.epoch, all_s_median, 
-                c='gainsboro', 
-                marker='o', 
-                markevery=(5,7),
-                markerfacecolor=R.aes[method]['color'], 
-                markeredgecolor='gainsboro', 
-                lw=2.5,
-                label=r"$\zeta_k$")
-        
-        # plot LR
-        if rho is not None:
-            y = np.repeat(this_df.learning_rate, iter_per_epoch) / rho
-            ax.plot(upsampled, y, c='silver', lw=2.5, label=r"$\alpha_k/\rho_k$")
-        else:
-            ax.plot(this_df.epoch, this_df.learning_rate, c='silver', lw=2.5, label=r"$\alpha_k$")
-        
         if xlim is None:
             ax.set_xlim(0, )
         else:
@@ -239,6 +254,18 @@ def plot_step_sizes(R, method='momo', ylim=(1e-5,1e3), xlim = None, grid=(3,3), 
         ax.set_ylim(ylim)
         ax.set_yscale('log')
         
+        # zoomed in inset    
+        # if counter==3:
+        #     # inset axes....
+        #     ax2 = ax.inset_axes([0.15, 0.02, 0.3, 0.47])
+        #     ax2 = plot_single_step_sizes(this_df, ax2)
+        #     ax2.set_xlim(0,0.5)
+        #     ax2.set_ylim(ylim)
+        #     ax2.set_yscale('log')
+        #     ax2.set_yticks([]); ax2.set_xticks([])
+        #     ax.indicate_inset_zoom(ax2, edgecolor="black", lw=2)
+
+
         if counter%ncol == 0:
             ax.set_ylabel('Step size', fontsize=10)
             ax.tick_params(axis='y', which='major', labelsize=9)
