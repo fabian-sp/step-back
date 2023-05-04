@@ -153,7 +153,7 @@ class MomoAdam(torch.optim.Optimizer):
                     
         # Exponential moving average of function value
         # Uses beta1 of last param_group! 
-        self.loss_avg = (1-beta1)*loss +  beta1*self.loss_avg 
+        self.loss_avg = (1-beta1)*loss.detach() +  beta1*self.loss_avg 
         
         # OLD: NO BIAS CORRECTION
         # if self._number_steps >= 1:
