@@ -147,7 +147,9 @@ def get_cifar_resnet(name, num_classes, batch_norm=True):
         m= ResNet(BasicBlock, [200, 200, 200], num_classes=num_classes, batch_norm=batch_norm)
     
     return m
-    
+
+
+get_imagenet32_resnet = get_cifar_resnet
 
 
 def test(net):

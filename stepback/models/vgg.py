@@ -76,3 +76,7 @@ def get_cifar_vgg(name, batch_norm=False, num_classes=10):
         m = VGG_CIFAR(make_layers(cfg['E'], batch_norm=batch_norm), num_classes=num_classes)
     
     return m
+
+
+def get_imagenet32_vgg(name, batch_norm=False):
+    return get_cifar_vgg(name, batch_norm=batch_norm, num_classes=1000)
