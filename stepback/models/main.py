@@ -2,8 +2,9 @@ import torch
 import warnings
 
 from .basic_models import MLP, MatrixFac
-from .vgg import get_cifar_vgg
-from .resnet import get_cifar_resnet
+from .vgg import get_cifar_vgg, get_imagenet32_vgg
+from .resnet import get_cifar_resnet, get_imagenet32_resnet
+from .kuangliu_resnet import ResNet18
 
 def get_model(config: dict={}) -> torch.nn.Module:
     """
@@ -64,7 +65,12 @@ def get_model(config: dict={}) -> torch.nn.Module:
         else:
             raise KeyError(f"Model {name} is not implemented yet for dataset {config['dataset']}.")   
     
-    
+    elif name in ['resnet18-kuangliu']:
+        if config['dataset'] == 'imagenet32':
+            model = ResNet18(num_classes=1000)
+        else:
+            raise KeyError(f"Model {name} is not implemented yet for dataset {config['dataset']}.")
+        
     else:
         raise KeyError(f"Unknown model option {name}.")   
     
