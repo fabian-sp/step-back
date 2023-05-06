@@ -6,8 +6,65 @@ import numpy as np
 import torch
 import itertools
 import copy
+import os
 
 from sklearn.linear_model import Ridge, LogisticRegression
+
+from .log import load_json, save_json
+
+#%%
+"""
+Utility functions for managing output files.
+"""
+
+def get_output_filenames(exp_id, output_dir='output/'):
+    """Given exp_id, it returns list of output filenames.
+    The output filename should either be identical to exp_id or have the form <exp_id>-1, <exp_id>-2 etc
+    """
+    all_files = os.listdir(output_dir)
+    exp_files = [f for f in all_files if (f == exp_id+'.json') or (exp_id+'-' in f)] 
+
+    # remove .json from string
+    exp_files = [f.split('.json')[0] for f in exp_files]
+
+    return exp_files
+
+def filter_output_file(exp_id, exp_filter=dict(), opt_filter=dict(), fname=None, output_dir='output/'):
+    """Filter ouput file. Deletes all results that are specified by exp_filter and opt_filter.
+    Example:
+        opt_filter = {'name': 'adam'} # deletes all adam runs
+        exp_filter = {'dataset':'mnist} # deletes all runs where mnist was the dataset 
+
+    CAUTION: This will overwrite the file if not fname is specified. Otherwise, it will write the filtered output in fname.
+    """
+    print(f"Reading from {output_dir+exp_id}.")
+    data = load_json(exp_id, output_dir)
+    print(f"Original file has {len(data)} entries.")
+    new_data = list()
+
+    for d in data:
+        DROP = False
+        conf = copy.deepcopy(d['config'])
+
+        for k,v in exp_filter.items():
+            if conf.get(k) == v:
+                DROP = True
+        
+        for k,v in opt_filter.items():
+            if conf['opt'].get(k) == v:
+                DROP = True
+
+        if not DROP:
+            new_data.append(d)  
+        else:
+            print("Dropping the config:") 
+            print(conf)
+
+    NEW_FNAME = exp_id if fname is None else fname
+    save_json(NEW_FNAME, new_data, output_dir)  
+    print(f"New file has {len(new_data)} entries.")       
+
+    return
 
 #%%
 """

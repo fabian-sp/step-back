@@ -21,21 +21,27 @@ score_names = {'train_loss': 'Training loss',
                }
 
 
-aes = {'sgd': {'color': '#7fb285', 'markevery': 15},
-        'sgd-m': {'color': '#de9151', 'markevery': 8},
-        'adam': {'color': '#f34213', 'markevery': 10}, 
-        'adamw': {'color': '#f34213', 'markevery': 10},
-        'momo': {'color': '#023047', 'markevery': 5},
-        'prox-sps': {'color': '#97BF88', 'markevery': 7},
-        'default': {'color': 'grey', 'markevery': 3},
+aes = {'sgd': {'color': '#7fb285', 'markevery': 15, 'zorder': 7},
+        'sgd-m': {'color': '#de9151', 'markevery': 8, 'zorder': 8},
+        'adam': {'color': '#f34213', 'markevery': 10, 'zorder': 9}, 
+        'adamw': {'color': '#f34213', 'markevery': 10, 'zorder': 9},
+        'momo': {'color': '#023047', 'markevery': 5, 'zorder': 11},
+        'momo-adam': {'color': '#3F88C5', 'markevery': 6, 'zorder': 10},
+        'momo-star': {'color': '#87b37a', 'markevery': 3, 'zorder': 13},
+        'momo-adam-star': {'color': '#648381', 'markevery': 4, 'zorder': 12},
+        'prox-sps': {'color': '#97BF88', 'markevery': 7, 'zorder': 6},
+        'default': {'color': 'grey', 'markevery': 3, 'zorder': 1},
         }
 # more colors:
+#F7CE5B
+#FFBF46
 #4FB0C6
-#8be8cb
+#648381
+#F7B801
+#
 #7ea2aa
-#97BF88
 
-ALL_MARKER = ('o', 'H', 's', '>', 'v', '<' , '^', 'D', 'x')
+ALL_MARKER = ('o', 'v', 'H', 's', '>', '<' , '^', 'D', 'x')
 
 
 #%%
@@ -72,6 +78,13 @@ class Record:
         self.base_df = self._build_base_df(agg='mean')
         return
     
+    def filter(self, exclude=[]):
+
+        base_df = self.base_df[~self.base_df.name.isin(exclude)]
+        id_df = self.id_df[~self.id_df.name.isin(exclude)]
+
+        return base_df, id_df
+
     def _build_raw_df(self):
         """ create DataFrame with the stored output. Creates an id column based on opt config. """
         df_list = list()
@@ -142,7 +155,7 @@ class Record:
             self.aes[m]['marker_cycle'] = itertools.cycle(ALL_MARKER)  
         return
     
-    def plot_metric(self, s, df=None, log_scale=False, ylim=None, legend=True, ax=None):
+    def plot_metric(self, s, df=None, log_scale=False, ylim=None, legend=True, figsize=(4,4), ax=None):
         
         if df is None:
             df = self.base_df.copy()
@@ -151,7 +164,7 @@ class Record:
         self._reset_marker_cycle()
         
         if ax is None:
-            fig, ax = plt.subplots()
+            fig, ax = plt.subplots(figsize=figsize)
         else:
             fig = ax.get_figure()
 
@@ -159,7 +172,7 @@ class Record:
             alpha = 1
             markersize = 6
         else:
-            alpha = .8
+            alpha = .65
             markersize = 4
             
         for m in df.id.unique():
@@ -177,12 +190,13 @@ class Record:
             
             # plot
             ax.plot(x, y, 
-                    c=aes.get(conf['name'], self.aes['default']).get('color'), 
+                    c=self.aes.get(conf['name'], self.aes['default']).get('color'), 
                     marker=next(self.aes.get(conf['name'], self.aes['default']).get('marker_cycle')) if legend else 'o', 
                     markersize=markersize, 
                     markevery=(self.aes.get(conf['name'], self.aes['default']).get('markevery'), 20), 
                     alpha = alpha,
-                    label=label)
+                    label=label,
+                    zorder=self.aes.get(conf['name'], self.aes['default']).get('zorder'))
         
         ax.set_xlabel('Epoch')
         ax.set_ylabel(score_names[s])
@@ -195,12 +209,14 @@ class Record:
         
         # full legend or only solver names
         if legend:
-            ax.legend(fontsize=8, loc='lower left')
+            ax.legend(fontsize=8, loc='lower left').set_zorder(100)
         else:
             for n in df.name.unique():
                 handles = [Line2D([0], [0], color=aes.get(n, self.aes['default']).get('color'), lw=4) for n in df.name.unique()]
                 names = list(df.name.unique())
-                ax.legend(handles, names, loc='lower left')
+                ax.legend(handles, names, loc='lower left').set_zorder(100)
+
+        fig.tight_layout()
         return fig
 
     
@@ -228,7 +244,6 @@ def key_to_math(k):
         k2 = r'$\alpha_0$'
     elif k == 'beta':
         k2 = r'$\beta$'
-        #v2 = None if v == 'none' else float(v)
-    if k == 'weight_decay':
+    elif k == 'weight_decay':
         k2 = r'$\lambda$'
     return k2

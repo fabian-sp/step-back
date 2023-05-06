@@ -8,6 +8,7 @@ from .cifar import get_cifar10, get_cifar100
 from .mnist import get_mnist
 from .synthetic import get_synthetic_matrix_fac, get_synthetic_linear
 from .libsvm import LIBSVM_NAME_MAP, get_libsvm
+from .imagenet32 import get_imagenet32
 
 class DataClass:
     def __init__(self, dataset: Dataset, split: str):
@@ -61,7 +62,10 @@ def get_dataset(config: dict, split: str, seed: int, path: str) -> DataClass:
     
     elif name in LIBSVM_NAME_MAP.keys():
         ds = get_libsvm(split=split, name=name, path=path, **kwargs)
-    
+
+    elif name == 'imagenet32':
+        ds = get_imagenet32(split=split, path=path)
+
     else:
         raise KeyError(f"Unknown dataset name {name}.")
     #===============================================

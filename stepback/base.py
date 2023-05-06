@@ -116,10 +116,6 @@ class Base:
         """Initializes the opt object. If your optimizer needs custom commands, add them here."""
         
         self.opt = opt_obj(params=self.model.parameters(), **hyperp)         
-        self._custom_closure = False
-        
-        ### Set self._custom_closure=True if your optimizer needs a custom closure function
-        # in that case, self.opt.closure(out, targets) will be executed in .step()
         
         print(self.opt)        
         return
@@ -163,11 +159,16 @@ class Base:
                 score_dict.update(train_dict)
                 score_dict.update(val_dict)
                 
-                # Reset 
+                # Record metrics specific to MoMo methods 
                 if self.opt.state.get('step_size_list'):
                     score_dict['step_size_list'] = [float(np.format_float_scientific(t,5)) for t in self.opt.state['step_size_list']] 
                     self.opt.state['step_size_list'] = list()
-                
+                # fstar estimator
+                if self.opt.state.get('fstar'):
+                    score_dict['fstar'] = self.opt.state['fstar']
+                if self.opt.state.get('h'):
+                    score_dict['h'] = self.opt.state['h']
+
                 # Add score_dict to score_list
                 score_list += [score_dict]
             
@@ -199,10 +200,7 @@ class Base:
             if len(out.shape) <= 1:
                 warnings.warn(f"Shape of model output is {out.shape}, recommended to have shape [batch_size, ..].")
                
-            if not self._custom_closure:
-                closure = lambda: self.training_loss.compute(out, targets)
-            else:
-                closure = lambda: self.opt.closure(out, targets)
+            closure = lambda: self.training_loss.compute(out, targets)
             
             # see optim/README.md for explanation 
             if hasattr(self.opt,"prestep"):
@@ -289,6 +287,8 @@ class Base:
                                             lmbda = self.config['opt'].get('weight_decay', 0),
                                             fit_intercept = False
                                             )
+            else:
+                opt_val = None
         else:
             opt_val = None
             
