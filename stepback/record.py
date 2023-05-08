@@ -17,7 +17,8 @@ score_names = {'train_loss': 'Training loss',
                'train_score': 'Training score', 
                'val_score': 'Validation score',
                'model_norm': r'$\|x^k\|$',
-               'grad_norm': r'$\|g_k\|$'
+               'grad_norm': r'$\|g_k\|$',
+               'fstar': r'$f_*^k$'
                }
 
 

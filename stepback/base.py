@@ -163,10 +163,10 @@ class Base:
                 if self.opt.state.get('step_size_list'):
                     score_dict['step_size_list'] = [float(np.format_float_scientific(t,5)) for t in self.opt.state['step_size_list']] 
                     self.opt.state['step_size_list'] = list()
-                # fstar estimator
-                if self.opt.state.get('fstar'):
+                # fstar estimator (could be zero)
+                if self.opt.state.get('fstar', None) is not None:
                     score_dict['fstar'] = self.opt.state['fstar']
-                if self.opt.state.get('h'):
+                if self.opt.state.get('h', None) is not None:
                     score_dict['h'] = self.opt.state['h']
 
                 # Add score_dict to score_list
