@@ -48,7 +48,9 @@ best = base_df[base_df.epoch==base_df.epoch.max()].groupby('name')['val_score'].
 ixx = base_df.id[best.index.levels[1]]
 df1 = base_df.loc[base_df.id.isin(ixx),:]
 
-fig = R.plot_metric(df=df1, s='val_score', ylim = (0.6, 1.05*df1.val_score.max()), log_scale=False, figsize=(4,3.5), legend=False)
+y0 = 0.3 if exp_id=='cifar100_resnet110' else 0.6
+
+fig = R.plot_metric(df=df1, s='val_score', ylim=(y0, 1.05*df1.val_score.max()), log_scale=False, figsize=(4,3.5), legend=False)
 fig.subplots_adjust(top=0.975,bottom=0.16,left=0.155,right=0.975)
 if save:
     fig.savefig('output/plots/' + exp_id + f'/all_val_score.pdf')
