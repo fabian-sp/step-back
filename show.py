@@ -42,15 +42,15 @@ base_df, id_df = R.filter(exclude=['prox-sps'])     # filter out a method
 
 #%% plot training curves for a subset of runs:
 
-#ixx =  base_df[base_df['val_score'] >= 0.5].id.unique()
-#df1 = base_df.loc[base_df.id.isin(ixx),:]
-
 # takes 3 best runs per methods
 best = base_df[base_df.epoch==base_df.epoch.max()].groupby('name')['val_score'].nlargest(3)
+#best = base_df[base_df.epoch==base_df.epoch.max()].groupby('name')['train_loss'].nsmallest(3)
 ixx = base_df.id[best.index.levels[1]]
 df1 = base_df.loc[base_df.id.isin(ixx),:]
 
-fig = R.plot_metric(df=df1, s='val_score', ylim = (0.6, 1.05*df1.val_score.max()), log_scale=False, figsize=(4,3.5), legend=False)
+y0 = 0.3 if exp_id=='cifar100_resnet110' else 0.6
+
+fig = R.plot_metric(df=df1, s='val_score', ylim=(y0, 1.05*df1.val_score.max()), log_scale=False, figsize=(4,3.5), legend=False)
 fig.subplots_adjust(top=0.975,bottom=0.16,left=0.155,right=0.975)
 if save:
     fig.savefig('output/plots/' + exp_id + f'/all_val_score.pdf')
@@ -63,7 +63,7 @@ if save:
 
 #%% stability plots
 
-def plot_stability(base_df, score='val_score', xaxis='lr', sigma=1, cutoff=None, full_legend=True, figsize=(6,5), save=False):
+def plot_stability(base_df, score='val_score', xaxis='lr', sigma=1, cutoff=None, legend=None, figsize=(6,5), save=False):
     """
     Generates stability plot.
 
@@ -108,10 +108,13 @@ def plot_stability(base_df, score='val_score', xaxis='lr', sigma=1, cutoff=None,
         y = this_df[score]
         y2 = this_df[score+'_std']
         
-        if full_legend:
-            label = name + ", " + ", ".join([k+"="+v for k,v in zip(df.index.names,m) if (v!='none') and (k!='name')])
+        if legend is None:
+            label = name # default: only show method name
+        elif legend == 'full':
+            label = name + ", " + ", ".join([k+"="+v for k,v in zip(df.index.names,m) if (v!='none') and (k!='name')]) # show all keys
         else:
-            label = name
+            label = name + ", " + ", ".join([k+"="+v for k,v in zip(df.index.names,m) if (v!='none') and (k!='name') and (k in legend)]) # show subset of keys
+            
            
         ax.plot(x,y, c=R.aes.get(name, R.aes['default'])['color'], label=label,
                 marker=next(R.aes.get(name, R.aes['default']).get('marker_cycle')), 
@@ -132,16 +135,16 @@ def plot_stability(base_df, score='val_score', xaxis='lr', sigma=1, cutoff=None,
     else:
         ax.set_xlabel(xaxis)
 
-    if score == 'val_score':
+    if score in ['train_score', 'val_score']:
         ax.set_ylim(0,1)    
-    elif score == 'train_loss':
+    elif score in ['train_loss', 'val_loss']:
         ax.set_yscale('log')
 
     ax.set_ylabel(score_names[score])
     ax.set_xscale('log')
     ax.grid(axis='y', lw=0.2, ls='--', zorder=-10)
     
-    if full_legend:
+    if legend is not None:
         # legend has all specific opt arguments
         fig.legend(fontsize=8, loc='upper right')
     else:
@@ -150,7 +153,7 @@ def plot_stability(base_df, score='val_score', xaxis='lr', sigma=1, cutoff=None,
                    ncol=min(len(ax.get_legend_handles_labels()[0]),4), columnspacing=0.6)
 
     fig.tight_layout()
-    if full_legend:
+    if legend is not None:
         fig.subplots_adjust(top=0.75,bottom=0.125,left=0.14,right=0.97)
     else:
         fig.subplots_adjust(top=0.85,bottom=0.115,left=0.145,right=0.98)
@@ -163,8 +166,8 @@ def plot_stability(base_df, score='val_score', xaxis='lr', sigma=1, cutoff=None,
 
 FIGSIZE = (4.8,4)
 
-fig = plot_stability(base_df, score='val_score', xaxis='lr', sigma=1, full_legend=False, cutoff=None, figsize=FIGSIZE, save=save)
-fig = plot_stability(base_df, score='train_loss', xaxis='lr', sigma=1, full_legend=False, cutoff=None, figsize=FIGSIZE, save=save)
+fig = plot_stability(base_df, score='val_score', xaxis='lr', sigma=1, legend=None, cutoff=None, figsize=FIGSIZE, save=save)
+fig = plot_stability(base_df, score='train_loss', xaxis='lr', sigma=1, legend=None, cutoff=None, figsize=FIGSIZE, save=save)
 
 #%% plots the adaptive step size
 ### THIS PLOT IS ONLY RELEVANT FOR METHODS WITH ADAPTIVE STEP SIZE

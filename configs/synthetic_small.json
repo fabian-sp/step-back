@@ -1,0 +1,16 @@
+{   "dataset": "synthetic_linear",
+    "dataset_kwargs": {"p": 10, "n_samples": 200},
+    "model": "linear",
+    "loss_func": "squared",
+    "score_func": "squared",
+    "opt": [{"name": "momo", "lr": [0.001, 0.01, 0.1, 1, 10, 100,  1000], "weight_decay": 0, "beta": 0.9, "lb": -10, "lr_schedule": "constant"},
+            {"name": "momo-star", "lr": [0.001, 0.01, 0.1, 1, 10, 100,  1000], "weight_decay": 0, "beta": 0.9, "lb": -10, "lr_schedule": "constant"},
+            {"name": "sgd-m", "lr": [0.001, 0.01, 0.1, 1, 10, 100], "weight_decay": 0, "momentum": 0.9, "dampening": 0.9, "lr_schedule": "constant"},
+            {"name": "momo-adam", "lr": [0.0001, 0.001, 0.01, 0.1, 1, 10, 100, 1000], "weight_decay": 0, "lb": -10, "lr_schedule": "constant"},
+            {"name": "momo-adam-star", "lr": [0.0001, 0.001, 0.01, 0.1, 1, 10, 100, 1000], "weight_decay": 0, "lb": -10, "lr_schedule": "constant"},
+            {"name": "adam", "lr": [0.0001, 0.001, 0.01, 0.1, 1, 10, 100], "weight_decay": 0, "lr_schedule": "constant"}
+            ],
+    "batch_size": 20,
+    "max_epoch": 20,
+    "n_runs": 3
+}

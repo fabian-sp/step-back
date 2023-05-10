@@ -175,6 +175,7 @@ class Record:
         else:
             alpha = .65
             markersize = 4
+            names_legend = list()
             
         for m in df.id.unique():
             this_df = df[df.id==m]
@@ -190,14 +191,16 @@ class Record:
                 label += ', ' + k + '=' + str(v)
             
             # plot
-            ax.plot(x, y, 
-                    c=self.aes.get(conf['name'], self.aes['default']).get('color'), 
-                    marker=next(self.aes.get(conf['name'], self.aes['default']).get('marker_cycle')) if legend else 'o', 
-                    markersize=markersize, 
-                    markevery=(self.aes.get(conf['name'], self.aes['default']).get('markevery'), 20), 
-                    alpha = alpha,
-                    label=label,
-                    zorder=self.aes.get(conf['name'], self.aes['default']).get('zorder'))
+            if not y.isna().all():
+                names_legend.append(conf['name'])
+                ax.plot(x, y, 
+                        c=self.aes.get(conf['name'], self.aes['default']).get('color'), 
+                        marker=next(self.aes.get(conf['name'], self.aes['default']).get('marker_cycle')) if legend else 'o', 
+                        markersize=markersize, 
+                        markevery=(self.aes.get(conf['name'], self.aes['default']).get('markevery'), 20), 
+                        alpha = alpha,
+                        label=label,
+                        zorder=self.aes.get(conf['name'], self.aes['default']).get('zorder'))
         
         ax.set_xlabel('Epoch')
         ax.set_ylabel(score_names[s])
@@ -212,10 +215,9 @@ class Record:
         if legend:
             ax.legend(fontsize=8, loc='lower left').set_zorder(100)
         else:
-            for n in df.name.unique():
-                handles = [Line2D([0], [0], color=aes.get(n, self.aes['default']).get('color'), lw=4) for n in df.name.unique()]
-                names = list(df.name.unique())
-                ax.legend(handles, names, loc='lower left').set_zorder(100)
+            names_legend = set(names_legend)
+            handles = [Line2D([0], [0], color=aes.get(n, self.aes['default']).get('color'), lw=4) for n in names_legend]
+            ax.legend(handles, names_legend, loc='lower left').set_zorder(100)
 
         fig.tight_layout()
         return fig
