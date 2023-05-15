@@ -17,7 +17,8 @@ class Momo(torch.optim.Optimizer):
                  beta: float=0.9,
                  lb: float=0,
                  bias_correction: bool=False,
-                 use_fstar: bool=False) -> None:
+                 use_fstar: bool=False,
+                 fstar_max: bool=False) -> None:
         """
         MoMo optimizer
 
@@ -64,6 +65,10 @@ class Momo(torch.optim.Optimizer):
         self._number_steps = 0
         self.state['step_size_list'] = list() # for storing the adaptive step size term
         
+        self._fstar_max = fstar_max
+        if self._fstar_max:
+            self.omega = 0
+
         return
         
     def step(self, closure: LossClosure=None) -> OptFloat:
@@ -146,8 +151,12 @@ class Momo(torch.optim.Optimizer):
                 cap = ((1+lr*lmbda)*self.loss_avg + _dot - (1+lr*lmbda)*_gamma).item()
                 # Reset
                 if cap < (1+lr*lmbda)*rho*self.lb:
-                    self.lb = cap/(2*(1+lr*lmbda)*rho) 
-                    self.lb = max(self.lb, self._initial_lb) # safeguard
+                    if self._fstar_max:
+                        self.omega = 0
+                        self.lb = self._initial_lb
+                    else:
+                        self.lb = cap/(2*(1+lr*lmbda)*rho) 
+                        self.lb = max(self.lb, self._initial_lb) # safeguard
 
             ### Compute adaptive step size
             if lmbda > 0:
@@ -163,8 +172,14 @@ class Momo(torch.optim.Optimizer):
             ### Update lb estimator
             if self.use_fstar:
                 h = (self.loss_avg  + _dot -  _gamma).item()
-                self.lb = ((h - (1/2)*tau*_norm)/rho).item() 
-                self.lb = max(self.lb, self._initial_lb) # safeguard
+                if self._fstar_max:
+                    omega_prev = self.omega  
+                    self.omega += tau*rho 
+                    self.lb = ((self.lb*omega_prev + tau*(h - 0.5*tau*_norm))/self.omega).item() 
+                    self.lb = max(self.lb, self._initial_lb) # safeguard
+                else:
+                    self.lb = ((h - (1/2)*tau*_norm)/rho).item() 
+                    self.lb = max(self.lb, self._initial_lb) # safeguard
 
             ### Update params
             for p in group['params']:   
