@@ -35,8 +35,9 @@ plt.rc('text', usetex=True)
 R = Record(output_names)
 base_df = R.base_df                                 # base dataframe for all plots
 id_df = R.id_df                                     # dataframe with the optimizer setups that were run
-#base_df, id_df = R.filter(exclude=['momo-adam-star', 'momo-star', 'momo-adam-max', 'momo-max'])     # filter out a method
-base_df, id_df = R.filter(exclude=['prox-sps'])     # filter out a method
+base_df, id_df = R.filter(exclude=['momo-adam-star', 'momo-star',
+                                    'momo-adam-max', 'momo-max',
+                                    'prox-sps'])     # filter out a method
 
 #fig = R.plot_metric(s='val_score', log_scale=False, legend=True)
 
@@ -156,7 +157,8 @@ def plot_stability(base_df, score='val_score', xaxis='lr', sigma=1, cutoff=None,
     if legend is not None:
         fig.subplots_adjust(top=0.75,bottom=0.125,left=0.14,right=0.97)
     else:
-        fig.subplots_adjust(top=0.85,bottom=0.115,left=0.145,right=0.98)
+        fig.subplots_adjust(top=0.805,bottom=0.155,left=0.145,right=0.98)
+    # 0.805 for mnist
     #grouped.indices.keys()
 
     if save:
@@ -164,7 +166,7 @@ def plot_stability(base_df, score='val_score', xaxis='lr', sigma=1, cutoff=None,
     
     return fig
 
-FIGSIZE = (4.8,4)
+FIGSIZE = (4.8,3.2)
 
 fig = plot_stability(base_df, score='val_score', xaxis='lr', sigma=1, legend=None, cutoff=None, figsize=FIGSIZE, save=save)
 fig = plot_stability(base_df, score='train_loss', xaxis='lr', sigma=1, legend=None, cutoff=None, figsize=FIGSIZE, save=save)
