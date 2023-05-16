@@ -155,7 +155,7 @@ def plot_stability(base_df, score='val_score', xaxis='lr', sigma=1, cutoff=None,
         # xticks only in last row
         if j+1 < len(score):
             ax.set_xlabel('')
-            ax.set_xticks([])
+            #ax.set_xticks([])
     
     if legend is not None:
         # legend has all specific opt arguments
