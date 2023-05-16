@@ -74,8 +74,11 @@ def plot_stability(base_df, score='val_score', xaxis='lr', sigma=1, cutoff=None,
         sigma: number of standard deviations to show (in one direction)
         cutoff: if not None, score is aggregated over [cutoff, max_epoch]
 
-
     """
+    # plot only one score
+    if isinstance(score, str):
+        score = [score]
+
     grouped = base_df.groupby(['name', xaxis])
     max_epoch = grouped['epoch'].max()
     assert len(max_epoch.unique()) == 1, "It seems that different setups ran for different number of epochs."
@@ -85,65 +88,74 @@ def plot_stability(base_df, score='val_score', xaxis='lr', sigma=1, cutoff=None,
     else:
         cutoff_epoch = (cutoff, max_epoch[0])
 
-    # filter epochs
-    sub_df = base_df[(base_df.epoch >= cutoff_epoch[0]) & (base_df.epoch <= cutoff_epoch[1])] 
-    # group by all id_cols 
-    df = sub_df.groupby(list(id_df.columns))[score, score+'_std'].mean() # use dropna=False if we would have nan values
-    # move xaxis out of grouping
-    df = df.reset_index(level=xaxis)
-    # make xaxis float
-    df[xaxis] = df[xaxis].astype('float')
-    # get method and learning rate with best score
-    # best_ind, best_x = df.index[df[s].argmax()], df[xaxis][df[s].argmax()]
+    fig, axs = plt.subplots(len(score),1,figsize=figsize)
 
-    R._reset_marker_cycle()
+    for j, s in enumerate(score):
+        # filter epochs
+        sub_df = base_df[(base_df.epoch >= cutoff_epoch[0]) & (base_df.epoch <= cutoff_epoch[1])] 
+        # group by all id_cols 
+        df = sub_df.groupby(list(id_df.columns))[s, s+'_std'].mean() # use dropna=False if we would have nan values
+        # move xaxis out of grouping
+        df = df.reset_index(level=xaxis)
+        # make xaxis float
+        df[xaxis] = df[xaxis].astype('float')
+        
+        # get method and learning rate with best score
+        # best_ind, best_x = df.index[df[s].argmax()], df[xaxis][df[s].argmax()]
 
-    fig, ax = plt.subplots(figsize=figsize)
-    # .unique(level=) might be useful at some point
-    for m in df.index.unique():
-        this_df = df.loc[m,:]
-        this_df = this_df.sort_values(xaxis) # sort!
-        name = this_df.index.get_level_values('name')[0]
-        
-        x = this_df[xaxis]
-        y = this_df[score]
-        y2 = this_df[score+'_std']
-        
-        if legend is None:
-            label = name # default: only show method name
-        elif legend == 'full':
-            label = name + ", " + ", ".join([k+"="+v for k,v in zip(df.index.names,m) if (v!='none') and (k!='name')]) # show all keys
+        R._reset_marker_cycle()
+        ax = axs.ravel()[j] if len(score) > 1 else axs 
+        # .unique(level=) might be useful at some point
+        for m in df.index.unique():
+            this_df = df.loc[m,:]
+            this_df = this_df.sort_values(xaxis) # sort!
+            name = this_df.index.get_level_values('name')[0]
+            
+            x = this_df[xaxis]
+            y = this_df[s]
+            y2 = this_df[s+'_std']
+            
+            if legend is None:
+                label = name # default: only show method name
+            elif legend == 'full':
+                label = name + ", " + ", ".join([k+"="+v for k,v in zip(df.index.names,m) if (v!='none') and (k!='name')]) # show all keys
+            else:
+                label = name + ", " + ", ".join([k+"="+v for k,v in zip(df.index.names,m) if (v!='none') and (k!='name') and (k in legend)]) # show subset of keys
+            
+            label = label if j+1 == len(score) else None # avoid duplicate labels in legend
+            
+            ax.plot(x,y, c=R.aes.get(name, R.aes['default'])['color'], label=label,
+                    marker=next(R.aes.get(name, R.aes['default']).get('marker_cycle')), 
+                    zorder=R.aes.get(name, R.aes['default']).get('zorder')
+                    )
+            
+            if sigma > 0:
+                ax.fill_between(x, y-sigma*y2, y+sigma*y2,
+                                color=R.aes.get(name, R.aes['default'])['color'],
+                                alpha=0.1, zorder=-10)
+            
+            # mark overall best
+            #if m == best_ind:
+            #    ax.scatter(best_x, df[s].max(), s=40, marker='o', c='k', zorder=100)
+                
+        if xaxis == 'lr':
+            ax.set_xlabel('Learning rate')
         else:
-            label = name + ", " + ", ".join([k+"="+v for k,v in zip(df.index.names,m) if (v!='none') and (k!='name') and (k in legend)]) # show subset of keys
-            
-           
-        ax.plot(x,y, c=R.aes.get(name, R.aes['default'])['color'], label=label,
-                marker=next(R.aes.get(name, R.aes['default']).get('marker_cycle')), 
-                zorder=R.aes.get(name, R.aes['default']).get('zorder')
-                )
-        
-        if sigma > 0:
-            ax.fill_between(x, y-sigma*y2, y+sigma*y2,
-                            color=R.aes.get(name, R.aes['default'])['color'],
-                            alpha=0.1, zorder=-10)
-        
-        # mark overall best
-        #if m == best_ind:
-        #    ax.scatter(best_x, df[s].max(), s=40, marker='o', c='k', zorder=100)
-            
-    if xaxis == 'lr':
-        ax.set_xlabel('Learning rate')
-    else:
-        ax.set_xlabel(xaxis)
+            ax.set_xlabel(xaxis)
 
-    if score in ['train_score', 'val_score']:
-        ax.set_ylim(0,1)    
-    elif score in ['train_loss', 'val_loss']:
-        ax.set_yscale('log')
+        if s in ['train_score', 'val_score']:
+            ax.set_ylim(0,1)    
+        elif s in ['train_loss', 'val_loss']:
+            ax.set_yscale('log')
 
-    ax.set_ylabel(score_names[score])
-    ax.set_xscale('log')
-    ax.grid(axis='y', lw=0.2, ls='--', zorder=-10)
+        ax.set_ylabel(score_names[s])
+        ax.set_xscale('log')
+        ax.grid(axis='y', lw=0.2, ls='--', zorder=-10)
+
+        # xticks only in last row
+        if j+1 < len(score):
+            ax.set_xlabel('')
+            ax.set_xticks([])
     
     if legend is not None:
         # legend has all specific opt arguments
@@ -157,12 +169,16 @@ def plot_stability(base_df, score='val_score', xaxis='lr', sigma=1, cutoff=None,
     if legend is not None:
         fig.subplots_adjust(top=0.75,bottom=0.125,left=0.14,right=0.97)
     else:
-        fig.subplots_adjust(top=0.805,bottom=0.155,left=0.145,right=0.98)
+        if len(score) > 1:
+            fig.subplots_adjust(top=0.935,bottom=0.084,left=0.16,right=0.96)
+        else:
+            fig.subplots_adjust(top=0.855,bottom=0.155,left=0.145,right=0.98)
+    
     # 0.805 for mnist
     #grouped.indices.keys()
 
     if save:
-        fig.savefig('output/plots/' + exp_id + f'/stability_{xaxis}_{score}.pdf')
+        fig.savefig('output/plots/' + exp_id + f"/stability_{xaxis}_{'_'.join(score)}.pdf")
     
     return fig
 
@@ -170,6 +186,9 @@ FIGSIZE = (4.8,3.2)
 
 fig = plot_stability(base_df, score='val_score', xaxis='lr', sigma=1, legend=None, cutoff=None, figsize=FIGSIZE, save=save)
 fig = plot_stability(base_df, score='train_loss', xaxis='lr', sigma=1, legend=None, cutoff=None, figsize=FIGSIZE, save=save)
+
+fig = plot_stability(base_df, score=['train_loss', 'val_score'], xaxis='lr', sigma=1, legend=None, cutoff=None, figsize=(4.8,6.4), save=save)
+
 
 #%% plots the adaptive step size
 ### THIS PLOT IS ONLY RELEVANT FOR METHODS WITH ADAPTIVE STEP SIZE
