@@ -74,7 +74,7 @@ class MomoAdam(torch.optim.Optimizer):
 
         return
 
-    def step(self, closure: LossClosure=None) -> OptFloat:
+    def step(self, closure: LossClosure=None, loss: torch.Tensor=None) -> OptFloat:
         """
         Performs a single optimization step.
 
@@ -83,13 +83,20 @@ class MomoAdam(torch.optim.Optimizer):
         closure : LossClosure, optional
             A callable that evaluates the model (possibly with backprop) and returns the loss, by default None.
 
+        loss : torch.tensor, optional
+            The loss tensor. Use this when the backward step has already been performed. By default None.
+            
         Returns
         -------
         (Stochastic) Loss function value.
         """
         
-        with torch.enable_grad():
-            loss = closure()
+        assert (closure is not None) or (loss is not None), "Either loss tensor or closure must be passed."
+        assert (closure is None) or (loss is None), "Pass either the loss tensor or the closure, not both."
+
+        if closure is not None:
+            with torch.enable_grad():
+                loss = closure()
         
         if len(self.param_groups) > 1:
             warnings.warn("More than one param group. step_size_list contains adaptive term of last group.")
