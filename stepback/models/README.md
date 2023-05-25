@@ -1,0 +1,20 @@
+# Models Overview
+
+In the config, the key ``'model'`` specifies which model should be trained. ``step-back`` currently has the following models implemented.
+
+In the below list, we first state the value for the key ``'model'`` and then give a short description. See [the main model script](main.py) for more details.
+
+* ``resnet20``, ``resnet32`` etc.: ResNet model. There is an option to deactivate batch norm by setting ``"model_kwargs": {"batch_norm": false}``. Compatible with the following datasets: ``'cifar10','cifar100'``.
+
+* ``vgg13``, ``vgg16`` etc.: VGG model. There is an option to deactivate batch norm by setting ``"model_kwargs": {"batch_norm": false}``. Compatible with the following datasets: ``'cifar10','cifar100'``.
+
+* ``resnet18-kuangliu``, etc.: ResNet model for Imagenet. The size of convolutional layers is slightly different to the ResNet models above. Compatible with the following datasets: ``'imagenet32'``.
+
+* ``mlp``: MLP with ReLU activations. Make sure to specify the dimension of the last layer (before loss function) with ``"model_kwargs": {"output_size": }``. More options can be specified via 
+``"model_kwargs": {"hidden_sizes": [128,64], "bias": true}``.
+Compatible with any dataset where input has only one dimension.
+
+* ``matrix_fac``: Matrix factorization with two layers. Input and output dimension are automatically inferred from the dataset. Compatible with following datasets: ``'synthetic_matrix_fac'``.
+
+* ``linear``: Linear model, no bias. By default, assumes that output is a scalar, otherwise specify with ``"model_kwargs": {"output_size": }``. Compatible with any dataset where input has only one dimension.
+

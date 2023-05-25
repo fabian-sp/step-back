@@ -105,24 +105,44 @@ class ResNet(nn.Module):
         return out
 
 
-def ResNet18(num_classes=10):
+def ResNet18(num_classes=1000):
     return ResNet(BasicBlock, [2, 2, 2, 2], num_classes=num_classes)
 
 
-def ResNet34():
-    return ResNet(BasicBlock, [3, 4, 6, 3])
+def ResNet34(num_classes=1000):
+    return ResNet(BasicBlock, [3, 4, 6, 3], num_classes=num_classes)
 
 
-def ResNet50():
-    return ResNet(Bottleneck, [3, 4, 6, 3])
+def ResNet50(num_classes=1000):
+    return ResNet(Bottleneck, [3, 4, 6, 3], num_classes=num_classes)
 
 
-def ResNet101():
-    return ResNet(Bottleneck, [3, 4, 23, 3])
+def ResNet101(num_classes=1000):
+    return ResNet(Bottleneck, [3, 4, 23, 3], num_classes=num_classes)
 
 
-def ResNet152():
-    return ResNet(Bottleneck, [3, 8, 36, 3])
+def ResNet152(num_classes=1000):
+    return ResNet(Bottleneck, [3, 8, 36, 3], num_classes=num_classes)
+
+
+def get_kuangliu_resnet(name, num_classes=1000):
+    
+    if name == 'resnet18-kuangliu':
+        m = ResNet18(num_classes=num_classes)
+
+    elif name == 'resnet34-kuangliu':
+        m = ResNet34(num_classes=num_classes)
+        
+    elif name == 'resnet50-kuangliu':
+        m = ResNet50(num_classes=num_classes)
+
+    elif name == 'resnet101-kuangliu':
+        m = ResNet101(num_classes=num_classes)
+    
+    elif name == 'resnet152-kuangliu':
+        m = ResNet152(num_classes=num_classes)
+    
+    return m
 
 
 def test():
