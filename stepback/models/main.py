@@ -47,7 +47,7 @@ def get_model(config: dict={}) -> torch.nn.Module:
     
     #======== Matrix completion =============
     elif name == 'matrix_completion':
-        assert len(config['_input_dim']) == 2, "Expecting input dimensionality of length 2."
+        assert len(config['_input_dim']) == 1, "Expecting input dimensionality of length 1."
         assert len(config['_output_dim']) == 1, "Expecting output dimensionality of length 1."
         
         if 'rank' not in kwargs.keys():
