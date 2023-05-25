@@ -5,27 +5,25 @@ import torch
 
 from stepback.base import Base
 
-
-# config = {"dataset": 'synthetic_matrix_fac',
-#           "dataset_kwargs": {'p': 10, 'q': 5, 'n_samples': 100},
-#           "model": 'matrix_fac',
-#           "loss_func": 'squared',
-#           "score_func": 'squared',
-#           "opt": {'name': 'momo', 'lr': 1., 'weight_decay': 0, 'lr_schedule': 'sqrt', 'bias_correction': False},
-#           "batch_size": 20,
-#           "max_epoch": 30,
+# config = {"dataset": "sensor",
+#           "model": "matrix_completion",
+#           "model_kwargs": {"dim": [130,720], "rank": 24},
+#           "loss_func": "squared",
+#           "score_func": "squared",
+#           "opt": {'name': 'sgd', 'lr': 1, 'weight_decay': 1e-4, 'lr_schedule': 'constant'},
+#           #"opt": {'name': 'momo', 'lr': 1, 'weight_decay': 1e-4, 'lr_schedule': 'constant'},
+#           "batch_size": 128,
+#           "max_epoch": 50,
 #           "run_id": 0}
 
-config = {"dataset": 'synthetic_linear',
-          "dataset_kwargs": {'p': 10, 'n_samples': 100},
-          "model": 'linear',
-          "loss_func": 'logistic',
-          "score_func": 'logistic_accuracy',
-          #"opt": {'name': 'sgd', 'lr': 1e-1,  'lr_schedule': 'sqrt'},
-          "opt": {'name': 'momo', 'lr': 1e-1,  'lr_schedule': 'sqrt', 
-                   'lb': 10,  'bias_correction': False},
-          "batch_size": 20,
-          "max_epoch": 10,
+config = {"dataset": "cifar10",
+          "model": "vit",
+          "loss_func": "cross_entropy",
+          "score_func": "cross_entropy_accuracy",
+          "opt": {'name': 'adamw', 'lr': 1e-3, 'weight_decay': 0.1, 'lr_schedule': 'sqrt'},
+          #"opt": {'name': 'momo', 'lr': 1, 'weight_decay': 1e-4, 'lr_schedule': 'constant'},
+          "batch_size": 128,
+          "max_epoch": 1,
           "run_id": 0}
 
 name = 'test'
@@ -39,4 +37,4 @@ B.setup()
 B.run()
 B.results
 
-B.save_checkpoint(path='output/checkp/')
+# B.save_checkpoint(path='output/checkp/')

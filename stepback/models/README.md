@@ -10,13 +10,13 @@ In the below list, we first state the value for the key ``'model'`` and then giv
 
 * ``resnet18-kuangliu``, etc.: ResNet model for Imagenet. The size of convolutional layers is slightly different to the ResNet models above. Compatible with the following datasets: ``'imagenet32'``.
 
-* ``mlp``: MLP with ReLU activations. Make sure to specify the dimension of the last layer (before loss function) with ``"model_kwargs": {"output_size": }``. More options can be specified via 
+* ``mlp``: MLP with ReLU activations. Make sure to specify the dimension of the last layer (before loss function) with ``"model_kwargs": {"output_size": }`` (e.g. use number of classes for classification). More options can be specified via 
 ``"model_kwargs": {"hidden_sizes": [128,64], "bias": true}``.
-Compatible with any dataset where input has only one dimension.
+Compatible with any dataset where one input sample is a 1-D array.
 
 * ``matrix_fac``: Matrix factorization with two layers. Input and output dimension are automatically inferred from the dataset. Compatible with following datasets: ``'synthetic_matrix_fac'``.
 
 * ``matrix_completion``: Matrix completion with two layers. Matrix dimension (and rank) have to be specified in ``"model_kwargs": {"dim": (dim1,dim2), "rank": }``. Compatible with following datasets: ``'sensor'``.
 
-* ``linear``: Linear model, no bias. By default, assumes that output is a scalar, otherwise specify with ``"model_kwargs": {"output_size": }``. Compatible with any dataset where input has only one dimension.
+* ``linear``: Linear model, no bias. By default, assumes that output is a scalar, otherwise specify with ``"model_kwargs": {"output_size": }``. Compatible with any dataset where one input sample is a 1-D array.
 
