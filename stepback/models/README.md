@@ -16,5 +16,7 @@ Compatible with any dataset where input has only one dimension.
 
 * ``matrix_fac``: Matrix factorization with two layers. Input and output dimension are automatically inferred from the dataset. Compatible with following datasets: ``'synthetic_matrix_fac'``.
 
+* ``matrix_completion``: Matrix completion with two layers. Matrix dimension (and rank) have to be specified in ``"model_kwargs": {"dim": (dim1,dim2), "rank": }``. Compatible with following datasets: ``'sensor'``.
+
 * ``linear``: Linear model, no bias. By default, assumes that output is a scalar, otherwise specify with ``"model_kwargs": {"output_size": }``. Compatible with any dataset where input has only one dimension.
 

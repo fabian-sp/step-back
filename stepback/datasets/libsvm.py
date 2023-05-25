@@ -6,17 +6,17 @@ import torch
 import numpy as np
 import urllib
 
-_BASE_SEED = 12345678
+SPLIT_SEED = 12345678
 
 LIBSVM_URL = "https://www.csie.ntu.edu.tw/~cjlin/libsvmtools/datasets/binary/"
 
 # mapping libsvm names to download links
-LIBSVM_NAME_MAP = {"rcv1"       : "rcv1_train.binary.bz2",
-                      "mushrooms"  : "mushrooms",
-                      "a1a"  : "a1a",
-                      "ijcnn"      : "ijcnn1.tr.bz2", 
-                      "breast-cancer": "breast-cancer_scale"
-                      }
+LIBSVM_NAME_MAP = {"rcv1"           : "rcv1_train.binary.bz2",
+                    "mushrooms"     : "mushrooms",
+                    "a1a"           : "a1a",
+                    "ijcnn"         : "ijcnn1.tr.bz2", 
+                    "breast-cancer" : "breast-cancer_scale"
+                    }
 
 
 def get_libsvm(split, name, path, train_size=0.8):
@@ -35,7 +35,8 @@ def get_libsvm(split, name, path, train_size=0.8):
     # use fixed seed for train/val split
     X_train, X_test, Y_train, Y_test = train_test_split(X, y, 
                                                         train_size=train_size, 
-                                                        shuffle=True, random_state=_BASE_SEED)
+                                                        shuffle=True, 
+                                                        random_state=SPLIT_SEED)
     
     if split == 'train':
         X = torch.FloatTensor(X_train.toarray())

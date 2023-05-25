@@ -1,7 +1,7 @@
 import torch
 import warnings
 
-from .basic_models import MLP, MatrixFac
+from .basic_models import MLP, MatrixFac, MatrixComplete
 from .vgg import get_cifar_vgg
 from .resnet import get_cifar_resnet
 from .kuangliu_resnet import get_kuangliu_resnet
@@ -44,6 +44,16 @@ def get_model(config: dict={}) -> torch.nn.Module:
             warnings.warn(f'No rank dimension specified. Using max of input and output size, equal to {max(input_size, output_size)}')
         
         model = MatrixFac(input_size=input_size, output_size=output_size, rank=kwargs.get('rank', max(input_size, output_size)))
+    
+    #======== Matrix completion =============
+    elif name == 'matrix_completion':
+        assert len(config['_input_dim']) == 2, "Expecting input dimensionality of length 2."
+        assert len(config['_output_dim']) == 1, "Expecting output dimensionality of length 1."
+        
+        if 'rank' not in kwargs.keys():
+            warnings.warn(f'No rank dimension specified. Using default of 10.')
+        
+        model = MatrixComplete(dim1=kwargs['dim'][0], dim2=kwargs['dim'][1], rank=kwargs.get('rank', 10))
     
     #======== VGG models =============
     elif name in ['vgg11', 'vgg13', 'vgg16', 'vgg19']:

@@ -8,6 +8,7 @@ from .cifar import get_cifar10, get_cifar100
 from .mnist import get_mnist
 from .synthetic import get_synthetic_matrix_fac, get_synthetic_linear
 from .libsvm import LIBSVM_NAME_MAP, get_libsvm
+from .sensor import get_sensor
 from .imagenet32 import get_imagenet32
 
 class DataClass:
@@ -50,6 +51,9 @@ def get_dataset(config: dict, split: str, seed: int, path: str) -> DataClass:
         assert all([k in kwargs.keys() for k in ['p', 'q', 'n_samples']]), "For synthetic dataset, dimensions and number of samples need to be specified in config['dataset_kwargs]']."
         ds = get_synthetic_matrix_fac(split=split, seed=seed,
                                       **kwargs)
+    elif name == 'sensor':
+        ds = get_sensor(split=split, path=path)
+
     elif name == 'synthetic_linear':
         assert all([k in kwargs.keys() for k in ['p', 'n_samples']]), "For synthetic dataset, dimensions and number of samples need to be specified in config['dataset_kwargs]']."
         
