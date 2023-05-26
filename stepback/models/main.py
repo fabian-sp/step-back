@@ -85,17 +85,7 @@ def get_model(config: dict={}) -> torch.nn.Module:
      #======== Vision transformer =============
     elif name == 'vit':
         num_classes = 10 if config['dataset'] == 'cifar10' else 100
-        model = ViT(image_size = 32,
-                    patch_size = 16,
-                    num_classes = num_classes,
-                    dim = 1024,
-                    depth = 6,
-                    heads = 16,
-                    mlp_dim = 2048,
-                    dropout = 0,
-                    emb_dropout = 0
-                    )
-     
+        model = ViT(image_size = 32, num_classes = num_classes,**kwargs)   
     else:
         raise KeyError(f"Unknown model option {name}.")   
     
