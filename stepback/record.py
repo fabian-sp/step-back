@@ -169,13 +169,14 @@ class Record:
         else:
             fig = ax.get_figure()
 
+        names_legend = list()
         if legend:
             alpha = 1
             markersize = 6
         else:
             alpha = .65
             markersize = 4
-            names_legend = list()
+            
             
         for m in df.id.unique():
             this_df = df[df.id==m]
