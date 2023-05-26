@@ -1,6 +1,6 @@
 {   "dataset": "cifar10",        
     "model": "vit",
-    "model_kwargs": {"patch": 16},
+    "model_kwargs": {"patch_size": 16},
     "loss_func": "cross_entropy",
     "score_func": "cross_entropy_accuracy",
     "opt": [{"name": "adamw", "lr": 1e-3, "weight_decay": 1e-4, "lr_schedule": "constant"},
