@@ -5,7 +5,7 @@ from .basic_models import MLP, MatrixFac, MatrixComplete
 from .vgg import get_cifar_vgg
 from .resnet import get_cifar_resnet
 from .kuangliu_resnet import get_kuangliu_resnet
-from .vit import ViT, SimpleViT
+from .vit import ViT, SimpleViT, swin_t
 
 def get_model(config: dict={}) -> torch.nn.Module:
     """
@@ -82,10 +82,17 @@ def get_model(config: dict={}) -> torch.nn.Module:
         else:
             raise KeyError(f"Model {name} is not implemented yet for dataset {config['dataset']}.")
     
-     #======== Vision transformer =============
+    # ======== Vision transformer =============
     elif name == 'vit':
         num_classes = 10 if config['dataset'] == 'cifar10' else 100
-        model = ViT(image_size = 32, num_classes = num_classes,**kwargs)   
+        model = ViT(image_size=32, num_classes=num_classes,**kwargs)   
+    
+    elif name == 'swint':
+        num_classes = 10 if config['dataset'] == 'cifar10' else 100
+        model = swin_t(num_classes=num_classes,
+                       downscaling_factors=(2,2,2,1),
+                       **kwargs)   
+    
     else:
         raise KeyError(f"Unknown model option {name}.")   
     
