@@ -10,7 +10,7 @@ import os
 
 from sklearn.linear_model import Ridge, LogisticRegression
 
-from .log import load_json, save_json
+from .log import load_json, save_json, Container
 
 #%%
 """
@@ -29,7 +29,7 @@ def get_output_filenames(exp_id, output_dir='output/'):
 
     return exp_files
 
-def filter_output_file(exp_id, exp_filter=dict(), opt_filter=dict(), fname=None, output_dir='output/'):
+def filter_output_file(exp_id, exp_filter=dict(), opt_filter=dict(), fname=None, output_dir='output/', as_json=True):
     """Filter ouput file. Deletes all results that are specified by exp_filter and opt_filter.
     Example:
         opt_filter = {'name': 'adam'} # deletes all adam runs
@@ -38,11 +38,12 @@ def filter_output_file(exp_id, exp_filter=dict(), opt_filter=dict(), fname=None,
     CAUTION: This will overwrite the file if not fname is specified. Otherwise, it will write the filtered output in fname.
     """
     print(f"Reading from {output_dir+exp_id}.")
-    data = load_json(exp_id, output_dir)
-    print(f"Original file has {len(data)} entries.")
+    C = Container(name=exp_id, output_dir=output_dir, as_json=as_json)
+    C.load() # load data
+    print(f"Original file has {len(C.data)} entries.")
     new_data = list()
 
-    for d in data:
+    for d in C.data:
         DROP = False
         conf = copy.deepcopy(d['config'])
 
@@ -61,8 +62,26 @@ def filter_output_file(exp_id, exp_filter=dict(), opt_filter=dict(), fname=None,
             print(conf)
 
     NEW_FNAME = exp_id if fname is None else fname
-    save_json(NEW_FNAME, new_data, output_dir)  
-    print(f"New file has {len(new_data)} entries.")       
+    
+    new = Container(name=NEW_FNAME, output_dir=output_dir, as_json=as_json)
+    new.data = new_data
+    #save_json(NEW_FNAME, new_data, output_dir)  
+    print(f"New file has {len(new_data)} entries.")  
+    new.store()     
+
+    return
+
+def merge_output_files(exp_id_list, fname, output_dir='output/', as_json=True):
+
+    merged = Container(name=fname, output_dir=output_dir, as_json=as_json)
+
+    for _e in exp_id_list:
+        C = Container(name=_e, output_dir=output_dir, as_json=as_json)
+        C.load() # load data
+        merged.data += C.data # append
+
+    print(f"New output file has {len(merged.data)} entries.")
+    merged.store()
 
     return
 
