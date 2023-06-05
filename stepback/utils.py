@@ -10,7 +10,7 @@ import os
 
 from sklearn.linear_model import Ridge, LogisticRegression
 
-from .log import load_json, save_json, Container
+from .log import Container
 
 #%%
 """
@@ -65,14 +65,14 @@ def filter_output_file(exp_id, exp_filter=dict(), opt_filter=dict(), fname=None,
     
     new = Container(name=NEW_FNAME, output_dir=output_dir, as_json=as_json)
     new.data = new_data
-    #save_json(NEW_FNAME, new_data, output_dir)  
+ 
     print(f"New file has {len(new_data)} entries.")  
     new.store()     
 
     return
 
 def merge_output_files(exp_id_list, fname, output_dir='output/', as_json=True):
-
+    """ Merges output files from a list of exp_id into a new file (with name fname)."""
     merged = Container(name=fname, output_dir=output_dir, as_json=as_json)
 
     for _e in exp_id_list:
