@@ -49,10 +49,10 @@ best = base_df[base_df.epoch==base_df.epoch.max()].groupby('name')['val_score'].
 ixx = base_df.id[best.index.levels[1]]
 df1 = base_df.loc[base_df.id.isin(ixx),:]
 
-y0 = 0.3 if exp_id=='cifar100_resnet110' else 0.6
+y0 = 0.3 if exp_id=='cifar100_resnet110' else 0.4 if exp_id=='cifar10_vit' else 0.6
 
 fig = R.plot_metric(df=df1, s='val_score', ylim=(y0, 1.05*df1.val_score.max()), log_scale=False, figsize=(4,3.5), legend=False)
-fig.subplots_adjust(top=0.975,bottom=0.16,left=0.155,right=0.975)
+fig.subplots_adjust(top=0.975,bottom=0.16,left=0.16,right=0.975)
 if save:
     fig.savefig('output/plots/' + exp_id + f'/all_val_score.pdf')
 
@@ -224,10 +224,11 @@ def plot_single_step_sizes(this_df, ax):
     
     # plot adaptive term
     ax.scatter(upsampled, all_s, c=R.aes[method]['color'], s=5, alpha=0.25)
+    markevery = (5,7) if this_df.epoch.max() <= 100 else (5,20)
     ax.plot(this_df.epoch, all_s_median, 
             c='gainsboro', 
             marker='o', 
-            markevery=(5,7),
+            markevery=markevery,
             markerfacecolor=R.aes[method]['color'], 
             markeredgecolor='gainsboro', 
             lw=2.5,
@@ -334,6 +335,8 @@ elif exp_id == 'mnist_mlp':
 elif exp_id == 'cifar100_resnet110':
     plot_step_sizes(R, method='momo', grid=(3,2), start=1, stop=7, save=save)
     plot_step_sizes(R, method='momo-adam', grid=(3,2), start=1, stop=7, save=save)
+elif exp_id == 'cifar10_vit':
+    plot_step_sizes(R, method='momo-adam', grid=(2,2), start=None, stop=None, save=save)
 
 
 # %%
