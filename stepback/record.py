@@ -178,7 +178,7 @@ class Record:
         if 'train_epoch_time' in db.columns:
             db = db.drop(columns=['train_epoch_time', 'train_epoch_time_std'])
 
-        db.to_csv(db_dir+name+'.csv')
+        db.to_csv(db_dir+name+'.csv', index=False)
 
         return
 
