@@ -1,8 +1,10 @@
 """
-Test Base class.
+Debug Base class.
 """
 import torch
+import os
 
+os.chdir('..')
 from stepback.base import Base
 
 # config = {"dataset": "sensor",
