@@ -167,10 +167,13 @@ class Record:
         """
         
         if df is None:
-            df = self.base_df
+            db = self.base_df.copy()
+        else:
+            db = df.copy()
         
-        db = df.copy()
-        
+        # sort
+        db = db.sort_values(['id', 'epoch'])
+
         # train time depends on hardware and is not meaningful
         if 'train_epoch_time' in db.columns:
             db = db.drop(columns=['train_epoch_time', 'train_epoch_time_std'])

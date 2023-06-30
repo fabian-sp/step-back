@@ -1,13 +1,13 @@
 import torch
 from torch.optim.lr_scheduler import LambdaLR, StepLR
 import warnings
+from typing import Tuple
 
 from .momo import Momo
-
 from .momo_adam import MomoAdam
 from .sps import SPS
 
-def get_optimizer(opt_config: dict) -> (torch.optim.Optimizer, dict):
+def get_optimizer(opt_config: dict) -> Tuple[torch.optim.Optimizer, dict]:
     """
     Main function mapping opt configs to an instance of torch.optim.Optimizer and a dict of hyperparameter arguments (lr, weight_decay,..).  
     
