@@ -5,7 +5,7 @@ from .basic_models import MLP, MatrixFac, MatrixComplete
 from .vgg import get_cifar_vgg
 from .resnet import get_cifar_resnet
 from .kuangliu_resnet import get_kuangliu_resnet
-from .vit import ViT, SimpleViT, swin_t
+from .vit import ViT, swin_t
 
 def get_model(config: dict={}) -> torch.nn.Module:
     """

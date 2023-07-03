@@ -13,6 +13,22 @@ or in order to install in developer mode via
 
     python setup.py clean --all develop clean --all
 
+## Results
+
+For the experiments we ran, we provide the code that generated the results (i.e. the model, dataset preprocessing and training setup) as well as the actual scores at the end of each epoch. An overview and all links are given in the table below.
+
+| ID  | Model  | Dataset  | Results  |   |
+|---|---|---|---|---|
+| cifar100_resnet110  | ResNet101 [code](stepback/models/resnet.py)  | Cifar100 [code](stepback/datasets/cifar.py) | [record](output/records/cifar100_resnet110.csv)  |   |
+| cifar10_resnet20  | ResNet20 [code](stepback/models/resnet.py) | Cifar10 [code](stepback/datasets/cifar.py) | [record](output/records/cifar10_resnet20.csv)  |   |
+| cifar10_vgg16  | VGG16 [code](stepback/models/vgg.py) | Cifar10 [code](stepback/datasets/cifar.py) | [record](output/records/cifar10_vgg16.csv)  |   |
+| cifar10_vit  | Small ViT [code](stepback/models/vit/vit.py) | Cifar10 [code](stepback/datasets/cifar.py) | [record](output/records/cifar10_vit.csv)  |   |
+| mnist_mlp  |  MLP (3-layer, ReLU) [code](stepback/models/basic_models.py) | MNIST [code](stepback/datasets/mnist.py) | [record](output/records/mnist_mlp.csv)  |   |
+
+
+For each experiment, the exact config can also be found under `configs/` where the files are named according to the ID (and possibly an integer suffix).
+
+
 ## How to use
 
 Any experiment needs a config file, see e.g. `configs/test1.json`.
@@ -25,6 +41,7 @@ Any experiment needs a config file, see e.g. `configs/test1.json`.
 You can run an experiment with `run.py` or with `run.ipynb`.
 
 The output is stored in `output` if no other directory is specified.
+
 
 ## Output structure
 
