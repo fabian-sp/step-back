@@ -152,7 +152,7 @@ class Record:
     #============ DATABASE =================================
     #=======================================================
 
-    def to_csv(self, name: str, df: pd.DataFrame=None, db_dir: str='output/records/'):
+    def to_csv(self, name: str, df: pd.DataFrame=None, db_dir: str='stepback/records/'):
         """Create a Record csv for an experiment.
 
         Parameters
