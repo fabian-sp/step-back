@@ -24,6 +24,10 @@ def get_output_filenames(exp_id, output_dir='output/'):
     all_files = os.listdir(output_dir)
     exp_files = [f for f in all_files if (f == exp_id+'.json') or (exp_id+'-' in f)] 
 
+    # sorting
+    exp_files.sort() # first sort integers
+    exp_files.sort(key=len) # no integer file first
+
     # remove .json from string
     exp_files = [f.split('.json')[0] for f in exp_files]
 
