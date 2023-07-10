@@ -1,6 +1,8 @@
+<h1 align="center">
 <img src="data/logo2.svg"
      alt="Step-back logo"
-     width="500" />
+     width="600" />
+</h1><br>
 
 Package for running and benchmarking Pytorch optimizers.
 
