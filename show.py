@@ -94,7 +94,7 @@ def plot_stability(base_df, score='val_score', xaxis='lr', sigma=1, cutoff=None,
         # filter epochs
         sub_df = base_df[(base_df.epoch >= cutoff_epoch[0]) & (base_df.epoch <= cutoff_epoch[1])] 
         # group by all id_cols 
-        df = sub_df.groupby(list(id_df.columns))[s, s+'_std'].mean() # use dropna=False if we would have nan values
+        df = sub_df.groupby(list(id_df.columns))[[s, s+'_std']].mean() # use dropna=False if we would have nan values
         # move xaxis out of grouping
         df = df.reset_index(level=xaxis)
         # make xaxis float
