@@ -1,8 +1,32 @@
+"""
+Loss and accuracy function objects.
+
+NOTE:
+    
+    * We generally use reduction='mean' for all loss functions.
+    * When using the squared loss (MSELoss), we flatten output and target. 
+      Due to reduction='mean', this computes the avergae error, per tensor entry and over the batch.
+      E.g. with batch size b and output dimension m, the loss is compute as 1/(b*m) sum (output-target)^2.
+      Actually, this is also what Pytorch does internally.
+       
+"""
 import torch 
 
 
 class Loss:
     def __init__(self, name : str, backwards: bool=False):
+        """A loss function object. Can be used either as training loss or as evaluation loss/metric.
+        
+        The loss can be computed by ```self.compute(out, targets)```.
+
+        Parameters
+        ----------
+        name : str
+            The name of the loss. See below for options.
+        backwards : bool, optional
+            Whether backpropagation is done in self.compute. 
+            Should be only set True for the training losss object. By default False.
+        """
         self.name = name
         self.backwards = backwards
         
