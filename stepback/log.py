@@ -37,7 +37,7 @@ class Container:
         
         self.data = []
                
-        if not os.path.exists(self.output_dir):
+        if (not os.path.exists(self.output_dir)) and (output_dir != ''):
             os.mkdir(self.output_dir)
         
     def load(self):

@@ -1,10 +1,11 @@
 import torch
 import warnings
 
-from .basic_models import MLP, MatrixFac
-from .vgg import get_cifar_vgg, get_imagenet32_vgg
-from .resnet import get_cifar_resnet, get_imagenet32_resnet
-from .kuangliu_resnet import ResNet18
+from .basic_models import MLP, MatrixFac, MatrixComplete
+from .vgg import get_cifar_vgg
+from .resnet import get_cifar_resnet
+from .kuangliu_resnet import get_kuangliu_resnet
+from .vit import ViT, swin_t
 
 def get_model(config: dict={}) -> torch.nn.Module:
     """
@@ -45,6 +46,16 @@ def get_model(config: dict={}) -> torch.nn.Module:
         
         model = MatrixFac(input_size=input_size, output_size=output_size, rank=kwargs.get('rank', max(input_size, output_size)))
     
+    #======== Matrix completion =============
+    elif name == 'matrix_completion':
+        assert len(config['_input_dim']) == 1, "Expecting input dimensionality of length 1."
+        assert len(config['_output_dim']) == 1, "Expecting output dimensionality of length 1."
+        
+        if 'rank' not in kwargs.keys():
+            warnings.warn(f'No rank dimension specified. Using default of 10.')
+        
+        model = MatrixComplete(dim1=kwargs['dim'][0], dim2=kwargs['dim'][1], rank=kwargs.get('rank', 10))
+    
     #======== VGG models =============
     elif name in ['vgg11', 'vgg13', 'vgg16', 'vgg19']:
         
@@ -65,12 +76,23 @@ def get_model(config: dict={}) -> torch.nn.Module:
         else:
             raise KeyError(f"Model {name} is not implemented yet for dataset {config['dataset']}.")   
     
-    elif name in ['resnet18-kuangliu']:
+    elif name in ['resnet18-kuangliu', 'resnet34-kuangliu', 'resnet50-kuangliu', 'resnet101-kuangliu', 'resnet152-kuangliu']:
         if config['dataset'] == 'imagenet32':
-            model = ResNet18(num_classes=1000)
+            model = get_kuangliu_resnet(name, num_classes=1000)
         else:
             raise KeyError(f"Model {name} is not implemented yet for dataset {config['dataset']}.")
-        
+    
+    # ======== Vision transformer =============
+    elif name == 'vit':
+        num_classes = 10 if config['dataset'] == 'cifar10' else 100
+        model = ViT(image_size=32, num_classes=num_classes,**kwargs)   
+    
+    elif name == 'swint':
+        num_classes = 10 if config['dataset'] == 'cifar10' else 100
+        model = swin_t(num_classes=num_classes,
+                       downscaling_factors=(2,2,2,1),
+                       **kwargs)   
+    
     else:
         raise KeyError(f"Unknown model option {name}.")   
     

@@ -1,0 +1,14 @@
+{   "dataset": "sensor",
+    "model": "matrix_completion",
+    "model_kwargs": {"dim": [130,720], "rank": 24},
+    "loss_func": "squared",
+    "score_func": "squared",
+    "opt": [{"name": "momo", "lr": [1e-3,1e-2,1e-1,1,10], "beta": 0.9, "weight_decay": 1e-4, "lr_schedule": "constant"},
+            {"name": "momo-adam", "lr": [1e-4,1e-3,1e-2,1e-1,1], "weight_decay": 1e-4, "lr_schedule": "constant"},
+            {"name": "sgd-m", "lr": [1e-3,1e-2,1e-1,1,10], "momentum": 0.9, "weight_decay": 1e-4, "lr_schedule": "constant"},
+            {"name": "adam", "lr": [1e-4,1e-3,1e-2,1e-1,1], "weight_decay": 1e-4, "lr_schedule": "constant"}
+            ],
+    "batch_size": 128,
+    "max_epoch": 100,
+    "n_runs": 3 
+}

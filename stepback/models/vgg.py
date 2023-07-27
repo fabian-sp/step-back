@@ -82,6 +82,6 @@ def get_cifar_vgg(name, batch_norm=False, num_classes=10):
     m = _get_vgg(name, batch_norm, num_classes)
     return m
 
-def get_imagenet32_vgg(name, batch_norm=False):
-    m = _get_vgg(name, batch_norm, num_classes=1000)
-    return m
+# def get_imagenet32_vgg(name, batch_norm=False):
+#     m = _get_vgg(name, batch_norm, num_classes=1000)
+#     return m

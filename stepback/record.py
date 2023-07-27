@@ -149,6 +149,39 @@ class Record:
         
         return df
     
+    #============ DATABASE =================================
+    #=======================================================
+
+    def to_csv(self, name: str, df: pd.DataFrame=None, db_dir: str='stepback/records/'):
+        """Create a Record csv for an experiment.
+
+        Parameters
+        ----------
+        name : str
+            name of csv file, recommended to be identical to ```exp_id```
+        df : pd.DataFrame, optional
+            Dataframe to store. By default uses ```self.base_df```.
+        db_dir : str, optional
+            directory for storing the csv, by default 'output/records/'.
+
+        """
+        
+        if df is None:
+            db = self.base_df.copy()
+        else:
+            db = df.copy()
+        
+        # sort
+        db = db.sort_values(['id', 'epoch'])
+
+        # train time depends on hardware and is not meaningful
+        if 'train_epoch_time' in db.columns:
+            db = db.drop(columns=['train_epoch_time', 'train_epoch_time_std'])
+
+        db.to_csv(db_dir+name+'.csv', index=False)
+
+        return
+
     #============ PLOTTING =================================
     #=======================================================
     def _reset_marker_cycle(self):
@@ -169,13 +202,14 @@ class Record:
         else:
             fig = ax.get_figure()
 
+        names_legend = list()
         if legend:
             alpha = 1
             markersize = 6
         else:
             alpha = .65
             markersize = 4
-            names_legend = list()
+            
             
         for m in df.id.unique():
             this_df = df[df.id==m]

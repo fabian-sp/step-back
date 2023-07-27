@@ -4,5 +4,6 @@ scikit-learn
 pandas
 numpy
 matplotlib
-scipy
+seaborn
 tqdm
+einops

@@ -151,10 +151,10 @@ def get_cifar_resnet(name, num_classes, batch_norm=True):
     m = _get_resnet(name, num_classes, batch_norm)
     return m
 
-def get_imagenet32_resnet(name, num_classes, batch_norm=True):
-    assert num_classes in [1000]
-    m = _get_resnet(name, num_classes, batch_norm)
-    return m
+# def get_imagenet32_resnet(name, num_classes, batch_norm=True):
+#     assert num_classes in [1000]
+#     m = _get_resnet(name, num_classes, batch_norm)
+#     return m
 
 
 def test(net):
