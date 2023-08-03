@@ -6,6 +6,8 @@ from typing import Tuple
 from .momo import Momo
 from .momo_adam import MomoAdam
 from .sps import SPS
+from .adabound import AdaBoundW
+from .adabelief import AdaBelief
 
 def get_optimizer(opt_config: dict) -> Tuple[torch.optim.Optimizer, dict]:
     """
@@ -115,6 +117,29 @@ def get_optimizer(opt_config: dict) -> Tuple[torch.optim.Optimizer, dict]:
                   'lb': opt_config.get('lb', 0.),
                   'prox': True
                   }
+    
+    elif name == 'adabound':
+        opt_obj = AdaBoundW
+        if opt_config.get('lr_schedule', 'constant'):
+            final_lr = opt_config.get('lr', 1e-3) # constant lr --> do not use final_lr argument
+        else:
+            final_lr = 0.1 # otherwise use default
+
+        hyperp = {'lr': opt_config.get('lr', 1e-3),
+                  'weight_decay': opt_config.get('weight_decay', 0),
+                  'betas': opt_config.get('betas', (0.9, 0.999)),
+                  'eps': opt_config.get('eps', 1e-8),
+                  'final_lr': final_lr
+                  }
+
+    elif name == 'adabelief':
+        opt_obj = AdaBelief
+        hyperp = {'lr': opt_config.get('lr', 1e-3),
+                  'weight_decay': opt_config.get('weight_decay', 0),
+                  'betas': opt_config.get('betas', (0.9, 0.999)),
+                  'eps': opt_config.get('eps', 1e-16),
+                  }
+
     else:
         raise KeyError(f"Unknown optimizer name {name}.")
         
@@ -141,7 +166,7 @@ def get_scheduler(config: dict, opt: torch.optim.Optimizer) -> torch.optim.lr_sc
         
     elif name == 'exponential':
         # TODO: allow arguments
-        scheduler = StepLR(opt, step_size=50, gamma=0.5)
+        scheduler = StepLR(opt, step_size=60, gamma=0.5)
         
     else:
         raise ValueError(f"Unknown learning rate schedule name {name}.")
