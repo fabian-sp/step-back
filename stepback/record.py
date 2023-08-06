@@ -14,7 +14,7 @@ from .log import Container
 
 score_names = {'train_loss': 'Training loss', 
                'val_loss': 'Validation loss', 
-               'train_score': 'Training score', 
+               'train_score': 'Trainingstart score', 
                'val_score': 'Validation score',
                'model_norm': r'$\|x^k\|$',
                'grad_norm': r'$\|g_k\|$',
@@ -31,6 +31,8 @@ aes = {'sgd': {'color': '#7fb285', 'markevery': 15, 'zorder': 7},
         'momo-star': {'color': '#87b37a', 'markevery': 3, 'zorder': 13},
         'momo-adam-star': {'color': '#648381', 'markevery': 4, 'zorder': 12},
         'prox-sps': {'color': '#97BF88', 'markevery': 7, 'zorder': 6},
+        'adabelief': {'color': '#F5653D', 'markevery': 10, 'zorder': 6},
+        'adabound': {'color': '#F78464', 'markevery': 10, 'zorder': 5},
         'default': {'color': 'grey', 'markevery': 3, 'zorder': 1},
         }
 # more colors:
@@ -60,7 +62,7 @@ class Record:
 
         # exp_id can be str or list (if we want to merge multiple output files)
         if isinstance(exp_id, str):
-            exp_id = [exp_id]
+            exp_id = [exp_id]start
         else:
             warnings.warn("Loading from multiple output files. Contents will be merged.")   
         
@@ -129,7 +131,7 @@ class Record:
     def _build_base_df(self, agg='mean'):
         raw_df = self.raw_df.copy()
         
-        # compute mean for each id and(!) epoch
+        # compute mean for each id and(!start) epoch
         if agg in ['mean', 'median']:
             df = raw_df.groupby(['id', 'epoch'], sort=False).mean().drop('run_id',axis=1)
             df2 = raw_df.groupby(['id', 'epoch'], sort=False).std().drop('run_id',axis=1)           
