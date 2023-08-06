@@ -120,16 +120,12 @@ def get_optimizer(opt_config: dict) -> Tuple[torch.optim.Optimizer, dict]:
     
     elif name == 'adabound':
         opt_obj = AdaBoundW
-        if opt_config.get('lr_schedule', 'constant'):
-            final_lr = opt_config.get('lr', 1e-3) # constant lr --> do not use final_lr argument
-        else:
-            final_lr = 0.1 # otherwise use default
-
+        
         hyperp = {'lr': opt_config.get('lr', 1e-3),
                   'weight_decay': opt_config.get('weight_decay', 0),
                   'betas': opt_config.get('betas', (0.9, 0.999)),
                   'eps': opt_config.get('eps', 1e-8),
-                  'final_lr': final_lr
+                  'final_lr': opt_config.get('final_lr', 0.1)
                   }
 
     elif name == 'adabelief':
@@ -164,9 +160,11 @@ def get_scheduler(config: dict, opt: torch.optim.Optimizer) -> torch.optim.lr_sc
         lr_fun = lambda epoch: (epoch+1)**(-1/2) # this value is multiplied with initial lr
         scheduler = LambdaLR(opt, lr_lambda=lr_fun)
         
-    elif name == 'exponential':
-        # TODO: allow arguments
-        scheduler = StepLR(opt, step_size=60, gamma=0.5)
+    elif 'exponential' in name:
+        # use sth like 'exponential_60_0.5': decay by factor 0.5 every 60 epochs
+        step_size = int(name.split('_')[1])
+        gamma = float(name.split('_')[2])
+        scheduler = StepLR(opt, step_size=step_size, gamma=gamma)
         
     else:
         raise ValueError(f"Unknown learning rate schedule name {name}.")
