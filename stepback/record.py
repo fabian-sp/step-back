@@ -62,7 +62,7 @@ class Record:
 
         # exp_id can be str or list (if we want to merge multiple output files)
         if isinstance(exp_id, str):
-            exp_id = [exp_id]start
+            exp_id = [exp_id]
         else:
             warnings.warn("Loading from multiple output files. Contents will be merged.")   
         
@@ -131,7 +131,7 @@ class Record:
     def _build_base_df(self, agg='mean'):
         raw_df = self.raw_df.copy()
         
-        # compute mean for each id and(!start) epoch
+        # compute mean for each id and(!) epoch
         if agg in ['mean', 'median']:
             df = raw_df.groupby(['id', 'epoch'], sort=False).mean().drop('run_id',axis=1)
             df2 = raw_df.groupby(['id', 'epoch'], sort=False).std().drop('run_id',axis=1)           
