@@ -228,7 +228,7 @@ class Base:
         """
         
         # create temporary DataLoader
-        dl = torch.utils.data.DataLoader(dataset, drop_last=True, 
+        dl = torch.utils.data.DataLoader(dataset, drop_last=False, 
                                          batch_size=self.config['batch_size'])
         pbar = tqdm.tqdm(dl)
         
