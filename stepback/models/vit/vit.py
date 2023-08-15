@@ -6,8 +6,12 @@ With minor adaptation,this code is copied from : https://github.com/lucidrains/v
 import torch
 from torch import nn
 
-from einops import rearrange, repeat
-from einops.layers.torch import Rearrange
+try:
+    from einops import rearrange, repeat
+    from einops.layers.torch import Rearrange
+except ImportError:
+    print("Please install einops if you want to use ViT: pip install einops")
+
 
 # helpers
 def pair(t):

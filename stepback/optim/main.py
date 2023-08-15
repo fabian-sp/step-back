@@ -141,7 +141,9 @@ def get_scheduler(config: dict, opt: torch.optim.Optimizer) -> torch.optim.lr_sc
         
     elif name == 'exponential':
         # TODO: allow arguments
-        scheduler = StepLR(opt, step_size=50, gamma=0.5)
+        step_size = config.get('lr_decay_epoch', 50)
+        gamma = config.get('lr_decay', 0.5)
+        scheduler = StepLR(opt, step_size=step_size, gamma=gamma)
         
     else:
         raise ValueError(f"Unknown learning rate schedule name {name}.")

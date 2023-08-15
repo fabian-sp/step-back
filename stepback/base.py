@@ -16,7 +16,7 @@ from .metrics import Loss
 from .utils import l2_norm, grad_norm, ridge_opt_value, logreg_opt_value
 
 class Base:
-    def __init__(self, name: str, config: dict, device: str='cpu', data_dir: str='data/'):
+    def __init__(self, name: str, config: dict, device: str='cpu', data_dir: str='data/', dataparallel=None):
         self.name = name
         self.config = copy.deepcopy(config)
         self.data_dir = data_dir
@@ -27,7 +27,8 @@ class Base:
             self.device = torch.device(device)
         else:
             self.device = torch.device('cpu')
-            
+        
+        self.dataparallel = dataparallel
         print("Using device: ", self.device)
         
         self.seed = 1234567
@@ -66,7 +67,8 @@ class Base:
         _gen = torch.Generator()
         _gen.manual_seed(self.run_seed)
         self.train_loader = DataLoader(self.train_set, drop_last=True, shuffle=True, generator=_gen,
-                                       batch_size=self.config['batch_size'])
+                                       batch_size=self.config['batch_size'],
+                                       num_workers=self.config.get('num_workers', 0))
         
         return
 
@@ -77,6 +79,10 @@ class Base:
         
         self.model = get_model(self.config)
         self.model.to(self.device)
+        if self.dataparallel is not None:
+            devices = [int(d) for d in self.dataparallel]
+            self.model = torch.nn.DataParallel(self.model, device_ids=devices)
+    #self.model.to(self.device)
 
         return
         
@@ -173,6 +179,7 @@ class Base:
                 score_list += [score_dict]
             
             self._epochs_trained += 1
+            print(f"\nEpochs trained: {self._epochs_trained}\n\n")
         
         end_time = str(datetime.datetime.now())
         
@@ -189,8 +196,14 @@ class Base:
                 
         self.model.train()
         pbar = tqdm.tqdm(self.train_loader)
-        
+
+        data_loader_durations = []
+        model_durations = []
+
+        t2 = time.time()
+
         for batch in pbar:
+            #t0 = time.time()
             self.opt.zero_grad()    
             
             # get batch and compute model output
@@ -200,6 +213,7 @@ class Base:
             if len(out.shape) <= 1:
                 warnings.warn(f"Shape of model output is {out.shape}, recommended to have shape [batch_size, ..].")
                
+            t1 = time.time()
             closure = lambda: self.training_loss.compute(out, targets)
             
             # see optim/README.md for explanation 
@@ -209,7 +223,11 @@ class Base:
             
             # Here the magic happens
             loss_val = self.opt.step(closure=closure) 
-            pbar.set_description(f'Training - {loss_val:.3f}')
+            #torch.cuda.synchronize()
+            data_loader_durations.append(t1 - t2)
+            t2 = time.time()
+            model_durations.append(t2 - t1)
+            pbar.set_description(f'Training - {loss_val:.3f} - data: {data_loader_durations[-1]:.3f}({np.mean(data_loader_durations):.3f}) - model: {model_durations[-1]:.3f}({np.mean(model_durations):.3f})')
 
         
         print("Current learning rate", self.sched.get_last_lr()[0])
@@ -228,23 +246,34 @@ class Base:
         """
         
         # create temporary DataLoader
+
         dl = torch.utils.data.DataLoader(dataset, drop_last=False, 
-                                         batch_size=self.config['batch_size'])
+                                         batch_size=self.config['batch_size'],
+                                         num_workers=self.config.get('num_workers', 0))
         pbar = tqdm.tqdm(dl)
         
         self.model.eval()
         score_dict = dict(zip(metric_dict.keys(), np.zeros(len(metric_dict))))
-        
+
+        data_loader_durations = []
+        model_durations = []
+
+        t2 = time.time()
+
         for batch in pbar:
             # get batch and compute model output
             data, targets = batch['data'].to(device=self.device), batch['targets'].to(device=self.device)
+            t1 = time.time()
             out = self.model(data)
             
             for _met, _met_fun in metric_dict.items():
                 # metric takes average over batch ==> multiply with batch size
                 score_dict[_met] += _met_fun.compute(out, targets).item() * data.shape[0] 
-                
-            pbar.set_description(f'Validating {dataset.split}')
+            data_loader_durations.append(t1 - t2)
+            t2 = time.time()
+            model_durations.append(t2 - t1)
+
+            pbar.set_description(f'Validating {dataset.split} - data: {data_loader_durations[-1]:.3f}({np.mean(data_loader_durations):.3f}) - model: {model_durations[-1]:.3f}({np.mean(model_durations):.3f})')
 
             
         
