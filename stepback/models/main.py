@@ -81,6 +81,13 @@ def get_model(config: dict={}) -> torch.nn.Module:
             model = get_kuangliu_resnet(name, num_classes=1000)
         else:
             raise KeyError(f"Model {name} is not implemented yet for dataset {config['dataset']}.")
+        
+    elif name in ['resnet18-pytorch']:
+        if config['dataset'] == 'imagenet':
+            from torchvision.models import resnet18
+            model = resnet18(pretrained=False)
+        else:
+            raise KeyError(f"Model {name} is not implemented yet for dataset {config['dataset']}.")
     
     # ======== Vision transformer =============
     elif name == 'vit':
