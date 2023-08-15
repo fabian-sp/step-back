@@ -1,3 +1,4 @@
+import os
 from torchvision import transforms, datasets
 
 input_dim = 224
@@ -11,11 +12,11 @@ def get_imagenet(split, path):
         raise ValueError(f"split must be in ('train', 'val'), but got {split}")
     
     # data directory
-    traindir = os.path.expanduser(os.path.join(path, "train/"))
-    valdir = os.path.expanduser(os.path.join(path, "val/"))
+    traindir = os.path.expanduser(os.path.join(path, "imagenet/train/"))
+    valdir = os.path.expanduser(os.path.join(path, "imagenet/val/"))
     
     # normalization
-    normalize = Normalize(mean=[0.485, 0.456, 0.406],
+    normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406],
                             std=[0.229, 0.224, 0.225])
 
     train = (split.lower() != 'val')
