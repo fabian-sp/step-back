@@ -4,11 +4,13 @@ In the config, the key ``'model'`` specifies which model should be trained. ``st
 
 In the below list, we first state the value for the key ``'model'`` and then give a short description. See [the main model script](main.py) for more details.
 
-* ``resnet20``, ``resnet32`` etc.: ResNet model. There is an option to deactivate batch norm by setting ``"model_kwargs": {"batch_norm": false}``. Compatible with the following datasets: ``'cifar10','cifar100'``.
+* ``resnet20``, ``resnet32`` etc.: ResNet model for CIFAR. There is an option to deactivate batch norm by setting ``"model_kwargs": {"batch_norm": false}``. Compatible with the following datasets: ``'cifar10','cifar100'``.
 
-* ``vgg13``, ``vgg16`` etc.: VGG model. There is an option to deactivate batch norm by setting ``"model_kwargs": {"batch_norm": false}``. Compatible with the following datasets: ``'cifar10','cifar100'``.
+* ``vgg13``, ``vgg16`` etc.: VGG model for CIFAR. There is an option to deactivate batch norm by setting ``"model_kwargs": {"batch_norm": false}``. Compatible with the following datasets: ``'cifar10','cifar100'``.
 
-* ``resnet18-kuangliu``, etc.: ResNet model for Imagenet. The size of convolutional layers is slightly different to the ResNet models above. Compatible with the following datasets: ``'imagenet32'``.
+* ``resnet18-kuangliu``, etc.: ResNet model for Imagenet32. The size of convolutional layers is slightly different to the ResNet models above. Compatible with the following datasets: ``'imagenet32'``.
+
+* ``resnet18-pytorch``, ``resnet50-pytorch``: Official Pytorch ResNet model for Imagenet-1K. Compatible with the following datasets: ``'imagenet'``.
 
 * ``mlp``: MLP with ReLU activations. Make sure to specify the dimension of the last layer (before loss function) with ``"model_kwargs": {"output_size": }`` (e.g. use number of classes for classification). More options can be specified via 
 ``"model_kwargs": {"hidden_sizes": [128,64], "bias": true}``.
