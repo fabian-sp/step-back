@@ -8,7 +8,10 @@ NOTE: Changed default windows size from 7 to 4.
 import torch
 from torch import nn, einsum
 import numpy as np
-from einops import rearrange, repeat
+try:
+    from einops import rearrange, repeat
+except ImportError:
+    print("Please install einops if you want to use ViT: pip install einops")
 
 
 class CyclicShift(nn.Module):
