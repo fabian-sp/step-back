@@ -101,7 +101,7 @@ def run_one(exp_id: str,
 
 if __name__ == '__main__':
     args = parser.parse_args()
-    print(args)
+
     run_one(args.id,
             config_dir=args.config_dir,
             output_dir=args.output_dir,
