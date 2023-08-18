@@ -25,6 +25,29 @@ class Base:
                  num_workers: int=0,
                  data_parallel: Union[list, None]=None,
                  verbose: bool=True):
+        """The main class. Performs one single training run plus evaluation.
+
+        Parameters
+        ----------
+        name : str
+            A name for this run. Currently not used later.
+        config : dict
+            A config containing dataset, model, optimizer information.
+            Needs to have the keys ['loss_func', 'score_func', 'opt'].
+        device : str, optional
+            Device string, by default 'cuda'
+            If 'cuda' is specified, but not available on system, it switches to CPU.
+        data_dir : str, optional
+            Directory where datasets can be found, by default 'data/'
+        num_workers : int, optional
+            Number of workers for DataLoader, by default 0
+        data_parallel : Union[list, None], optional
+            If not None, this specifies the device ids for DataParallel mode in Pytorch. By default None.
+            See https://pytorch.org/docs/stable/generated/torch.nn.DataParallel.html.
+        verbose : bool, optional
+            Verbose mode flag, by default True.
+            If True, prints progress bars, model architecture and other useful information.
+        """
         
         self.name = name
         self.config = copy.deepcopy(config)

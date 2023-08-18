@@ -34,6 +34,34 @@ def run_one(exp_id: str,
             verbose: bool=DEFAULTS.verbose,
             force_deterministic: bool=DEFAULTS.force_deterministic
             ):
+    """Function for running all runs from one config file.
+    Default values for all arguments can be found in ``stepback/defaults.py``.
+
+    Parameters
+    ----------
+    exp_id : str
+        The experiment ID, equal to the name of the config file.
+    config_dir : str, optional
+        Directory where config file is stored, by default DEFAULTS.config_dir
+    output_dir : str, optional
+        Directory where output is stored, by default DEFAULTS.output_dir
+    data_dir : str, optional
+        Directory where datasets can be found,, by default DEFAULTS.data_dir
+    device : str, optional
+        Device string, by default DEFAULTS.device
+        If 'cuda' is specified, but not available on system, it switches to CPU.
+    num_workers : int, optional
+        Number of workers for DataLoader, by default DEFAULTS.num_workers
+    data_parallel : Union[list, None], optional
+        If not None, this specifies the device ids for DataParallel mode in Pytorch.
+        See https://pytorch.org/docs/stable/generated/torch.nn.DataParallel.html.
+    verbose : bool, optional
+        Verbose mode flag.
+        If True, prints progress bars, model architecture and other useful information.
+    force_deterministic : bool, optional
+        Whether to run in Pytorch (full) deterministic mode.
+        Not recommended, as this leads to substantial slow down. Seeds are set also without setting this to True.
+    """
     
     # load config
     with open(config_dir + f'{exp_id}.json') as f:
@@ -68,7 +96,7 @@ def run_one(exp_id: str,
         C.append(B.results).store() # store results
     
     print("All experiments have completed.")
-    
+
     return 
 
 if __name__ == '__main__':
