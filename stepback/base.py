@@ -5,6 +5,8 @@ import copy
 import time
 import datetime
 import warnings
+from typing import Union
+
 
 from torch.utils.data import DataLoader
 
@@ -16,10 +18,21 @@ from .metrics import Loss
 from .utils import l2_norm, grad_norm, ridge_opt_value, logreg_opt_value
 
 class Base:
-    def __init__(self, name: str, config: dict, device: str='cpu', data_dir: str='data/'):
+    def __init__(self, name: str, 
+                 config: dict, 
+                 device: str='cpu', 
+                 data_dir: str='data/',
+                 num_workers: int=0,
+                 data_parallel: Union[list, None]=None,
+                 verbose: bool=True):
+        
         self.name = name
         self.config = copy.deepcopy(config)
         self.data_dir = data_dir
+        self.num_workers = num_workers
+        self.data_parallel = data_parallel
+        self.verbose = verbose
+
 
         print("CUDA available? ", torch.cuda.is_available())
         
@@ -88,7 +101,9 @@ class Base:
                
         #============ Model ================
         self._setup_model()
-        print(self.model)
+        
+        if self.verbose:
+            print(self.model)
 
         #============ Loss function ========
         self.training_loss = Loss(name=self.config['loss_func'], backwards=True)
