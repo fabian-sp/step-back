@@ -1,11 +1,25 @@
 import torch
 import warnings
+from torchvision.models import resnet18, resnet50
 
 from .basic_models import MLP, MatrixFac, MatrixComplete
 from .vgg import get_cifar_vgg
 from .resnet import get_cifar_resnet
 from .kuangliu_resnet import get_kuangliu_resnet
 from .vit import ViT, swin_t
+
+def get_num_classes(dataset_name):
+    if dataset_name == 'cifar10':
+        C = 10
+    elif dataset_name == 'cifar100':
+        C = 100
+    elif dataset_name in ['imagenet', 'imagenet32']:
+        C = 1000
+    else:
+        raise KeyError(f"Unknown number of classes for dataset {dataset_name}.")
+
+    return C
+
 
 def get_model(config: dict={}) -> torch.nn.Module:
     """
@@ -59,20 +73,18 @@ def get_model(config: dict={}) -> torch.nn.Module:
     #======== VGG models =============
     elif name in ['vgg11', 'vgg13', 'vgg16', 'vgg19']:
         
-        if config['dataset'] == 'cifar10':
-            model = get_cifar_vgg(name, num_classes=10, **kwargs) # batch_norm False by default
-        elif config['dataset'] == 'cifar100':
-            model = get_cifar_vgg(name, num_classes=100, **kwargs) # batch_norm False by default
+        if config['dataset'] in ['cifar10', 'cifar100']:
+            num_classes = get_num_classes(config['dataset'])
+            model = get_cifar_vgg(name, num_classes=num_classes, **kwargs) # batch_norm False by default
         else:
             raise KeyError(f"Model {name} is not implemented yet for dataset {config['dataset']}.")   
     
     #======== Resnet =============
     elif name in ['resnet20', 'resnet32', 'resnet44', 'resnet56', 'resnet110', 'resnet1202']:
         
-        if config['dataset'] == 'cifar10':
-                model = get_cifar_resnet(name, num_classes=10, **kwargs) # batch_norm True by default
-        elif config['dataset'] == 'cifar100':
-                model = get_cifar_resnet(name, num_classes=100, **kwargs) # batch_norm True by default
+        if config['dataset'] in ['cifar10', 'cifar100']:
+            num_classes = get_num_classes(config['dataset'])
+            model = get_cifar_resnet(name, num_classes=num_classes, **kwargs) # batch_norm True by default
         else:
             raise KeyError(f"Model {name} is not implemented yet for dataset {config['dataset']}.")   
     
@@ -81,14 +93,23 @@ def get_model(config: dict={}) -> torch.nn.Module:
             model = get_kuangliu_resnet(name, num_classes=1000)
         else:
             raise KeyError(f"Model {name} is not implemented yet for dataset {config['dataset']}.")
+        
+    elif name in ['resnet18-pytorch', 'resnet50-pytorch']:
+        if config['dataset'] == 'imagenet':     
+            if name == 'resnet18-pytorch':
+                model = resnet18(pretrained=False)
+            elif name == 'resnet50-pytorch':
+                model = resnet50(pretrained=False)
+        else:
+            raise KeyError(f"Model {name} is not implemented yet for dataset {config['dataset']}.")
     
     # ======== Vision transformer =============
     elif name == 'vit':
-        num_classes = 10 if config['dataset'] == 'cifar10' else 100
+        num_classes = get_num_classes(config['dataset'])
         model = ViT(image_size=32, num_classes=num_classes,**kwargs)   
     
     elif name == 'swint':
-        num_classes = 10 if config['dataset'] == 'cifar10' else 100
+        num_classes = get_num_classes(config['dataset'])
         model = swin_t(num_classes=num_classes,
                        downscaling_factors=(2,2,2,1),
                        **kwargs)   

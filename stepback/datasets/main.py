@@ -10,6 +10,7 @@ from .synthetic import get_synthetic_matrix_fac, get_synthetic_linear
 from .libsvm import LIBSVM_NAME_MAP, get_libsvm
 from .sensor import get_sensor
 from .imagenet32 import get_imagenet32
+from .imagenet import get_imagenet
 
 class DataClass:
     def __init__(self, dataset: Dataset, split: str):
@@ -69,6 +70,9 @@ def get_dataset(config: dict, split: str, seed: int, path: str) -> DataClass:
 
     elif name == 'imagenet32':
         ds = get_imagenet32(split=split, path=path)
+    
+    elif name == 'imagenet':
+        ds = get_imagenet(split=split, path=path)
 
     else:
         raise KeyError(f"Unknown dataset name {name}.")
