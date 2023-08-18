@@ -232,7 +232,6 @@ def logreg_opt_value(X, y, lmbda, fit_intercept=False):
         
     sk.fit(X,y)
     sol = sk.coef_.squeeze()
-    print(sol)
     
     if fit_intercept:
         t2 = np.log(1+np.exp(-y*(X@sol + sk.intercept_))).mean()

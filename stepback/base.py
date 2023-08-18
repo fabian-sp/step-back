@@ -20,7 +20,7 @@ from .utils import l2_norm, grad_norm, ridge_opt_value, logreg_opt_value
 class Base:
     def __init__(self, name: str, 
                  config: dict, 
-                 device: str='cpu', 
+                 device: str='cuda', 
                  data_dir: str='data/',
                  num_workers: int=0,
                  data_parallel: Union[list, None]=None,
@@ -79,7 +79,8 @@ class Base:
         _gen = torch.Generator()
         _gen.manual_seed(self.run_seed)
         self.train_loader = DataLoader(self.train_set, drop_last=True, shuffle=True, generator=_gen,
-                                       batch_size=self.config['batch_size'])
+                                       batch_size=self.config['batch_size'],
+                                       num_workers=self.num_workers)
         
         return
 
@@ -90,6 +91,10 @@ class Base:
         
         self.model = get_model(self.config)
         self.model.to(self.device)
+
+        if self.data_parallel is not None:
+            devices = [int(d) for d in self.data_parallel]
+            self.model = torch.nn.DataParallel(self.model, device_ids=devices)
 
         return
         
@@ -142,6 +147,8 @@ class Base:
         
         for epoch in range(self.config['max_epoch']):
             
+            print(f"Epoch {epoch}, current learning rate", self.sched.get_last_lr()[0])
+
             # Record metrics
             score_dict = {'epoch': epoch}
             score_dict['learning_rate'] = self.sched.get_last_lr()[0] # must be stored before sched.step()
@@ -203,7 +210,7 @@ class Base:
         """
                 
         self.model.train()
-        pbar = tqdm.tqdm(self.train_loader)
+        pbar = tqdm.tqdm(self.train_loader, disable=(not self.verbose))
         
         for batch in pbar:
             self.opt.zero_grad()    
@@ -225,9 +232,6 @@ class Base:
             # Here the magic happens
             loss_val = self.opt.step(closure=closure) 
             pbar.set_description(f'Training - {loss_val:.3f}')
-
-        
-        print("Current learning rate", self.sched.get_last_lr()[0])
         
         # update learning rate             
         self.sched.step()       
@@ -244,8 +248,10 @@ class Base:
         
         # create temporary DataLoader
         dl = torch.utils.data.DataLoader(dataset, drop_last=False, 
-                                         batch_size=self.config['batch_size'])
-        pbar = tqdm.tqdm(dl)
+                                         batch_size=self.config['batch_size'],
+                                         num_workers=self.num_workers
+                                         )
+        pbar = tqdm.tqdm(dl, disable=(not self.verbose))
         
         self.model.eval()
         score_dict = dict(zip(metric_dict.keys(), np.zeros(len(metric_dict))))
@@ -298,10 +304,10 @@ class Base:
                                           )
             elif self.config['loss_func'] == 'logistic':
                 opt_val = logreg_opt_value(X=self.train_set.dataset.tensors[0].detach().numpy(),
-                                            y=self.train_set.dataset.tensors[1].detach().numpy().astype(int).reshape(-1),
-                                            lmbda = self.config['opt'].get('weight_decay', 0),
-                                            fit_intercept = False
-                                            )
+                                           y=self.train_set.dataset.tensors[1].detach().numpy().astype(int).reshape(-1),
+                                           lmbda = self.config['opt'].get('weight_decay', 0),
+                                           fit_intercept = False
+                                           )
             else:
                 opt_val = None
         else:

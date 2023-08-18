@@ -67,6 +67,8 @@ def run_one(exp_id: str,
         
         C.append(B.results).store() # store results
     
+    print("All experiments have completed.")
+    
     return 
 
 if __name__ == '__main__':
