@@ -341,7 +341,7 @@ elif exp_id == 'cifar100_resnet110':
     plot_step_sizes(R, method='momo', grid=(3,2), start=1, stop=7, save=save)
     plot_step_sizes(R, method='momo-adam', grid=(3,2), start=1, stop=7, save=save)
 elif exp_id == 'cifar10_vit':
-    plot_step_sizes(R, method='momo', grid=(2,2), start=None, stop=None, save=save)
+    plot_step_sizes(R, method='momo', grid=(2,2), start=1, stop=5, save=save)
     plot_step_sizes(R, method='momo-adam', grid=(2,2), start=None, stop=None, save=save)
 
 
