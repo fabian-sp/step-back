@@ -14,7 +14,7 @@ from .log import Container
 
 score_names = {'train_loss': 'Training loss', 
                'val_loss': 'Validation loss', 
-               'train_score': 'Training score', 
+               'train_score': 'Trainingstart score', 
                'val_score': 'Validation score',
                'model_norm': r'$\|x^k\|$',
                'grad_norm': r'$\|g_k\|$',
@@ -31,6 +31,8 @@ aes = {'sgd': {'color': '#7fb285', 'markevery': 15, 'zorder': 7},
         'momo-star': {'color': '#87b37a', 'markevery': 3, 'zorder': 13},
         'momo-adam-star': {'color': '#648381', 'markevery': 4, 'zorder': 12},
         'prox-sps': {'color': '#97BF88', 'markevery': 7, 'zorder': 6},
+        'adabelief': {'color': '#68d89b', 'markevery': 10, 'zorder': 6},
+        'adabound': {'color': '#4f9d69', 'markevery': 10, 'zorder': 5},
         'default': {'color': 'grey', 'markevery': 3, 'zorder': 1},
         }
 # more colors:

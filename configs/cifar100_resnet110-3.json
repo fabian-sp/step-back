@@ -1,0 +1,12 @@
+{
+    "dataset": "cifar100",
+    "model": "resnet110",
+    "model_kwargs": {"batch_norm": true},
+    "loss_func": "cross_entropy",
+    "score_func": "cross_entropy_accuracy",
+    "opt": [{"name": "sgd-m", "lr": [0.001, 0.01, 0.1, 1, 10, 100], "weight_decay": 0, "momentum": 0.9, "dampening": 0.9, "lr_schedule": "exponential_30_0.7"}
+            ],
+    "batch_size": 128,
+    "max_epoch": 100,
+    "n_runs": 3
+    }

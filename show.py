@@ -14,12 +14,17 @@ from stepback.utils import get_output_filenames
 
 ################# Main setup ###############################
 parser = argparse.ArgumentParser(description='Generate step-back plots.')
-parser.add_argument('-i', '--id', nargs='?', type=str, default='test1', help="The id of the config (its file name).")
+parser.add_argument('-i', '--id', nargs='?', type=str, default='test', help="The id of the config (its file name).")
 args = parser.parse_args()
-exp_id = args.id
-#exp_id = 'cifar100_resnet110'
 
-save = False
+
+try:
+    exp_id = args.id
+    save = True
+except:
+    exp_id = 'cifar100_resnet110'
+    save = False
+
 output_names = get_output_filenames(exp_id)
 ############################################################
 
@@ -35,9 +40,9 @@ plt.rc('text', usetex=True)
 R = Record(output_names)
 base_df = R.base_df                                 # base dataframe for all plots
 id_df = R.id_df                                     # dataframe with the optimizer setups that were run
+
 base_df, id_df = R.filter(exclude=['momo-adam-star', 'momo-star',
-                                    'momo-adam-max', 'momo-max',
-                                    'prox-sps'])     # filter out a method
+                                    'adabelief', 'adabound', 'prox-sps'])     # filter out a method
 
 #fig = R.plot_metric(s='val_score', log_scale=False, legend=True)
 
@@ -330,13 +335,13 @@ elif exp_id == 'cifar10_vgg16':
     plot_step_sizes(R, method='momo', grid=(3,3), start=2, stop=11, save=save)
     plot_step_sizes(R, method='momo-adam', grid=(3,3), start=2, stop=11, save=save)
 elif exp_id == 'mnist_mlp':
-    plot_step_sizes(R, method='momo', grid=(3,4), start=2, stop=None, save=save)
+    plot_step_sizes(R, method='momo', grid=(3,2), start=1, stop=None, save=save)
     plot_step_sizes(R, method='momo-adam', grid=(3,2), start=None, stop=None, save=save)
 elif exp_id == 'cifar100_resnet110':
     plot_step_sizes(R, method='momo', grid=(3,2), start=1, stop=7, save=save)
     plot_step_sizes(R, method='momo-adam', grid=(3,2), start=1, stop=7, save=save)
 elif exp_id == 'cifar10_vit':
-    plot_step_sizes(R, method='momo', grid=(2,2), start=None, stop=None, save=save)
+    plot_step_sizes(R, method='momo', grid=(2,2), start=1, stop=5, save=save)
     plot_step_sizes(R, method='momo-adam', grid=(2,2), start=None, stop=None, save=save)
 
 
