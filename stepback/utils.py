@@ -35,6 +35,7 @@ def get_output_filenames(exp_id, output_dir='output/'):
 
 def filter_output_file(exp_id, exp_filter=dict(), opt_filter=dict(), drop_keys=list(), fname=None, output_dir='output/', as_json=True):
     """Filter ouput file. Deletes all results that are specified by exp_filter and opt_filter.
+        Values of exp_filter and opt_filter can also be a list to specifiy multiple values. 
         Deletes also all drop_keys in history.
     Example:
         opt_filter = {'name': 'adam'}     # deletes all adam runs
@@ -54,11 +55,16 @@ def filter_output_file(exp_id, exp_filter=dict(), opt_filter=dict(), drop_keys=l
         conf = copy.deepcopy(d['config'])
 
         for k,v in exp_filter.items():
-            if conf.get(k) == v:
+            if not isinstance(v, list):
+                v = [v]
+            if conf.get(k) in v:
                 DROP = True
         
         for k,v in opt_filter.items():
-            if conf['opt'].get(k) == v:
+            if not isinstance(v, list):
+                v = [v]
+            
+            if conf['opt'].get(k) in v:
                 DROP = True
 
         if not DROP:
