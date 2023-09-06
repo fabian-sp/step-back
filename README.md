@@ -35,7 +35,7 @@ For each experiment, the exact config can also be found under `configs/` where t
 
 ## How to use
 
-Any experiment needs a config file, see e.g. `configs/test1.json`.
+Any experiment needs a config file, see e.g. `configs/test.json`.
 
 * In the config you can specify at each key a list or a single entry. For every list entry, a cartesian product will be run.
 * The same is true for the hypeprparameters of each entry in the `opt` key of the config file.
