@@ -7,25 +7,25 @@ import os
 import pickle
 
 def load_json(file_name, output_dir):
-    with open(output_dir + file_name + '.json', "r") as f:
+    with open(os.path.join(output_dir, file_name) + '.json', "r") as f:
         d = json.load(f)
 
     return d
 
 def save_json(file_name, results, output_dir):
-    with open(output_dir + file_name + '.json', "w") as f:
+    with open(os.path.join(output_dir, file_name) + '.json', "w") as f:
         json.dump(results, f, indent=4, sort_keys=True)
     
     return
 
 def save_pkl(file_name, results, output_dir):
-    with open(output_dir + file_name + ".pkl", "wb") as f:
+    with open(os.path.join(output_dir, file_name) + ".pkl", "wb") as f:
         pickle.dump(results, f)
     return
 
 
 def load_pkl(file_name, output_dir):
-    with open(output_dir + file_name + ".pkl", "rb") as f:
+    with open(os.path.join(output_dir, file_name) + ".pkl", "rb") as f:
         d = pickle.load(f)
     return d
 
