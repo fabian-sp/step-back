@@ -1,12 +1,6 @@
 [
     {
         "config": {
-            "_input_dim": [
-                10
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 20,
             "dataset": "synthetic_linear",
             "dataset_kwargs": {
@@ -492,18 +486,18 @@
         ],
         "summary": {
             "end_time": "2023-09-04 09:58:25.208002",
+            "input_dim": [
+                10
+            ],
             "opt_val": 4.4733737113861194e-13,
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-09-04 09:58:24.776830"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                10
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 20,
             "dataset": "synthetic_linear",
             "dataset_kwargs": {
@@ -989,18 +983,18 @@
         ],
         "summary": {
             "end_time": "2023-09-04 09:58:25.606125",
+            "input_dim": [
+                10
+            ],
             "opt_val": 4.4733737113861194e-13,
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-09-04 09:58:25.212095"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                10
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 20,
             "dataset": "synthetic_linear",
             "dataset_kwargs": {
@@ -1486,18 +1480,18 @@
         ],
         "summary": {
             "end_time": "2023-09-04 09:58:25.979027",
+            "input_dim": [
+                10
+            ],
             "opt_val": 4.4733737113861194e-13,
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-09-04 09:58:25.611595"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                10
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 20,
             "dataset": "synthetic_linear",
             "dataset_kwargs": {
@@ -1983,18 +1977,18 @@
         ],
         "summary": {
             "end_time": "2023-09-04 09:58:26.361563",
+            "input_dim": [
+                10
+            ],
             "opt_val": 4.4733737113861194e-13,
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-09-04 09:58:25.985443"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                10
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 20,
             "dataset": "synthetic_linear",
             "dataset_kwargs": {
@@ -2480,18 +2474,18 @@
         ],
         "summary": {
             "end_time": "2023-09-04 09:58:26.779355",
+            "input_dim": [
+                10
+            ],
             "opt_val": 4.4733737113861194e-13,
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-09-04 09:58:26.368895"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                10
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 20,
             "dataset": "synthetic_linear",
             "dataset_kwargs": {
@@ -2977,18 +2971,18 @@
         ],
         "summary": {
             "end_time": "2023-09-04 09:58:27.158243",
+            "input_dim": [
+                10
+            ],
             "opt_val": 4.4733737113861194e-13,
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-09-04 09:58:26.787731"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                10
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 20,
             "dataset": "synthetic_linear",
             "dataset_kwargs": {
@@ -3474,18 +3468,18 @@
         ],
         "summary": {
             "end_time": "2023-09-04 09:58:27.559277",
+            "input_dim": [
+                10
+            ],
             "opt_val": 4.4733737113861194e-13,
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-09-04 09:58:27.167000"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                10
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 20,
             "dataset": "synthetic_linear",
             "dataset_kwargs": {
@@ -3971,18 +3965,18 @@
         ],
         "summary": {
             "end_time": "2023-09-04 09:58:27.948573",
+            "input_dim": [
+                10
+            ],
             "opt_val": 4.4733737113861194e-13,
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-09-04 09:58:27.568760"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                10
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 20,
             "dataset": "synthetic_linear",
             "dataset_kwargs": {
@@ -4468,18 +4462,18 @@
         ],
         "summary": {
             "end_time": "2023-09-04 09:58:28.447016",
+            "input_dim": [
+                10
+            ],
             "opt_val": 4.4733737113861194e-13,
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-09-04 09:58:27.958347"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                10
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 20,
             "dataset": "synthetic_linear",
             "dataset_kwargs": {
@@ -4965,18 +4959,18 @@
         ],
         "summary": {
             "end_time": "2023-09-04 09:58:28.895393",
+            "input_dim": [
+                10
+            ],
             "opt_val": 4.4733737113861194e-13,
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-09-04 09:58:28.460052"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                10
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 20,
             "dataset": "synthetic_linear",
             "dataset_kwargs": {
@@ -5462,18 +5456,18 @@
         ],
         "summary": {
             "end_time": "2023-09-04 09:58:29.332428",
+            "input_dim": [
+                10
+            ],
             "opt_val": 4.4733737113861194e-13,
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-09-04 09:58:28.907182"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                10
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 20,
             "dataset": "synthetic_linear",
             "dataset_kwargs": {
@@ -5959,18 +5953,18 @@
         ],
         "summary": {
             "end_time": "2023-09-04 09:58:29.743022",
+            "input_dim": [
+                10
+            ],
             "opt_val": 4.4733737113861194e-13,
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-09-04 09:58:29.344678"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                10
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 20,
             "dataset": "synthetic_linear",
             "dataset_kwargs": {
@@ -6456,18 +6450,18 @@
         ],
         "summary": {
             "end_time": "2023-09-04 09:58:30.129204",
+            "input_dim": [
+                10
+            ],
             "opt_val": 4.4733737113861194e-13,
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-09-04 09:58:29.755949"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                10
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 20,
             "dataset": "synthetic_linear",
             "dataset_kwargs": {
@@ -6953,18 +6947,18 @@
         ],
         "summary": {
             "end_time": "2023-09-04 09:58:30.508617",
+            "input_dim": [
+                10
+            ],
             "opt_val": 4.4733737113861194e-13,
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-09-04 09:58:30.143713"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                10
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 20,
             "dataset": "synthetic_linear",
             "dataset_kwargs": {
@@ -7450,18 +7444,18 @@
         ],
         "summary": {
             "end_time": "2023-09-04 09:58:30.909608",
+            "input_dim": [
+                10
+            ],
             "opt_val": 4.4733737113861194e-13,
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-09-04 09:58:30.524707"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                10
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 20,
             "dataset": "synthetic_linear",
             "dataset_kwargs": {
@@ -7947,18 +7941,18 @@
         ],
         "summary": {
             "end_time": "2023-09-04 09:58:31.312559",
+            "input_dim": [
+                10
+            ],
             "opt_val": 4.4733737113861194e-13,
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-09-04 09:58:30.927778"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                10
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 20,
             "dataset": "synthetic_linear",
             "dataset_kwargs": {
@@ -8444,18 +8438,18 @@
         ],
         "summary": {
             "end_time": "2023-09-04 09:58:31.722070",
+            "input_dim": [
+                10
+            ],
             "opt_val": 4.4733737113861194e-13,
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-09-04 09:58:31.328724"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                10
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 20,
             "dataset": "synthetic_linear",
             "dataset_kwargs": {
@@ -8941,18 +8935,18 @@
         ],
         "summary": {
             "end_time": "2023-09-04 09:58:32.125634",
+            "input_dim": [
+                10
+            ],
             "opt_val": 4.4733737113861194e-13,
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-09-04 09:58:31.739132"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                10
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 20,
             "dataset": "synthetic_linear",
             "dataset_kwargs": {
@@ -9438,18 +9432,18 @@
         ],
         "summary": {
             "end_time": "2023-09-04 09:58:32.496184",
+            "input_dim": [
+                10
+            ],
             "opt_val": 4.4733737113861194e-13,
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-09-04 09:58:32.142526"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                10
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 20,
             "dataset": "synthetic_linear",
             "dataset_kwargs": {
@@ -9935,18 +9929,18 @@
         ],
         "summary": {
             "end_time": "2023-09-04 09:58:32.885471",
+            "input_dim": [
+                10
+            ],
             "opt_val": 4.4733737113861194e-13,
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-09-04 09:58:32.514369"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                10
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 20,
             "dataset": "synthetic_linear",
             "dataset_kwargs": {
@@ -10432,18 +10426,18 @@
         ],
         "summary": {
             "end_time": "2023-09-04 09:58:33.242023",
+            "input_dim": [
+                10
+            ],
             "opt_val": 4.4733737113861194e-13,
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-09-04 09:58:32.906810"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                10
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 20,
             "dataset": "synthetic_linear",
             "dataset_kwargs": {
@@ -10969,18 +10963,18 @@
         ],
         "summary": {
             "end_time": "2023-09-04 09:58:33.636086",
+            "input_dim": [
+                10
+            ],
             "opt_val": 4.4733737113861194e-13,
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-09-04 09:58:33.261717"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                10
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 20,
             "dataset": "synthetic_linear",
             "dataset_kwargs": {
@@ -11506,18 +11500,18 @@
         ],
         "summary": {
             "end_time": "2023-09-04 09:58:34.046338",
+            "input_dim": [
+                10
+            ],
             "opt_val": 4.4733737113861194e-13,
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-09-04 09:58:33.656997"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                10
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 20,
             "dataset": "synthetic_linear",
             "dataset_kwargs": {
@@ -12043,18 +12037,18 @@
         ],
         "summary": {
             "end_time": "2023-09-04 09:58:34.434863",
+            "input_dim": [
+                10
+            ],
             "opt_val": 4.4733737113861194e-13,
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-09-04 09:58:34.068374"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                10
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 20,
             "dataset": "synthetic_linear",
             "dataset_kwargs": {
@@ -12580,18 +12574,18 @@
         ],
         "summary": {
             "end_time": "2023-09-04 09:58:34.828052",
+            "input_dim": [
+                10
+            ],
             "opt_val": 4.4733737113861194e-13,
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-09-04 09:58:34.455249"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                10
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 20,
             "dataset": "synthetic_linear",
             "dataset_kwargs": {
@@ -13117,18 +13111,18 @@
         ],
         "summary": {
             "end_time": "2023-09-04 09:58:35.318209",
+            "input_dim": [
+                10
+            ],
             "opt_val": 4.4733737113861194e-13,
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-09-04 09:58:34.851973"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                10
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 20,
             "dataset": "synthetic_linear",
             "dataset_kwargs": {
@@ -13654,18 +13648,18 @@
         ],
         "summary": {
             "end_time": "2023-09-04 09:58:35.711985",
+            "input_dim": [
+                10
+            ],
             "opt_val": 4.4733737113861194e-13,
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-09-04 09:58:35.343274"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                10
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 20,
             "dataset": "synthetic_linear",
             "dataset_kwargs": {
@@ -14191,18 +14185,18 @@
         ],
         "summary": {
             "end_time": "2023-09-04 09:58:36.112981",
+            "input_dim": [
+                10
+            ],
             "opt_val": 4.4733737113861194e-13,
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-09-04 09:58:35.736578"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                10
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 20,
             "dataset": "synthetic_linear",
             "dataset_kwargs": {
@@ -14728,18 +14722,18 @@
         ],
         "summary": {
             "end_time": "2023-09-04 09:58:36.563167",
+            "input_dim": [
+                10
+            ],
             "opt_val": 4.4733737113861194e-13,
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-09-04 09:58:36.139490"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                10
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 20,
             "dataset": "synthetic_linear",
             "dataset_kwargs": {
@@ -15265,18 +15259,18 @@
         ],
         "summary": {
             "end_time": "2023-09-04 09:58:37.014783",
+            "input_dim": [
+                10
+            ],
             "opt_val": 4.4733737113861194e-13,
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-09-04 09:58:36.588639"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                10
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 20,
             "dataset": "synthetic_linear",
             "dataset_kwargs": {
@@ -15802,18 +15796,18 @@
         ],
         "summary": {
             "end_time": "2023-09-04 09:58:37.465239",
+            "input_dim": [
+                10
+            ],
             "opt_val": 4.4733737113861194e-13,
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-09-04 09:58:37.049068"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                10
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 20,
             "dataset": "synthetic_linear",
             "dataset_kwargs": {
@@ -16339,18 +16333,18 @@
         ],
         "summary": {
             "end_time": "2023-09-04 09:58:37.877767",
+            "input_dim": [
+                10
+            ],
             "opt_val": 4.4733737113861194e-13,
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-09-04 09:58:37.493892"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                10
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 20,
             "dataset": "synthetic_linear",
             "dataset_kwargs": {
@@ -16876,18 +16870,18 @@
         ],
         "summary": {
             "end_time": "2023-09-04 09:58:38.323473",
+            "input_dim": [
+                10
+            ],
             "opt_val": 4.4733737113861194e-13,
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-09-04 09:58:37.905766"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                10
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 20,
             "dataset": "synthetic_linear",
             "dataset_kwargs": {
@@ -17413,18 +17407,18 @@
         ],
         "summary": {
             "end_time": "2023-09-04 09:58:38.715671",
+            "input_dim": [
+                10
+            ],
             "opt_val": 4.4733737113861194e-13,
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-09-04 09:58:38.356192"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                10
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 20,
             "dataset": "synthetic_linear",
             "dataset_kwargs": {
@@ -17950,18 +17944,18 @@
         ],
         "summary": {
             "end_time": "2023-09-04 09:58:39.105157",
+            "input_dim": [
+                10
+            ],
             "opt_val": 4.4733737113861194e-13,
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-09-04 09:58:38.744911"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                10
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 20,
             "dataset": "synthetic_linear",
             "dataset_kwargs": {
@@ -18487,18 +18481,18 @@
         ],
         "summary": {
             "end_time": "2023-09-04 09:58:39.525025",
+            "input_dim": [
+                10
+            ],
             "opt_val": 4.4733737113861194e-13,
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-09-04 09:58:39.136403"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                10
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 20,
             "dataset": "synthetic_linear",
             "dataset_kwargs": {
@@ -19024,18 +19018,18 @@
         ],
         "summary": {
             "end_time": "2023-09-04 09:58:39.940289",
+            "input_dim": [
+                10
+            ],
             "opt_val": 4.4733737113861194e-13,
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-09-04 09:58:39.558368"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                10
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 20,
             "dataset": "synthetic_linear",
             "dataset_kwargs": {
@@ -19561,18 +19555,18 @@
         ],
         "summary": {
             "end_time": "2023-09-04 09:58:40.371521",
+            "input_dim": [
+                10
+            ],
             "opt_val": 4.4733737113861194e-13,
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-09-04 09:58:39.972487"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                10
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 20,
             "dataset": "synthetic_linear",
             "dataset_kwargs": {
@@ -20098,18 +20092,18 @@
         ],
         "summary": {
             "end_time": "2023-09-04 09:58:40.772976",
+            "input_dim": [
+                10
+            ],
             "opt_val": 4.4733737113861194e-13,
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-09-04 09:58:40.403116"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                10
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 20,
             "dataset": "synthetic_linear",
             "dataset_kwargs": {
@@ -20635,18 +20629,18 @@
         ],
         "summary": {
             "end_time": "2023-09-04 09:58:41.220005",
+            "input_dim": [
+                10
+            ],
             "opt_val": 4.4733737113861194e-13,
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-09-04 09:58:40.813800"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                10
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 20,
             "dataset": "synthetic_linear",
             "dataset_kwargs": {
@@ -21172,18 +21166,18 @@
         ],
         "summary": {
             "end_time": "2023-09-04 09:58:41.713867",
+            "input_dim": [
+                10
+            ],
             "opt_val": 4.4733737113861194e-13,
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-09-04 09:58:41.259397"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                10
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 20,
             "dataset": "synthetic_linear",
             "dataset_kwargs": {
@@ -21709,18 +21703,18 @@
         ],
         "summary": {
             "end_time": "2023-09-04 09:58:42.123401",
+            "input_dim": [
+                10
+            ],
             "opt_val": 4.4733737113861194e-13,
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-09-04 09:58:41.760677"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                10
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 20,
             "dataset": "synthetic_linear",
             "dataset_kwargs": {
@@ -21966,18 +21960,18 @@
         ],
         "summary": {
             "end_time": "2023-09-04 09:58:42.495458",
+            "input_dim": [
+                10
+            ],
             "opt_val": 4.4733737113861194e-13,
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-09-04 09:58:42.160376"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                10
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 20,
             "dataset": "synthetic_linear",
             "dataset_kwargs": {
@@ -22223,18 +22217,18 @@
         ],
         "summary": {
             "end_time": "2023-09-04 09:58:42.876453",
+            "input_dim": [
+                10
+            ],
             "opt_val": 4.4733737113861194e-13,
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-09-04 09:58:42.528929"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                10
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 20,
             "dataset": "synthetic_linear",
             "dataset_kwargs": {
@@ -22480,18 +22474,18 @@
         ],
         "summary": {
             "end_time": "2023-09-04 09:58:43.244377",
+            "input_dim": [
+                10
+            ],
             "opt_val": 4.4733737113861194e-13,
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-09-04 09:58:42.917295"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                10
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 20,
             "dataset": "synthetic_linear",
             "dataset_kwargs": {
@@ -22737,18 +22731,18 @@
         ],
         "summary": {
             "end_time": "2023-09-04 09:58:43.604882",
+            "input_dim": [
+                10
+            ],
             "opt_val": 4.4733737113861194e-13,
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-09-04 09:58:43.283311"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                10
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 20,
             "dataset": "synthetic_linear",
             "dataset_kwargs": {
@@ -22994,18 +22988,18 @@
         ],
         "summary": {
             "end_time": "2023-09-04 09:58:43.951853",
+            "input_dim": [
+                10
+            ],
             "opt_val": 4.4733737113861194e-13,
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-09-04 09:58:43.639389"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                10
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 20,
             "dataset": "synthetic_linear",
             "dataset_kwargs": {
@@ -23251,18 +23245,18 @@
         ],
         "summary": {
             "end_time": "2023-09-04 09:58:44.311998",
+            "input_dim": [
+                10
+            ],
             "opt_val": 4.4733737113861194e-13,
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-09-04 09:58:43.994902"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                10
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 20,
             "dataset": "synthetic_linear",
             "dataset_kwargs": {
@@ -23508,18 +23502,18 @@
         ],
         "summary": {
             "end_time": "2023-09-04 09:58:44.707629",
+            "input_dim": [
+                10
+            ],
             "opt_val": 4.4733737113861194e-13,
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-09-04 09:58:44.347884"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                10
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 20,
             "dataset": "synthetic_linear",
             "dataset_kwargs": {
@@ -23765,18 +23759,18 @@
         ],
         "summary": {
             "end_time": "2023-09-04 09:58:45.091064",
+            "input_dim": [
+                10
+            ],
             "opt_val": 4.4733737113861194e-13,
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-09-04 09:58:44.744638"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                10
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 20,
             "dataset": "synthetic_linear",
             "dataset_kwargs": {
@@ -24022,18 +24016,18 @@
         ],
         "summary": {
             "end_time": "2023-09-04 09:58:45.434385",
+            "input_dim": [
+                10
+            ],
             "opt_val": 4.4733737113861194e-13,
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-09-04 09:58:45.130118"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                10
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 20,
             "dataset": "synthetic_linear",
             "dataset_kwargs": {
@@ -24279,18 +24273,18 @@
         ],
         "summary": {
             "end_time": "2023-09-04 09:58:45.849539",
+            "input_dim": [
+                10
+            ],
             "opt_val": 4.4733737113861194e-13,
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-09-04 09:58:45.471026"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                10
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 20,
             "dataset": "synthetic_linear",
             "dataset_kwargs": {
@@ -24536,18 +24530,18 @@
         ],
         "summary": {
             "end_time": "2023-09-04 09:58:46.236475",
+            "input_dim": [
+                10
+            ],
             "opt_val": 4.4733737113861194e-13,
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-09-04 09:58:45.888110"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                10
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 20,
             "dataset": "synthetic_linear",
             "dataset_kwargs": {
@@ -24793,18 +24787,18 @@
         ],
         "summary": {
             "end_time": "2023-09-04 09:58:46.603275",
+            "input_dim": [
+                10
+            ],
             "opt_val": 4.4733737113861194e-13,
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-09-04 09:58:46.278759"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                10
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 20,
             "dataset": "synthetic_linear",
             "dataset_kwargs": {
@@ -25050,18 +25044,18 @@
         ],
         "summary": {
             "end_time": "2023-09-04 09:58:46.990283",
+            "input_dim": [
+                10
+            ],
             "opt_val": 4.4733737113861194e-13,
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-09-04 09:58:46.642889"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                10
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 20,
             "dataset": "synthetic_linear",
             "dataset_kwargs": {
@@ -25307,18 +25301,18 @@
         ],
         "summary": {
             "end_time": "2023-09-04 09:58:47.380818",
+            "input_dim": [
+                10
+            ],
             "opt_val": 4.4733737113861194e-13,
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-09-04 09:58:47.039780"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                10
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 20,
             "dataset": "synthetic_linear",
             "dataset_kwargs": {
@@ -25564,18 +25558,18 @@
         ],
         "summary": {
             "end_time": "2023-09-04 09:58:47.769974",
+            "input_dim": [
+                10
+            ],
             "opt_val": 4.4733737113861194e-13,
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-09-04 09:58:47.424280"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                10
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 20,
             "dataset": "synthetic_linear",
             "dataset_kwargs": {
@@ -25821,18 +25815,18 @@
         ],
         "summary": {
             "end_time": "2023-09-04 09:58:48.162859",
+            "input_dim": [
+                10
+            ],
             "opt_val": 4.4733737113861194e-13,
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-09-04 09:58:47.821680"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                10
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 20,
             "dataset": "synthetic_linear",
             "dataset_kwargs": {
@@ -26078,18 +26072,18 @@
         ],
         "summary": {
             "end_time": "2023-09-04 09:58:48.536183",
+            "input_dim": [
+                10
+            ],
             "opt_val": 4.4733737113861194e-13,
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-09-04 09:58:48.205899"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                10
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 20,
             "dataset": "synthetic_linear",
             "dataset_kwargs": {
@@ -26335,18 +26329,18 @@
         ],
         "summary": {
             "end_time": "2023-09-04 09:58:48.912892",
+            "input_dim": [
+                10
+            ],
             "opt_val": 4.4733737113861194e-13,
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-09-04 09:58:48.582525"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                10
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 20,
             "dataset": "synthetic_linear",
             "dataset_kwargs": {
@@ -26831,18 +26825,18 @@
         ],
         "summary": {
             "end_time": "2023-09-04 09:58:49.350212",
+            "input_dim": [
+                10
+            ],
             "opt_val": 4.4733737113861194e-13,
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-09-04 09:58:48.954705"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                10
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 20,
             "dataset": "synthetic_linear",
             "dataset_kwargs": {
@@ -27327,18 +27321,18 @@
         ],
         "summary": {
             "end_time": "2023-09-04 09:58:49.818078",
+            "input_dim": [
+                10
+            ],
             "opt_val": 4.4733737113861194e-13,
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-09-04 09:58:49.395596"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                10
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 20,
             "dataset": "synthetic_linear",
             "dataset_kwargs": {
@@ -27823,18 +27817,18 @@
         ],
         "summary": {
             "end_time": "2023-09-04 09:58:50.337831",
+            "input_dim": [
+                10
+            ],
             "opt_val": 4.4733737113861194e-13,
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-09-04 09:58:49.864006"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                10
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 20,
             "dataset": "synthetic_linear",
             "dataset_kwargs": {
@@ -28319,18 +28313,18 @@
         ],
         "summary": {
             "end_time": "2023-09-04 09:58:50.805438",
+            "input_dim": [
+                10
+            ],
             "opt_val": 4.4733737113861194e-13,
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-09-04 09:58:50.396204"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                10
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 20,
             "dataset": "synthetic_linear",
             "dataset_kwargs": {
@@ -28815,18 +28809,18 @@
         ],
         "summary": {
             "end_time": "2023-09-04 09:58:51.278503",
+            "input_dim": [
+                10
+            ],
             "opt_val": 4.4733737113861194e-13,
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-09-04 09:58:50.851870"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                10
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 20,
             "dataset": "synthetic_linear",
             "dataset_kwargs": {
@@ -29311,18 +29305,18 @@
         ],
         "summary": {
             "end_time": "2023-09-04 09:58:51.808471",
+            "input_dim": [
+                10
+            ],
             "opt_val": 4.4733737113861194e-13,
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-09-04 09:58:51.327050"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                10
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 20,
             "dataset": "synthetic_linear",
             "dataset_kwargs": {
@@ -29807,18 +29801,18 @@
         ],
         "summary": {
             "end_time": "2023-09-04 09:58:52.265591",
+            "input_dim": [
+                10
+            ],
             "opt_val": 4.4733737113861194e-13,
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-09-04 09:58:51.859128"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                10
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 20,
             "dataset": "synthetic_linear",
             "dataset_kwargs": {
@@ -30303,18 +30297,18 @@
         ],
         "summary": {
             "end_time": "2023-09-04 09:58:52.727484",
+            "input_dim": [
+                10
+            ],
             "opt_val": 4.4733737113861194e-13,
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-09-04 09:58:52.313985"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                10
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 20,
             "dataset": "synthetic_linear",
             "dataset_kwargs": {
@@ -30799,18 +30793,18 @@
         ],
         "summary": {
             "end_time": "2023-09-04 09:58:53.296288",
+            "input_dim": [
+                10
+            ],
             "opt_val": 4.4733737113861194e-13,
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-09-04 09:58:52.776704"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                10
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 20,
             "dataset": "synthetic_linear",
             "dataset_kwargs": {
@@ -31295,18 +31289,18 @@
         ],
         "summary": {
             "end_time": "2023-09-04 09:58:53.944449",
+            "input_dim": [
+                10
+            ],
             "opt_val": 4.4733737113861194e-13,
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-09-04 09:58:53.355120"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                10
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 20,
             "dataset": "synthetic_linear",
             "dataset_kwargs": {
@@ -31791,18 +31785,18 @@
         ],
         "summary": {
             "end_time": "2023-09-04 09:58:54.440898",
+            "input_dim": [
+                10
+            ],
             "opt_val": 4.4733737113861194e-13,
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-09-04 09:58:54.009025"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                10
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 20,
             "dataset": "synthetic_linear",
             "dataset_kwargs": {
@@ -32287,18 +32281,18 @@
         ],
         "summary": {
             "end_time": "2023-09-04 09:58:54.934958",
+            "input_dim": [
+                10
+            ],
             "opt_val": 4.4733737113861194e-13,
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-09-04 09:58:54.494106"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                10
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 20,
             "dataset": "synthetic_linear",
             "dataset_kwargs": {
@@ -32783,18 +32777,18 @@
         ],
         "summary": {
             "end_time": "2023-09-04 09:58:55.393696",
+            "input_dim": [
+                10
+            ],
             "opt_val": 4.4733737113861194e-13,
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-09-04 09:58:55.018148"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                10
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 20,
             "dataset": "synthetic_linear",
             "dataset_kwargs": {
@@ -33279,18 +33273,18 @@
         ],
         "summary": {
             "end_time": "2023-09-04 09:58:55.861400",
+            "input_dim": [
+                10
+            ],
             "opt_val": 4.4733737113861194e-13,
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-09-04 09:58:55.445317"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                10
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 20,
             "dataset": "synthetic_linear",
             "dataset_kwargs": {
@@ -33775,18 +33769,18 @@
         ],
         "summary": {
             "end_time": "2023-09-04 09:58:56.338198",
+            "input_dim": [
+                10
+            ],
             "opt_val": 4.4733737113861194e-13,
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-09-04 09:58:55.914299"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                10
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 20,
             "dataset": "synthetic_linear",
             "dataset_kwargs": {
@@ -34271,18 +34265,18 @@
         ],
         "summary": {
             "end_time": "2023-09-04 09:58:56.822213",
+            "input_dim": [
+                10
+            ],
             "opt_val": 4.4733737113861194e-13,
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-09-04 09:58:56.391643"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                10
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 20,
             "dataset": "synthetic_linear",
             "dataset_kwargs": {
@@ -34767,18 +34761,18 @@
         ],
         "summary": {
             "end_time": "2023-09-04 09:58:57.520792",
+            "input_dim": [
+                10
+            ],
             "opt_val": 4.4733737113861194e-13,
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-09-04 09:58:56.922511"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                10
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 20,
             "dataset": "synthetic_linear",
             "dataset_kwargs": {
@@ -35263,18 +35257,18 @@
         ],
         "summary": {
             "end_time": "2023-09-04 09:58:58.082987",
+            "input_dim": [
+                10
+            ],
             "opt_val": 4.4733737113861194e-13,
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-09-04 09:58:57.585968"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                10
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 20,
             "dataset": "synthetic_linear",
             "dataset_kwargs": {
@@ -35759,18 +35753,18 @@
         ],
         "summary": {
             "end_time": "2023-09-04 09:58:58.593912",
+            "input_dim": [
+                10
+            ],
             "opt_val": 4.4733737113861194e-13,
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-09-04 09:58:58.143941"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                10
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 20,
             "dataset": "synthetic_linear",
             "dataset_kwargs": {
@@ -36255,18 +36249,18 @@
         ],
         "summary": {
             "end_time": "2023-09-04 09:58:59.250466",
+            "input_dim": [
+                10
+            ],
             "opt_val": 4.4733737113861194e-13,
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-09-04 09:58:58.675244"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                10
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 20,
             "dataset": "synthetic_linear",
             "dataset_kwargs": {
@@ -36751,18 +36745,18 @@
         ],
         "summary": {
             "end_time": "2023-09-04 09:58:59.710415",
+            "input_dim": [
+                10
+            ],
             "opt_val": 4.4733737113861194e-13,
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-09-04 09:58:59.313050"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                10
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 20,
             "dataset": "synthetic_linear",
             "dataset_kwargs": {
@@ -37247,18 +37241,18 @@
         ],
         "summary": {
             "end_time": "2023-09-04 09:59:00.358653",
+            "input_dim": [
+                10
+            ],
             "opt_val": 4.4733737113861194e-13,
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-09-04 09:58:59.768445"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                10
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 20,
             "dataset": "synthetic_linear",
             "dataset_kwargs": {
@@ -37743,18 +37737,18 @@
         ],
         "summary": {
             "end_time": "2023-09-04 09:59:00.901499",
+            "input_dim": [
+                10
+            ],
             "opt_val": 4.4733737113861194e-13,
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-09-04 09:59:00.425753"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                10
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 20,
             "dataset": "synthetic_linear",
             "dataset_kwargs": {
@@ -38239,18 +38233,18 @@
         ],
         "summary": {
             "end_time": "2023-09-04 09:59:01.422069",
+            "input_dim": [
+                10
+            ],
             "opt_val": 4.4733737113861194e-13,
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-09-04 09:59:00.985124"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                10
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 20,
             "dataset": "synthetic_linear",
             "dataset_kwargs": {
@@ -38775,18 +38769,18 @@
         ],
         "summary": {
             "end_time": "2023-09-04 09:59:02.158358",
+            "input_dim": [
+                10
+            ],
             "opt_val": 4.4733737113861194e-13,
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-09-04 09:59:01.490940"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                10
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 20,
             "dataset": "synthetic_linear",
             "dataset_kwargs": {
@@ -39311,18 +39305,18 @@
         ],
         "summary": {
             "end_time": "2023-09-04 09:59:02.808479",
+            "input_dim": [
+                10
+            ],
             "opt_val": 4.4733737113861194e-13,
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-09-04 09:59:02.228894"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                10
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 20,
             "dataset": "synthetic_linear",
             "dataset_kwargs": {
@@ -39847,18 +39841,18 @@
         ],
         "summary": {
             "end_time": "2023-09-04 09:59:03.323870",
+            "input_dim": [
+                10
+            ],
             "opt_val": 4.4733737113861194e-13,
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-09-04 09:59:02.868089"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                10
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 20,
             "dataset": "synthetic_linear",
             "dataset_kwargs": {
@@ -40383,18 +40377,18 @@
         ],
         "summary": {
             "end_time": "2023-09-04 09:59:03.775335",
+            "input_dim": [
+                10
+            ],
             "opt_val": 4.4733737113861194e-13,
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-09-04 09:59:03.386598"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                10
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 20,
             "dataset": "synthetic_linear",
             "dataset_kwargs": {
@@ -40919,18 +40913,18 @@
         ],
         "summary": {
             "end_time": "2023-09-04 09:59:04.210185",
+            "input_dim": [
+                10
+            ],
             "opt_val": 4.4733737113861194e-13,
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-09-04 09:59:03.835411"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                10
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 20,
             "dataset": "synthetic_linear",
             "dataset_kwargs": {
@@ -41455,18 +41449,18 @@
         ],
         "summary": {
             "end_time": "2023-09-04 09:59:04.650371",
+            "input_dim": [
+                10
+            ],
             "opt_val": 4.4733737113861194e-13,
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-09-04 09:59:04.272074"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                10
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 20,
             "dataset": "synthetic_linear",
             "dataset_kwargs": {
@@ -41991,18 +41985,18 @@
         ],
         "summary": {
             "end_time": "2023-09-04 09:59:05.093467",
+            "input_dim": [
+                10
+            ],
             "opt_val": 4.4733737113861194e-13,
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-09-04 09:59:04.716552"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                10
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 20,
             "dataset": "synthetic_linear",
             "dataset_kwargs": {
@@ -42527,18 +42521,18 @@
         ],
         "summary": {
             "end_time": "2023-09-04 09:59:05.554594",
+            "input_dim": [
+                10
+            ],
             "opt_val": 4.4733737113861194e-13,
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-09-04 09:59:05.179236"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                10
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 20,
             "dataset": "synthetic_linear",
             "dataset_kwargs": {
@@ -43063,18 +43057,18 @@
         ],
         "summary": {
             "end_time": "2023-09-04 09:59:05.993417",
+            "input_dim": [
+                10
+            ],
             "opt_val": 4.4733737113861194e-13,
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-09-04 09:59:05.617235"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                10
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 20,
             "dataset": "synthetic_linear",
             "dataset_kwargs": {
@@ -43599,18 +43593,18 @@
         ],
         "summary": {
             "end_time": "2023-09-04 09:59:06.436026",
+            "input_dim": [
+                10
+            ],
             "opt_val": 4.4733737113861194e-13,
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-09-04 09:59:06.061698"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                10
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 20,
             "dataset": "synthetic_linear",
             "dataset_kwargs": {
@@ -44135,18 +44129,18 @@
         ],
         "summary": {
             "end_time": "2023-09-04 09:59:06.870240",
+            "input_dim": [
+                10
+            ],
             "opt_val": 4.4733737113861194e-13,
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-09-04 09:59:06.501170"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                10
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 20,
             "dataset": "synthetic_linear",
             "dataset_kwargs": {
@@ -44671,18 +44665,18 @@
         ],
         "summary": {
             "end_time": "2023-09-04 09:59:07.311786",
+            "input_dim": [
+                10
+            ],
             "opt_val": 4.4733737113861194e-13,
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-09-04 09:59:06.934858"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                10
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 20,
             "dataset": "synthetic_linear",
             "dataset_kwargs": {
@@ -45207,18 +45201,18 @@
         ],
         "summary": {
             "end_time": "2023-09-04 09:59:07.774713",
+            "input_dim": [
+                10
+            ],
             "opt_val": 4.4733737113861194e-13,
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-09-04 09:59:07.379348"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                10
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 20,
             "dataset": "synthetic_linear",
             "dataset_kwargs": {
@@ -45743,18 +45737,18 @@
         ],
         "summary": {
             "end_time": "2023-09-04 09:59:08.231283",
+            "input_dim": [
+                10
+            ],
             "opt_val": 4.4733737113861194e-13,
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-09-04 09:59:07.841795"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                10
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 20,
             "dataset": "synthetic_linear",
             "dataset_kwargs": {
@@ -46279,18 +46273,18 @@
         ],
         "summary": {
             "end_time": "2023-09-04 09:59:08.682039",
+            "input_dim": [
+                10
+            ],
             "opt_val": 4.4733737113861194e-13,
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-09-04 09:59:08.301154"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                10
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 20,
             "dataset": "synthetic_linear",
             "dataset_kwargs": {
@@ -46815,18 +46809,18 @@
         ],
         "summary": {
             "end_time": "2023-09-04 09:59:09.159254",
+            "input_dim": [
+                10
+            ],
             "opt_val": 4.4733737113861194e-13,
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-09-04 09:59:08.763108"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                10
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 20,
             "dataset": "synthetic_linear",
             "dataset_kwargs": {
@@ -47351,18 +47345,18 @@
         ],
         "summary": {
             "end_time": "2023-09-04 09:59:09.604572",
+            "input_dim": [
+                10
+            ],
             "opt_val": 4.4733737113861194e-13,
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-09-04 09:59:09.227894"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                10
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 20,
             "dataset": "synthetic_linear",
             "dataset_kwargs": {
@@ -47887,18 +47881,18 @@
         ],
         "summary": {
             "end_time": "2023-09-04 09:59:10.046909",
+            "input_dim": [
+                10
+            ],
             "opt_val": 4.4733737113861194e-13,
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-09-04 09:59:09.674218"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                10
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 20,
             "dataset": "synthetic_linear",
             "dataset_kwargs": {
@@ -48423,18 +48417,18 @@
         ],
         "summary": {
             "end_time": "2023-09-04 09:59:10.496620",
+            "input_dim": [
+                10
+            ],
             "opt_val": 4.4733737113861194e-13,
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-09-04 09:59:10.124039"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                10
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 20,
             "dataset": "synthetic_linear",
             "dataset_kwargs": {
@@ -48959,18 +48953,18 @@
         ],
         "summary": {
             "end_time": "2023-09-04 09:59:10.964827",
+            "input_dim": [
+                10
+            ],
             "opt_val": 4.4733737113861194e-13,
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-09-04 09:59:10.569613"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                10
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 20,
             "dataset": "synthetic_linear",
             "dataset_kwargs": {
@@ -49495,18 +49489,18 @@
         ],
         "summary": {
             "end_time": "2023-09-04 09:59:11.473493",
+            "input_dim": [
+                10
+            ],
             "opt_val": 4.4733737113861194e-13,
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-09-04 09:59:11.064399"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                10
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 20,
             "dataset": "synthetic_linear",
             "dataset_kwargs": {
@@ -50031,18 +50025,18 @@
         ],
         "summary": {
             "end_time": "2023-09-04 09:59:11.917418",
+            "input_dim": [
+                10
+            ],
             "opt_val": 4.4733737113861194e-13,
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-09-04 09:59:11.548391"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                10
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 20,
             "dataset": "synthetic_linear",
             "dataset_kwargs": {
@@ -50567,18 +50561,18 @@
         ],
         "summary": {
             "end_time": "2023-09-04 09:59:12.346446",
+            "input_dim": [
+                10
+            ],
             "opt_val": 4.4733737113861194e-13,
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-09-04 09:59:11.994118"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                10
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 20,
             "dataset": "synthetic_linear",
             "dataset_kwargs": {
@@ -51103,18 +51097,18 @@
         ],
         "summary": {
             "end_time": "2023-09-04 09:59:12.803010",
+            "input_dim": [
+                10
+            ],
             "opt_val": 4.4733737113861194e-13,
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-09-04 09:59:12.428237"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                10
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 20,
             "dataset": "synthetic_linear",
             "dataset_kwargs": {
@@ -51358,18 +51352,18 @@
         ],
         "summary": {
             "end_time": "2023-09-04 09:59:13.234893",
+            "input_dim": [
+                10
+            ],
             "opt_val": 4.4733737113861194e-13,
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-09-04 09:59:12.879703"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                10
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 20,
             "dataset": "synthetic_linear",
             "dataset_kwargs": {
@@ -51613,18 +51607,18 @@
         ],
         "summary": {
             "end_time": "2023-09-04 09:59:13.687827",
+            "input_dim": [
+                10
+            ],
             "opt_val": 4.4733737113861194e-13,
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-09-04 09:59:13.329726"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                10
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 20,
             "dataset": "synthetic_linear",
             "dataset_kwargs": {
@@ -51868,18 +51862,18 @@
         ],
         "summary": {
             "end_time": "2023-09-04 09:59:14.107923",
+            "input_dim": [
+                10
+            ],
             "opt_val": 4.4733737113861194e-13,
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-09-04 09:59:13.768447"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                10
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 20,
             "dataset": "synthetic_linear",
             "dataset_kwargs": {
@@ -52123,18 +52117,18 @@
         ],
         "summary": {
             "end_time": "2023-09-04 09:59:14.552098",
+            "input_dim": [
+                10
+            ],
             "opt_val": 4.4733737113861194e-13,
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-09-04 09:59:14.188422"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                10
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 20,
             "dataset": "synthetic_linear",
             "dataset_kwargs": {
@@ -52378,18 +52372,18 @@
         ],
         "summary": {
             "end_time": "2023-09-04 09:59:14.992842",
+            "input_dim": [
+                10
+            ],
             "opt_val": 4.4733737113861194e-13,
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-09-04 09:59:14.656598"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                10
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 20,
             "dataset": "synthetic_linear",
             "dataset_kwargs": {
@@ -52633,18 +52627,18 @@
         ],
         "summary": {
             "end_time": "2023-09-04 09:59:15.421179",
+            "input_dim": [
+                10
+            ],
             "opt_val": 4.4733737113861194e-13,
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-09-04 09:59:15.080598"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                10
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 20,
             "dataset": "synthetic_linear",
             "dataset_kwargs": {
@@ -52888,18 +52882,18 @@
         ],
         "summary": {
             "end_time": "2023-09-04 09:59:15.870583",
+            "input_dim": [
+                10
+            ],
             "opt_val": 4.4733737113861194e-13,
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-09-04 09:59:15.502844"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                10
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 20,
             "dataset": "synthetic_linear",
             "dataset_kwargs": {
@@ -53143,18 +53137,18 @@
         ],
         "summary": {
             "end_time": "2023-09-04 09:59:16.272726",
+            "input_dim": [
+                10
+            ],
             "opt_val": 4.4733737113861194e-13,
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-09-04 09:59:15.952533"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                10
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 20,
             "dataset": "synthetic_linear",
             "dataset_kwargs": {
@@ -53398,18 +53392,18 @@
         ],
         "summary": {
             "end_time": "2023-09-04 09:59:16.737185",
+            "input_dim": [
+                10
+            ],
             "opt_val": 4.4733737113861194e-13,
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-09-04 09:59:16.357013"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                10
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 20,
             "dataset": "synthetic_linear",
             "dataset_kwargs": {
@@ -53653,18 +53647,18 @@
         ],
         "summary": {
             "end_time": "2023-09-04 09:59:17.150941",
+            "input_dim": [
+                10
+            ],
             "opt_val": 4.4733737113861194e-13,
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-09-04 09:59:16.821434"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                10
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 20,
             "dataset": "synthetic_linear",
             "dataset_kwargs": {
@@ -53908,18 +53902,18 @@
         ],
         "summary": {
             "end_time": "2023-09-04 09:59:17.569042",
+            "input_dim": [
+                10
+            ],
             "opt_val": 4.4733737113861194e-13,
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-09-04 09:59:17.239918"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                10
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 20,
             "dataset": "synthetic_linear",
             "dataset_kwargs": {
@@ -54163,18 +54157,18 @@
         ],
         "summary": {
             "end_time": "2023-09-04 09:59:18.005617",
+            "input_dim": [
+                10
+            ],
             "opt_val": 4.4733737113861194e-13,
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-09-04 09:59:17.653768"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                10
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 20,
             "dataset": "synthetic_linear",
             "dataset_kwargs": {
@@ -54418,18 +54412,18 @@
         ],
         "summary": {
             "end_time": "2023-09-04 09:59:18.429452",
+            "input_dim": [
+                10
+            ],
             "opt_val": 4.4733737113861194e-13,
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-09-04 09:59:18.112712"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                10
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 20,
             "dataset": "synthetic_linear",
             "dataset_kwargs": {
@@ -54673,18 +54667,18 @@
         ],
         "summary": {
             "end_time": "2023-09-04 09:59:18.832334",
+            "input_dim": [
+                10
+            ],
             "opt_val": 4.4733737113861194e-13,
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-09-04 09:59:18.513508"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                10
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 20,
             "dataset": "synthetic_linear",
             "dataset_kwargs": {
@@ -54928,18 +54922,18 @@
         ],
         "summary": {
             "end_time": "2023-09-04 09:59:19.233297",
+            "input_dim": [
+                10
+            ],
             "opt_val": 4.4733737113861194e-13,
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-09-04 09:59:18.918622"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                10
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 20,
             "dataset": "synthetic_linear",
             "dataset_kwargs": {
@@ -55183,18 +55177,18 @@
         ],
         "summary": {
             "end_time": "2023-09-04 09:59:19.684413",
+            "input_dim": [
+                10
+            ],
             "opt_val": 4.4733737113861194e-13,
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-09-04 09:59:19.325931"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                10
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 20,
             "dataset": "synthetic_linear",
             "dataset_kwargs": {
@@ -55438,18 +55432,18 @@
         ],
         "summary": {
             "end_time": "2023-09-04 09:59:20.122583",
+            "input_dim": [
+                10
+            ],
             "opt_val": 4.4733737113861194e-13,
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-09-04 09:59:19.772672"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                10
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 20,
             "dataset": "synthetic_linear",
             "dataset_kwargs": {
@@ -55693,18 +55687,18 @@
         ],
         "summary": {
             "end_time": "2023-09-04 09:59:20.550765",
+            "input_dim": [
+                10
+            ],
             "opt_val": 4.4733737113861194e-13,
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-09-04 09:59:20.212570"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                10
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 20,
             "dataset": "synthetic_linear",
             "dataset_kwargs": {
@@ -55948,18 +55942,18 @@
         ],
         "summary": {
             "end_time": "2023-09-04 09:59:20.964842",
+            "input_dim": [
+                10
+            ],
             "opt_val": 4.4733737113861194e-13,
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-09-04 09:59:20.638107"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                10
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 20,
             "dataset": "synthetic_linear",
             "dataset_kwargs": {
@@ -56203,18 +56197,18 @@
         ],
         "summary": {
             "end_time": "2023-09-04 09:59:21.386087",
+            "input_dim": [
+                10
+            ],
             "opt_val": 4.4733737113861194e-13,
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-09-04 09:59:21.053065"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                10
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 20,
             "dataset": "synthetic_linear",
             "dataset_kwargs": {
@@ -56458,7 +56452,13 @@
         ],
         "summary": {
             "end_time": "2023-09-04 09:59:21.796754",
+            "input_dim": [
+                10
+            ],
             "opt_val": 4.4733737113861194e-13,
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-09-04 09:59:21.474012"
         }
     }
