@@ -1,0 +1,17 @@
+{
+    "dataset": "imagenet32",
+    "model": "resnet18-kuangliu",
+    "model_kwargs": {},
+    "loss_func": "cross_entropy",
+    "score_func": "cross_entropy_accuracy",
+    "opt": [{"name": "momo", "lr": [1e-6,1e-5,1e-4,1e-3,1e-2,0.1,1,10,100,1000], "weight_decay": [0,1e-4], "lb": [0.0,0.9], "beta": 0.9, "lr_schedule": "constant"},
+            {"name": "momo-adam", "lr": [1e-6,1e-5,1e-4,1e-3,1e-2,0.1,1,10,100,1000], "weight_decay": [0,1e-4], "lb": [0.0,0.9], "lr_schedule": "constant"},
+            {"name": "momo-star", "lr": [1e-6,1e-5,1e-4,1e-3,1e-2,0.1,1,10,100,1000], "weight_decay": [0,1e-4], "beta": 0.9, "lr_schedule": "constant"},
+            {"name": "momo-adam-star", "lr": [1e-6,1e-5,1e-4,1e-3,1e-2,0.1,1,10,100,1000], "weight_decay": [0,1e-4], "lr_schedule": "constant"},
+            {"name": "adamw", "lr": [1e-6,1e-5,1e-4,1e-3,1e-2,0.1,1,10,100,1000], "weight_decay": [0,1e-4], "lr_schedule": "constant"},
+            {"name": "sgd-m", "lr": [1e-6,1e-5,1e-4,1e-3,1e-2,0.1,1,10,100,1000], "weight_decay": [0,1e-4], "momentum": 0.9, "lr_schedule": "constant"}
+            ],
+    "batch_size": 128,
+    "max_epoch": 45,
+    "n_runs": 1
+    }

@@ -38,11 +38,15 @@ plt.rc('text', usetex=True)
 
 #%%
 R = Record(output_names)
+
+R.filter(drop={'name': ['momo-adam-star', 'momo-star']})
+R.filter(drop={'name': ['adabelief', 'adabound', 'prox-sps']}) 
+R.filter(keep={'lr_schedule': 'constant'})                          # only show constant learning rate results
+
+
 base_df = R.base_df                                 # base dataframe for all plots
 id_df = R.id_df                                     # dataframe with the optimizer setups that were run
 
-base_df, id_df = R.filter(exclude=['momo-adam-star', 'momo-star',
-                                    'adabelief', 'adabound', 'prox-sps'])     # filter out a method
 
 #fig = R.plot_metric(s='val_score', log_scale=False, legend=True)
 

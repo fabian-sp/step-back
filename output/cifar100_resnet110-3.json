@@ -1,14 +1,6 @@
 [
     {
         "config": {
-            "_input_dim": [
-                3,
-                32,
-                32
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 128,
             "dataset": "cifar100",
             "dataset_kwargs": {},
@@ -1133,19 +1125,19 @@
         ],
         "summary": {
             "end_time": "2023-08-15 11:43:28.551960",
+            "input_dim": [
+                3,
+                32,
+                32
+            ],
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-08-15 10:15:05.040275"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                3,
-                32,
-                32
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 128,
             "dataset": "cifar100",
             "dataset_kwargs": {},
@@ -2270,19 +2262,19 @@
         ],
         "summary": {
             "end_time": "2023-08-15 13:11:55.711699",
+            "input_dim": [
+                3,
+                32,
+                32
+            ],
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-08-15 11:43:30.533966"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                3,
-                32,
-                32
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 128,
             "dataset": "cifar100",
             "dataset_kwargs": {},
@@ -3407,19 +3399,19 @@
         ],
         "summary": {
             "end_time": "2023-08-15 14:40:14.203514",
+            "input_dim": [
+                3,
+                32,
+                32
+            ],
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-08-15 13:11:57.666739"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                3,
-                32,
-                32
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 128,
             "dataset": "cifar100",
             "dataset_kwargs": {},
@@ -4544,19 +4536,19 @@
         ],
         "summary": {
             "end_time": "2023-08-15 16:08:00.624817",
+            "input_dim": [
+                3,
+                32,
+                32
+            ],
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-08-15 14:40:16.143670"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                3,
-                32,
-                32
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 128,
             "dataset": "cifar100",
             "dataset_kwargs": {},
@@ -5681,19 +5673,19 @@
         ],
         "summary": {
             "end_time": "2023-08-15 17:35:24.308253",
+            "input_dim": [
+                3,
+                32,
+                32
+            ],
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-08-15 16:08:02.546193"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                3,
-                32,
-                32
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 128,
             "dataset": "cifar100",
             "dataset_kwargs": {},
@@ -6818,19 +6810,19 @@
         ],
         "summary": {
             "end_time": "2023-08-15 19:03:10.628008",
+            "input_dim": [
+                3,
+                32,
+                32
+            ],
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-08-15 17:35:26.254686"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                3,
-                32,
-                32
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 128,
             "dataset": "cifar100",
             "dataset_kwargs": {},
@@ -7955,19 +7947,19 @@
         ],
         "summary": {
             "end_time": "2023-08-15 20:31:11.268807",
+            "input_dim": [
+                3,
+                32,
+                32
+            ],
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-08-15 19:03:12.587606"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                3,
-                32,
-                32
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 128,
             "dataset": "cifar100",
             "dataset_kwargs": {},
@@ -9092,19 +9084,19 @@
         ],
         "summary": {
             "end_time": "2023-08-15 21:54:55.341091",
+            "input_dim": [
+                3,
+                32,
+                32
+            ],
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-08-15 20:31:13.225244"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                3,
-                32,
-                32
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 128,
             "dataset": "cifar100",
             "dataset_kwargs": {},
@@ -10229,19 +10221,19 @@
         ],
         "summary": {
             "end_time": "2023-08-15 23:14:39.805743",
+            "input_dim": [
+                3,
+                32,
+                32
+            ],
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-08-15 21:54:56.860735"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                3,
-                32,
-                32
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 128,
             "dataset": "cifar100",
             "dataset_kwargs": {},
@@ -11366,19 +11358,19 @@
         ],
         "summary": {
             "end_time": "2023-08-16 00:34:24.965218",
+            "input_dim": [
+                3,
+                32,
+                32
+            ],
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-08-15 23:14:41.299352"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                3,
-                32,
-                32
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 128,
             "dataset": "cifar100",
             "dataset_kwargs": {},
@@ -12503,19 +12495,19 @@
         ],
         "summary": {
             "end_time": "2023-08-16 01:54:09.931032",
+            "input_dim": [
+                3,
+                32,
+                32
+            ],
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-08-16 00:34:26.478004"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                3,
-                32,
-                32
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 128,
             "dataset": "cifar100",
             "dataset_kwargs": {},
@@ -13640,19 +13632,19 @@
         ],
         "summary": {
             "end_time": "2023-08-16 03:13:54.441464",
+            "input_dim": [
+                3,
+                32,
+                32
+            ],
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-08-16 01:54:11.446340"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                3,
-                32,
-                32
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 128,
             "dataset": "cifar100",
             "dataset_kwargs": {},
@@ -14777,19 +14769,19 @@
         ],
         "summary": {
             "end_time": "2023-08-16 04:33:36.080059",
+            "input_dim": [
+                3,
+                32,
+                32
+            ],
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-08-16 03:13:55.955696"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                3,
-                32,
-                32
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 128,
             "dataset": "cifar100",
             "dataset_kwargs": {},
@@ -15914,19 +15906,19 @@
         ],
         "summary": {
             "end_time": "2023-08-16 05:53:16.649357",
+            "input_dim": [
+                3,
+                32,
+                32
+            ],
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-08-16 04:33:37.611118"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                3,
-                32,
-                32
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 128,
             "dataset": "cifar100",
             "dataset_kwargs": {},
@@ -17051,19 +17043,19 @@
         ],
         "summary": {
             "end_time": "2023-08-16 07:13:05.402008",
+            "input_dim": [
+                3,
+                32,
+                32
+            ],
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-08-16 05:53:18.169093"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                3,
-                32,
-                32
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 128,
             "dataset": "cifar100",
             "dataset_kwargs": {},
@@ -18188,19 +18180,19 @@
         ],
         "summary": {
             "end_time": "2023-08-16 08:32:53.934449",
+            "input_dim": [
+                3,
+                32,
+                32
+            ],
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-08-16 07:13:06.955528"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                3,
-                32,
-                32
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 128,
             "dataset": "cifar100",
             "dataset_kwargs": {},
@@ -19325,19 +19317,19 @@
         ],
         "summary": {
             "end_time": "2023-08-16 09:52:45.403983",
+            "input_dim": [
+                3,
+                32,
+                32
+            ],
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-08-16 08:32:55.478484"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                3,
-                32,
-                32
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 128,
             "dataset": "cifar100",
             "dataset_kwargs": {},
@@ -20462,6 +20454,14 @@
         ],
         "summary": {
             "end_time": "2023-08-16 11:12:32.378007",
+            "input_dim": [
+                3,
+                32,
+                32
+            ],
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-08-16 09:52:46.954223"
         }
     }

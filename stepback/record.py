@@ -81,12 +81,38 @@ class Record:
         self.base_df = self._build_base_df(agg='mean')
         return
     
-    def filter(self, exclude=[]):
+    def filter(self, drop=dict(), keep=dict()):
+        """Filter out by columns in id_df. Drops if any condition is true.
+        For example, use exclude = {'name': 'adam'} to drop all results from Adam. 
+        
+        NOTE: This overwrites the base_df and id_df object.
+        """
+        all_ix = list()
 
-        base_df = self.base_df[~self.base_df.name.isin(exclude)]
-        id_df = self.id_df[~self.id_df.name.isin(exclude)]
+        for k,v in drop.items():
+            if not isinstance(v, list):
+                v = [v] # if single value is given convert to list
+            
+            ix = ~self.id_df[k].isin(v) # indices to drop --> negate
+            all_ix.append(ix)
 
-        return base_df, id_df
+        for k,v in keep.items():
+            if not isinstance(v, list):
+                v = [v] # if single value is given convert to list
+            
+            ix = self.id_df[k].isin(v) # indices to keep
+            all_ix.append(ix)
+
+        ixx = pd.concat(all_ix, axis=1).all(axis=1) # keep where all True
+
+        ids_to_keep = ixx.index[ixx.values]
+
+        self.base_df = self.base_df[self.base_df.id.isin(ids_to_keep)]
+        self.id_df = self.id_df.loc[ids_to_keep]
+
+        warnings.warn("filter method overwrites base_df and id_df.")
+
+        return 
 
     def _build_raw_df(self):
         """ create DataFrame with the stored output. Creates an id column based on opt config. """

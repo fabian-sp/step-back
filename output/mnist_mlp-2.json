@@ -1,12 +1,6 @@
 [
     {
         "config": {
-            "_input_dim": [
-                784
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 128,
             "dataset": "mnist",
             "dataset_kwargs": {
@@ -146,17 +140,17 @@
         ],
         "summary": {
             "end_time": "2023-08-13 19:33:56.790614",
+            "input_dim": [
+                784
+            ],
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-08-13 19:30:42.984203"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                784
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 128,
             "dataset": "mnist",
             "dataset_kwargs": {
@@ -296,17 +290,17 @@
         ],
         "summary": {
             "end_time": "2023-08-13 19:37:10.851789",
+            "input_dim": [
+                784
+            ],
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-08-13 19:33:56.852787"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                784
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 128,
             "dataset": "mnist",
             "dataset_kwargs": {
@@ -446,17 +440,17 @@
         ],
         "summary": {
             "end_time": "2023-08-13 19:40:24.541383",
+            "input_dim": [
+                784
+            ],
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-08-13 19:37:10.907119"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                784
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 128,
             "dataset": "mnist",
             "dataset_kwargs": {
@@ -596,17 +590,17 @@
         ],
         "summary": {
             "end_time": "2023-08-13 19:43:37.788861",
+            "input_dim": [
+                784
+            ],
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-08-13 19:40:24.602502"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                784
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 128,
             "dataset": "mnist",
             "dataset_kwargs": {
@@ -746,17 +740,17 @@
         ],
         "summary": {
             "end_time": "2023-08-13 19:46:51.061088",
+            "input_dim": [
+                784
+            ],
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-08-13 19:43:37.850779"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                784
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 128,
             "dataset": "mnist",
             "dataset_kwargs": {
@@ -896,17 +890,17 @@
         ],
         "summary": {
             "end_time": "2023-08-13 19:50:04.720269",
+            "input_dim": [
+                784
+            ],
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-08-13 19:46:51.123697"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                784
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 128,
             "dataset": "mnist",
             "dataset_kwargs": {
@@ -1046,17 +1040,17 @@
         ],
         "summary": {
             "end_time": "2023-08-13 19:53:19.326870",
+            "input_dim": [
+                784
+            ],
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-08-13 19:50:04.780030"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                784
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 128,
             "dataset": "mnist",
             "dataset_kwargs": {
@@ -1196,17 +1190,17 @@
         ],
         "summary": {
             "end_time": "2023-08-13 19:56:34.178586",
+            "input_dim": [
+                784
+            ],
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-08-13 19:53:19.380279"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                784
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 128,
             "dataset": "mnist",
             "dataset_kwargs": {
@@ -1346,17 +1340,17 @@
         ],
         "summary": {
             "end_time": "2023-08-13 19:59:47.514857",
+            "input_dim": [
+                784
+            ],
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-08-13 19:56:34.231944"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                784
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 128,
             "dataset": "mnist",
             "dataset_kwargs": {
@@ -1496,17 +1490,17 @@
         ],
         "summary": {
             "end_time": "2023-08-13 20:03:01.184068",
+            "input_dim": [
+                784
+            ],
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-08-13 19:59:47.568202"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                784
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 128,
             "dataset": "mnist",
             "dataset_kwargs": {
@@ -1646,17 +1640,17 @@
         ],
         "summary": {
             "end_time": "2023-08-13 20:06:14.695101",
+            "input_dim": [
+                784
+            ],
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-08-13 20:03:01.238707"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                784
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 128,
             "dataset": "mnist",
             "dataset_kwargs": {
@@ -1796,17 +1790,17 @@
         ],
         "summary": {
             "end_time": "2023-08-13 20:09:27.609090",
+            "input_dim": [
+                784
+            ],
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-08-13 20:06:14.749939"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                784
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 128,
             "dataset": "mnist",
             "dataset_kwargs": {
@@ -1946,17 +1940,17 @@
         ],
         "summary": {
             "end_time": "2023-08-13 20:12:40.688058",
+            "input_dim": [
+                784
+            ],
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-08-13 20:09:27.662828"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                784
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 128,
             "dataset": "mnist",
             "dataset_kwargs": {
@@ -2096,17 +2090,17 @@
         ],
         "summary": {
             "end_time": "2023-08-13 20:15:54.220387",
+            "input_dim": [
+                784
+            ],
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-08-13 20:12:40.742849"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                784
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 128,
             "dataset": "mnist",
             "dataset_kwargs": {
@@ -2246,17 +2240,17 @@
         ],
         "summary": {
             "end_time": "2023-08-13 20:19:07.318561",
+            "input_dim": [
+                784
+            ],
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-08-13 20:15:54.276139"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                784
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 128,
             "dataset": "mnist",
             "dataset_kwargs": {
@@ -2396,17 +2390,17 @@
         ],
         "summary": {
             "end_time": "2023-08-13 20:22:20.827218",
+            "input_dim": [
+                784
+            ],
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-08-13 20:19:07.374089"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                784
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 128,
             "dataset": "mnist",
             "dataset_kwargs": {
@@ -2546,17 +2540,17 @@
         ],
         "summary": {
             "end_time": "2023-08-13 20:25:34.135078",
+            "input_dim": [
+                784
+            ],
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-08-13 20:22:20.883293"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                784
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 128,
             "dataset": "mnist",
             "dataset_kwargs": {
@@ -2696,17 +2690,17 @@
         ],
         "summary": {
             "end_time": "2023-08-13 20:28:47.258140",
+            "input_dim": [
+                784
+            ],
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-08-13 20:25:34.191145"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                784
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 128,
             "dataset": "mnist",
             "dataset_kwargs": {
@@ -2846,17 +2840,17 @@
         ],
         "summary": {
             "end_time": "2023-08-13 20:32:00.675611",
+            "input_dim": [
+                784
+            ],
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-08-13 20:28:47.320368"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                784
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 128,
             "dataset": "mnist",
             "dataset_kwargs": {
@@ -2996,17 +2990,17 @@
         ],
         "summary": {
             "end_time": "2023-08-13 20:35:14.231439",
+            "input_dim": [
+                784
+            ],
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-08-13 20:32:00.730563"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                784
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 128,
             "dataset": "mnist",
             "dataset_kwargs": {
@@ -3146,17 +3140,17 @@
         ],
         "summary": {
             "end_time": "2023-08-13 20:38:27.459507",
+            "input_dim": [
+                784
+            ],
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-08-13 20:35:14.288863"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                784
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 128,
             "dataset": "mnist",
             "dataset_kwargs": {
@@ -3296,17 +3290,17 @@
         ],
         "summary": {
             "end_time": "2023-08-13 20:41:40.521300",
+            "input_dim": [
+                784
+            ],
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-08-13 20:38:27.515874"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                784
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 128,
             "dataset": "mnist",
             "dataset_kwargs": {
@@ -3446,17 +3440,17 @@
         ],
         "summary": {
             "end_time": "2023-08-13 20:44:53.265780",
+            "input_dim": [
+                784
+            ],
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-08-13 20:41:40.577844"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                784
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 128,
             "dataset": "mnist",
             "dataset_kwargs": {
@@ -3596,17 +3590,17 @@
         ],
         "summary": {
             "end_time": "2023-08-13 20:48:05.919964",
+            "input_dim": [
+                784
+            ],
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-08-13 20:44:53.329791"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                784
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 128,
             "dataset": "mnist",
             "dataset_kwargs": {
@@ -3746,17 +3740,17 @@
         ],
         "summary": {
             "end_time": "2023-08-13 20:51:18.265195",
+            "input_dim": [
+                784
+            ],
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-08-13 20:48:05.985227"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                784
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 128,
             "dataset": "mnist",
             "dataset_kwargs": {
@@ -3896,17 +3890,17 @@
         ],
         "summary": {
             "end_time": "2023-08-13 20:54:30.953991",
+            "input_dim": [
+                784
+            ],
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-08-13 20:51:18.331331"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                784
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 128,
             "dataset": "mnist",
             "dataset_kwargs": {
@@ -4046,17 +4040,17 @@
         ],
         "summary": {
             "end_time": "2023-08-13 20:57:43.383705",
+            "input_dim": [
+                784
+            ],
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-08-13 20:54:31.014694"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                784
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 128,
             "dataset": "mnist",
             "dataset_kwargs": {
@@ -4196,17 +4190,17 @@
         ],
         "summary": {
             "end_time": "2023-08-13 21:00:56.506864",
+            "input_dim": [
+                784
+            ],
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-08-13 20:57:43.446438"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                784
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 128,
             "dataset": "mnist",
             "dataset_kwargs": {
@@ -4346,17 +4340,17 @@
         ],
         "summary": {
             "end_time": "2023-08-13 21:04:10.006453",
+            "input_dim": [
+                784
+            ],
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-08-13 21:00:56.575407"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                784
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 128,
             "dataset": "mnist",
             "dataset_kwargs": {
@@ -4496,17 +4490,17 @@
         ],
         "summary": {
             "end_time": "2023-08-13 21:07:24.322736",
+            "input_dim": [
+                784
+            ],
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-08-13 21:04:10.069911"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                784
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 128,
             "dataset": "mnist",
             "dataset_kwargs": {
@@ -4646,17 +4640,17 @@
         ],
         "summary": {
             "end_time": "2023-08-13 21:10:37.456509",
+            "input_dim": [
+                784
+            ],
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-08-13 21:07:24.402575"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                784
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 128,
             "dataset": "mnist",
             "dataset_kwargs": {
@@ -4796,17 +4790,17 @@
         ],
         "summary": {
             "end_time": "2023-08-13 21:13:51.330428",
+            "input_dim": [
+                784
+            ],
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-08-13 21:10:37.518749"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                784
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 128,
             "dataset": "mnist",
             "dataset_kwargs": {
@@ -4946,17 +4940,17 @@
         ],
         "summary": {
             "end_time": "2023-08-13 21:17:05.109077",
+            "input_dim": [
+                784
+            ],
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-08-13 21:13:51.398178"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                784
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 128,
             "dataset": "mnist",
             "dataset_kwargs": {
@@ -5096,17 +5090,17 @@
         ],
         "summary": {
             "end_time": "2023-08-13 21:20:19.163075",
+            "input_dim": [
+                784
+            ],
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-08-13 21:17:05.178915"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                784
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 128,
             "dataset": "mnist",
             "dataset_kwargs": {
@@ -5246,17 +5240,17 @@
         ],
         "summary": {
             "end_time": "2023-08-13 21:23:32.649848",
+            "input_dim": [
+                784
+            ],
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-08-13 21:20:19.233331"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                784
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 128,
             "dataset": "mnist",
             "dataset_kwargs": {
@@ -5396,17 +5390,17 @@
         ],
         "summary": {
             "end_time": "2023-08-13 21:26:45.995407",
+            "input_dim": [
+                784
+            ],
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-08-13 21:23:32.784339"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                784
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 128,
             "dataset": "mnist",
             "dataset_kwargs": {
@@ -5546,17 +5540,17 @@
         ],
         "summary": {
             "end_time": "2023-08-13 21:29:58.116265",
+            "input_dim": [
+                784
+            ],
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-08-13 21:26:46.087970"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                784
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 128,
             "dataset": "mnist",
             "dataset_kwargs": {
@@ -5696,17 +5690,17 @@
         ],
         "summary": {
             "end_time": "2023-08-13 21:33:10.836587",
+            "input_dim": [
+                784
+            ],
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-08-13 21:29:58.179175"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                784
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 128,
             "dataset": "mnist",
             "dataset_kwargs": {
@@ -5846,17 +5840,17 @@
         ],
         "summary": {
             "end_time": "2023-08-13 21:36:23.028223",
+            "input_dim": [
+                784
+            ],
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-08-13 21:33:10.898252"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                784
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 128,
             "dataset": "mnist",
             "dataset_kwargs": {
@@ -5996,17 +5990,17 @@
         ],
         "summary": {
             "end_time": "2023-08-13 21:39:35.151672",
+            "input_dim": [
+                784
+            ],
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-08-13 21:36:23.091749"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                784
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 128,
             "dataset": "mnist",
             "dataset_kwargs": {
@@ -6146,17 +6140,17 @@
         ],
         "summary": {
             "end_time": "2023-08-13 21:42:46.812671",
+            "input_dim": [
+                784
+            ],
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-08-13 21:39:35.214919"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                784
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 128,
             "dataset": "mnist",
             "dataset_kwargs": {
@@ -6296,17 +6290,17 @@
         ],
         "summary": {
             "end_time": "2023-08-13 21:45:58.298672",
+            "input_dim": [
+                784
+            ],
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-08-13 21:42:46.876002"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                784
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 128,
             "dataset": "mnist",
             "dataset_kwargs": {
@@ -6446,17 +6440,17 @@
         ],
         "summary": {
             "end_time": "2023-08-13 21:49:10.821597",
+            "input_dim": [
+                784
+            ],
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-08-13 21:45:58.366550"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                784
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 128,
             "dataset": "mnist",
             "dataset_kwargs": {
@@ -6596,17 +6590,17 @@
         ],
         "summary": {
             "end_time": "2023-08-13 21:52:23.124747",
+            "input_dim": [
+                784
+            ],
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-08-13 21:49:10.885998"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                784
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 128,
             "dataset": "mnist",
             "dataset_kwargs": {
@@ -6746,17 +6740,17 @@
         ],
         "summary": {
             "end_time": "2023-08-13 21:55:35.208504",
+            "input_dim": [
+                784
+            ],
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-08-13 21:52:23.194659"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                784
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 128,
             "dataset": "mnist",
             "dataset_kwargs": {
@@ -6896,17 +6890,17 @@
         ],
         "summary": {
             "end_time": "2023-08-13 21:58:47.132845",
+            "input_dim": [
+                784
+            ],
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-08-13 21:55:35.273214"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                784
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 128,
             "dataset": "mnist",
             "dataset_kwargs": {
@@ -7046,17 +7040,17 @@
         ],
         "summary": {
             "end_time": "2023-08-13 22:01:59.545243",
+            "input_dim": [
+                784
+            ],
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-08-13 21:58:47.202466"
         }
     },
     {
         "config": {
-            "_input_dim": [
-                784
-            ],
-            "_output_dim": [
-                1
-            ],
             "batch_size": 128,
             "dataset": "mnist",
             "dataset_kwargs": {
@@ -7196,6 +7190,12 @@
         ],
         "summary": {
             "end_time": "2023-08-13 22:05:11.667565",
+            "input_dim": [
+                784
+            ],
+            "output_dim": [
+                1
+            ],
             "start_time": "2023-08-13 22:01:59.616169"
         }
     }

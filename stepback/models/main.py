@@ -21,7 +21,7 @@ def get_num_classes(dataset_name):
     return C
 
 
-def get_model(config: dict={}) -> torch.nn.Module:
+def get_model(config: dict, input_dim: list, output_dim: list) -> torch.nn.Module:
     """
     Main function mapping a model name to an instance of torch.nn.Module.  
     """
@@ -30,17 +30,17 @@ def get_model(config: dict={}) -> torch.nn.Module:
     
     #======== Linear model =============
     if name == 'linear':
-        assert len(config['_input_dim']) == 1, "Expecting input dimensionality of length 1."
+        assert len(input_dim) == 1, "Expecting input dimensionality of length 1."
         
-        input_size = config['_input_dim'][0]
+        input_size = input_dim[0]
         output_size = config['model_kwargs'].get('output_size', 1)
 
         model = MLP(input_size=input_size, output_size=output_size, hidden_sizes=[], bias=False)
     
     #======== MLP with ReLU =============
     elif name == 'mlp':
-        assert len(config['_input_dim']) == 1, "Expecting input dimensionality of length 1."
-        input_size = config['_input_dim'][0]
+        assert len(input_dim) == 1, "Expecting input dimensionality of length 1."
+        input_size = input_dim[0]
         
         assert 'output_size' in config['model_kwargs'].keys(), "Need to specify the dimension of the output. Add in your config \n 'model_kwargs' = {'output_size': }"
         output_size = config['model_kwargs'] # output of model can be multi-dim, but targets are 1-dim 
@@ -49,11 +49,11 @@ def get_model(config: dict={}) -> torch.nn.Module:
     
     #======== Matrix factorization =============
     elif name == 'matrix_fac':
-        assert len(config['_input_dim']) == 1, "Expecting input dimensionality of length 1."
-        assert len(config['_output_dim']) == 1, "Expecting output dimensionality of length 1."
+        assert len(input_dim) == 1, "Expecting input dimensionality of length 1."
+        assert len(output_dim) == 1, "Expecting output dimensionality of length 1."
         
-        input_size = config['_input_dim'][0]
-        output_size = config['_output_dim'][0]
+        input_size = input_dim[0]
+        output_size = output_dim[0]
         
         if 'rank' not in kwargs.keys():
             warnings.warn(f'No rank dimension specified. Using max of input and output size, equal to {max(input_size, output_size)}')
@@ -62,8 +62,8 @@ def get_model(config: dict={}) -> torch.nn.Module:
     
     #======== Matrix completion =============
     elif name == 'matrix_completion':
-        assert len(config['_input_dim']) == 1, "Expecting input dimensionality of length 1."
-        assert len(config['_output_dim']) == 1, "Expecting output dimensionality of length 1."
+        assert len(input_dim) == 1, "Expecting input dimensionality of length 1."
+        assert len(output_dim) == 1, "Expecting output dimensionality of length 1."
         
         if 'rank' not in kwargs.keys():
             warnings.warn(f'No rank dimension specified. Using default of 10.')
