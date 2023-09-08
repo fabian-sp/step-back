@@ -7,7 +7,7 @@ os.chdir('..')
 print("Saving records from directory: ", os.getcwd())
 
 
-ALL_EXP = ['cifar100_resnet110', 'cifar10_resnet20', 'cifar10_vgg16', 'cifar10_vit', 'mnist_mlp']
+ALL_EXP = ['cifar100_resnet110', 'cifar10_resnet20', 'cifar10_vgg16', 'cifar10_vit', 'mnist_mlp', 'imagenet32_resnet18']
 
 for exp_id in ALL_EXP:
 

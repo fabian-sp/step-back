@@ -26,7 +26,8 @@ For the experiments we ran, we provide the code that generated the results (i.e.
 | cifar100_resnet110  | ResNet110 [code](stepback/models/resnet.py)  | Cifar100 [code](stepback/datasets/cifar.py) | [record](stepback/records/cifar100_resnet110.csv)  |   
 | cifar10_resnet20  | ResNet20 [code](stepback/models/resnet.py) | Cifar10 [code](stepback/datasets/cifar.py) | [record](stepback/records/cifar10_resnet20.csv)  |   
 | cifar10_vgg16  | VGG16 [code](stepback/models/vgg.py) | Cifar10 [code](stepback/datasets/cifar.py) | [record](stepback/records/cifar10_vgg16.csv)  |   
-| cifar10_vit  | Small ViT [code](stepback/models/vit/vit.py) | Cifar10 [code](stepback/datasets/cifar.py) | [record](stepback/records/cifar10_vit.csv)  |   
+| cifar10_vit  | Small ViT [code](stepback/models/vit/vit.py) | Cifar10 [code](stepback/datasets/cifar.py) | [record](stepback/records/cifar10_vit.csv)  |
+| imagenet32_resnet18  | ResNet18 [code](stepback/models/kuangliu_resnet.py) | Imagenet32 [code](stepback/datasets/imagenet32.py) | [record](stepback/records/imagenet32_resnet18.csv)  |   
 | mnist_mlp  |  MLP (3-layer, ReLU) [code](stepback/models/basic_models.py) | MNIST [code](stepback/datasets/mnist.py) | [record](stepback/records/mnist_mlp.csv)  |   
 
 
