@@ -37,8 +37,13 @@ exp_map = {'cifar100_resnet110': '\\texttt{ResNet110} for \\texttt{CIFAR100}',
 #%%
 def get_best_score(exp_id):
     output_names = get_output_filenames(exp_id)
+    
     R = Record(output_names)
-
+    
+    # filter
+    R.filter(drop={'name': ['momo-adam-star', 'momo-star']})
+    R.filter(drop={'name': ['adabelief', 'adabound', 'prox-sps']}) 
+    R.filter(keep={'lr_schedule': 'constant'})                          # only show constant learning rate results
 
     df = R.base_df.copy()
     df = df[df.name.isin(METHODS)]
