@@ -112,9 +112,16 @@ def plot_stability(base_df, score='val_score', xaxis='lr', sigma=1, cutoff=None,
         # get method and learning rate with best score
         # best_ind, best_x = df.index[df[s].argmax()], df[xaxis][df[s].argmax()]
 
-        R._reset_marker_cycle()
         ax = axs.ravel()[j] if len(score) > 1 else axs 
         # .unique(level=) might be useful at some point
+
+        # create ls cycle for each name
+        all_name = list(df.index.unique(level='name'))
+        ls_cycles = dict()
+        for n in all_name:
+            ls_cycles[n] = itertools.cycle(["-", '--', ':', '-.'])
+
+        # main plotting
         for m in df.index.unique():
             this_df = df.loc[m,:]
             this_df = this_df.sort_values(xaxis) # sort!
@@ -133,8 +140,11 @@ def plot_stability(base_df, score='val_score', xaxis='lr', sigma=1, cutoff=None,
             
             label = label if j+1 == len(score) else None # avoid duplicate labels in legend
             
-            ax.plot(x,y, c=R.aes.get(name, R.aes['default'])['color'], label=label,
-                    marker=next(R.aes.get(name, R.aes['default']).get('marker_cycle')), 
+            ax.plot(x,y, 
+                    c=R.aes.get(name, R.aes['default'])['color'], 
+                    label=label,
+                    marker="o",
+                    ls=next(ls_cycles[name]),
                     zorder=R.aes.get(name, R.aes['default']).get('zorder')
                     )
             
