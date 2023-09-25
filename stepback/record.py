@@ -158,7 +158,7 @@ class Record:
         
         # compute mean for each id and(!) epoch
         if agg in ['mean', 'median']:
-            df = raw_df.groupby(['id', 'epoch'], sort=False).mean().drop('run_id',axis=1)
+            df = raw_df.groupby(['id', 'epoch'], sort=False).agg(lambda x: x.mean(skipna=False)).drop('run_id',axis=1)
             df2 = raw_df.groupby(['id', 'epoch'], sort=False).std().drop('run_id',axis=1)           
             df2.columns = [c+'_std' for c in df2.columns]
             
