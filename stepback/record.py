@@ -7,6 +7,7 @@ import copy
 import itertools
 from typing import Union
 import warnings
+from pandas.api.types import is_numeric_dtype
 
 from .log import Container
 
@@ -158,7 +159,15 @@ class Record:
         
         # compute mean for each id and(!) epoch
         if agg in ['mean', 'median']:
-            df = raw_df.groupby(['id', 'epoch'], sort=False).agg(lambda x: x.mean(skipna=False)).drop('run_id',axis=1)
+            # if column numeric, take mean else take first
+            nan_mean_fun = lambda x: x.mean(skipna=False)
+            agg_dict = dict([(c, nan_mean_fun) if is_numeric_dtype(raw_df[c]) else (c, 'first') for c in raw_df.columns])
+            agg_dict.pop('id')
+            agg_dict.pop('epoch')
+
+            df = raw_df.groupby(['id', 'epoch'], sort=False).agg(agg_dict).drop('run_id',axis=1)
+            
+            # std returns nan if some entrys are nan
             df2 = raw_df.groupby(['id', 'epoch'], sort=False).std().drop('run_id',axis=1)           
             df2.columns = [c+'_std' for c in df2.columns]
             
