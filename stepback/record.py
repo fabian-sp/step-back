@@ -175,7 +175,7 @@ class Record:
             df = df.reset_index(level=-1) # moves epoch out of index
             
         elif agg == 'first':
-            df = raw_df.groupby(['id', 'epoch'], sort=False).first()
+            df = raw_df.sort_values(['id', 'epoch', 'run_id']).groupby(['id', 'epoch'], sort=False).first()
             assert len(df.run_id.unique()) == 1
             df = df.drop('run_id', axis=1)
             df = df.reset_index(level=-1) # moves epoch out of index
