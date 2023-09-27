@@ -271,7 +271,7 @@ class Base:
             # Here the magic happens
             loss_val = self.opt.step(closure=closure) 
             
-            if self.device != 'cpu':
+            if self.device != torch.device('cpu'):
                 torch.cuda.synchronize()
             timings_dataloader.append(t1-t0) 
             t0 = time.time()                                        # model timing ends
@@ -320,7 +320,7 @@ class Base:
                 score_dict[_met] += _met_fun.compute(out, targets).item() * data.shape[0] 
             
             timings_dataloader.append(t1-t0)                                         
-            if self.device != 'cpu':
+            if self.device != torch.device('cpu'):
                 torch.cuda.synchronize()        
             t0 = time.time()
             timings_model.append(t0-t1)    
