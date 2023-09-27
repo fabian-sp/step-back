@@ -251,7 +251,7 @@ class Base:
 
         for batch in pbar:
             # Move batch to device
-            data, targets = batch['data'].pin_memory().to(device=self.device), batch['targets'].pin_memory().to(device=self.device)
+            data, targets = batch['data'].to(device=self.device), batch['targets'].to(device=self.device)
             
             # Forward and Backward
             t1 = time.time()                                        # model timing starts
