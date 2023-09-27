@@ -1,0 +1,15 @@
+{
+"dataset": "synthetic_linear",
+"dataset_kwargs": {"p": 10, "n_samples": 50},
+"model": "linear",
+"loss_func": "logistic",
+"score_func": "logistic_accuracy",
+"opt": [{"name": "sgd-m", "lr": [1e-2,1e-1,1], "lr_schedule": "constant"},
+        {"name": "adam", "lr": [1e-2,1e-1,1], "weight_decay": 0, "lr_schedule": "constant"},
+        {"name": "momo", "lr": [1e-2,1e-1,1], "beta": 0.9, "lr_schedule": "constant"},
+        {"name": "momo-adam", "lr": [1e-2,1e-1,1], "lr_schedule": "constant"}
+        ],
+"batch_size": 5,
+"max_epoch": 10,
+"n_runs": 2 
+}

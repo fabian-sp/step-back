@@ -33,15 +33,18 @@ def get_output_filenames(exp_id, output_dir='output/'):
 
     return exp_files
 
-def filter_output_file(exp_id, exp_filter=dict(), opt_filter=dict(), fname=None, output_dir='output/', as_json=True):
+def filter_output_file(exp_id, exp_filter=dict(), opt_filter=dict(), drop_keys=list(), fname=None, output_dir='output/', as_json=True):
     """Filter ouput file. Deletes all results that are specified by exp_filter and opt_filter.
+        Values of exp_filter and opt_filter can also be a list to specifiy multiple values. 
+        Deletes also all drop_keys in history.
     Example:
-        opt_filter = {'name': 'adam'} # deletes all adam runs
-        exp_filter = {'dataset':'mnist} # deletes all runs where mnist was the dataset 
+        opt_filter = {'name': 'adam'}     # deletes all adam runs
+        exp_filter = {'dataset': 'mnist'} # deletes all runs where mnist was the dataset 
+        drop_keys = ['step_size_list']     # deletes step sizes 
 
     CAUTION: This will overwrite the file if not fname is specified. Otherwise, it will write the filtered output in fname.
     """
-    print(f"Reading from {output_dir+exp_id}.")
+    print(f"Reading from {os.path.join(output_dir,exp_id)}.")
     C = Container(name=exp_id, output_dir=output_dir, as_json=as_json)
     C.load() # load data
     print(f"Original file has {len(C.data)} entries.")
@@ -52,14 +55,24 @@ def filter_output_file(exp_id, exp_filter=dict(), opt_filter=dict(), fname=None,
         conf = copy.deepcopy(d['config'])
 
         for k,v in exp_filter.items():
-            if conf.get(k) == v:
+            if not isinstance(v, list):
+                v = [v]
+            if conf.get(k) in v:
                 DROP = True
         
         for k,v in opt_filter.items():
-            if conf['opt'].get(k) == v:
+            if not isinstance(v, list):
+                v = [v]
+            
+            if conf['opt'].get(k) in v:
                 DROP = True
 
         if not DROP:
+            if len(drop_keys) > 0:
+                for epoch_rec in d['history']:
+                    for dkey in drop_keys:
+                        epoch_rec.pop(dkey, None) # drop if exists
+
             new_data.append(d)  
         else:
             print("Dropping the config:") 
@@ -75,6 +88,17 @@ def filter_output_file(exp_id, exp_filter=dict(), opt_filter=dict(), fname=None,
 
     return
 
+def merge_subfolder(folder_name, fname='merged', output_dir='output/'):
+    """Merges all output files from output_dir/folder_name """
+    dir = os.path.join(output_dir, folder_name)
+    all_files = os.listdir(dir)
+    all_files = [f[:-5] for f in all_files if f[-5:]=='.json']
+
+    merge_output_files(all_files, fname, output_dir=dir, as_json=True)
+
+    return
+
+
 def merge_output_files(exp_id_list, fname, output_dir='output/', as_json=True):
     """ Merges output files from a list of exp_id into a new file (with name fname)."""
     merged = Container(name=fname, output_dir=output_dir, as_json=as_json)
@@ -84,6 +108,12 @@ def merge_output_files(exp_id_list, fname, output_dir='output/', as_json=True):
         C.load() # load data
         merged.data += C.data # append
 
+    all_model = set([d['config']['model'] for d in merged.data])
+    assert len(all_model) == 1, f"Found multiple models: {all_model}. Please make sure not to merge results from different setups."
+    
+    all_dataset = set([d['config']['dataset'] for d in merged.data])
+    assert len(all_dataset) == 1, f"Found multiple datasets: {all_dataset}. Please make sure not to merge results from different setups."
+    
     print(f"New output file has {len(merged.data)} entries.")
     merged.store()
 

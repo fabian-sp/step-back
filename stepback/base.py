@@ -72,6 +72,13 @@ class Base:
         # see https://pytorch.org/docs/stable/notes/randomness.html#reproducibility
         
         self.check_config()
+
+        # Create ditionary for results
+        self.results = {'config': self.config,
+                        'history': {},
+                        'summary': {}}
+        
+        return
         
     def check_config(self):
         
@@ -96,7 +103,7 @@ class Base:
         self.train_set = get_dataset(config=self.config, split='train', seed=self.seed, path=self.data_dir)
         self.val_set = get_dataset(config=self.config, split='val', seed=self.run_seed, path=self.data_dir)
         
-        self.config['_input_dim'], self.config['_output_dim'] = infer_shapes(self.train_set)
+        self.results['summary']['input_dim'], self.results['summary']['output_dim'] = infer_shapes(self.train_set)
         
         # construct train loader
         _gen = torch.Generator()
@@ -112,7 +119,11 @@ class Base:
         torch.manual_seed(self.seed) # Reseed to have same initialization   
         torch.cuda.manual_seed_all(self.seed)        
         
-        self.model = get_model(self.config)
+        self.model = get_model(config=self.config, 
+                               input_dim=self.results['summary'].get('input_dim',[]), 
+                               output_dim=self.results['summary'].get('output_dim',[])
+        )
+        
         self.model.to(self.device)
 
         if self.data_parallel is not None:
@@ -123,7 +134,7 @@ class Base:
         
 
     def setup(self):
-        
+
         #============ Data =================
         self._setup_data()
                
@@ -146,13 +157,11 @@ class Base:
         #============ Results ==============
         opt_val = self._compute_opt_value()
         
-        self.results = {'config': self.config,
-                        'history': {},
-                        'summary': {}}
         
+        # Store useful information as summary
         if opt_val is not None:
             self.results['summary']['opt_val'] = opt_val
-        
+
         return 
     
     def _init_opt(self, opt_obj, hyperp):

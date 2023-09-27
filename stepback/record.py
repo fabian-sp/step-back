@@ -7,6 +7,7 @@ import copy
 import itertools
 from typing import Union
 import warnings
+from pandas.api.types import is_numeric_dtype
 
 from .log import Container
 
@@ -14,7 +15,7 @@ from .log import Container
 
 score_names = {'train_loss': 'Training loss', 
                'val_loss': 'Validation loss', 
-               'train_score': 'Training score', 
+               'train_score': 'Trainingstart score', 
                'val_score': 'Validation score',
                'model_norm': r'$\|x^k\|$',
                'grad_norm': r'$\|g_k\|$',
@@ -31,11 +32,12 @@ aes = {'sgd': {'color': '#7fb285', 'markevery': 15, 'zorder': 7},
         'momo-star': {'color': '#87b37a', 'markevery': 3, 'zorder': 13},
         'momo-adam-star': {'color': '#648381', 'markevery': 4, 'zorder': 12},
         'prox-sps': {'color': '#97BF88', 'markevery': 7, 'zorder': 6},
+        'adabelief': {'color': '#FFBF46', 'markevery': 10, 'zorder': 6},
+        'adabound': {'color': '#4f9d69', 'markevery': 10, 'zorder': 5},
         'default': {'color': 'grey', 'markevery': 3, 'zorder': 1},
         }
 # more colors:
 #F7CE5B
-#FFBF46
 #4FB0C6
 #648381
 #F7B801
@@ -79,12 +81,38 @@ class Record:
         self.base_df = self._build_base_df(agg='mean')
         return
     
-    def filter(self, exclude=[]):
+    def filter(self, drop=dict(), keep=dict()):
+        """Filter out by columns in id_df. Drops if any condition is true.
+        For example, use exclude = {'name': 'adam'} to drop all results from Adam. 
+        
+        NOTE: This overwrites the base_df and id_df object.
+        """
+        all_ix = list()
 
-        base_df = self.base_df[~self.base_df.name.isin(exclude)]
-        id_df = self.id_df[~self.id_df.name.isin(exclude)]
+        for k,v in drop.items():
+            if not isinstance(v, list):
+                v = [v] # if single value is given convert to list
+            
+            ix = ~self.id_df[k].isin(v) # indices to drop --> negate
+            all_ix.append(ix)
 
-        return base_df, id_df
+        for k,v in keep.items():
+            if not isinstance(v, list):
+                v = [v] # if single value is given convert to list
+            
+            ix = self.id_df[k].isin(v) # indices to keep
+            all_ix.append(ix)
+
+        ixx = pd.concat(all_ix, axis=1).all(axis=1) # keep where all True
+
+        ids_to_keep = ixx.index[ixx.values]
+
+        self.base_df = self.base_df[self.base_df.id.isin(ids_to_keep)]
+        self.id_df = self.id_df.loc[ids_to_keep]
+
+        warnings.warn("filter method overwrites base_df and id_df.")
+
+        return 
 
     def _build_raw_df(self):
         """ create DataFrame with the stored output. Creates an id column based on opt config. """
@@ -131,7 +159,15 @@ class Record:
         
         # compute mean for each id and(!) epoch
         if agg in ['mean', 'median']:
-            df = raw_df.groupby(['id', 'epoch'], sort=False).mean().drop('run_id',axis=1)
+            # if column numeric, take mean else take first
+            nan_mean_fun = lambda x: x.mean(skipna=False)
+            agg_dict = dict([(c, nan_mean_fun) if is_numeric_dtype(raw_df[c]) else (c, 'first') for c in raw_df.columns])
+            agg_dict.pop('id')
+            agg_dict.pop('epoch')
+
+            df = raw_df.groupby(['id', 'epoch'], sort=False).agg(agg_dict).drop('run_id',axis=1)
+            
+            # std returns nan if some entrys are nan
             df2 = raw_df.groupby(['id', 'epoch'], sort=False).std().drop('run_id',axis=1)           
             df2.columns = [c+'_std' for c in df2.columns]
             
@@ -139,7 +175,7 @@ class Record:
             df = df.reset_index(level=-1) # moves epoch out of index
             
         elif agg == 'first':
-            df = raw_df.groupby(['id', 'epoch'], sort=False).first()
+            df = raw_df.sort_values(['id', 'epoch', 'run_id']).groupby(['id', 'epoch'], sort=False).first()
             assert len(df.run_id.unique()) == 1
             df = df.drop('run_id', axis=1)
             df = df.reset_index(level=-1) # moves epoch out of index

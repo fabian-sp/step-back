@@ -14,12 +14,17 @@ from stepback.utils import get_output_filenames
 
 ################# Main setup ###############################
 parser = argparse.ArgumentParser(description='Generate step-back plots.')
-parser.add_argument('-i', '--id', nargs='?', type=str, default='test1', help="The id of the config (its file name).")
+parser.add_argument('-i', '--id', nargs='?', type=str, default='test', help="The id of the config (its file name).")
 args = parser.parse_args()
-exp_id = args.id
-#exp_id = 'cifar100_resnet110'
 
-save = False
+
+try:
+    exp_id = args.id
+    save = True
+except:
+    exp_id = 'cifar100_resnet110'
+    save = False
+
 output_names = get_output_filenames(exp_id)
 ############################################################
 
@@ -33,11 +38,15 @@ plt.rc('text', usetex=True)
 
 #%%
 R = Record(output_names)
+
+R.filter(drop={'name': ['momo-adam-star', 'momo-star']})
+R.filter(drop={'name': ['adabelief', 'adabound', 'prox-sps']}) 
+R.filter(keep={'lr_schedule': 'constant'})                          # only show constant learning rate results
+
+
 base_df = R.base_df                                 # base dataframe for all plots
 id_df = R.id_df                                     # dataframe with the optimizer setups that were run
-base_df, id_df = R.filter(exclude=['momo-adam-star', 'momo-star',
-                                    'momo-adam-max', 'momo-max',
-                                    'prox-sps'])     # filter out a method
+
 
 #fig = R.plot_metric(s='val_score', log_scale=False, legend=True)
 
@@ -103,9 +112,16 @@ def plot_stability(base_df, score='val_score', xaxis='lr', sigma=1, cutoff=None,
         # get method and learning rate with best score
         # best_ind, best_x = df.index[df[s].argmax()], df[xaxis][df[s].argmax()]
 
-        R._reset_marker_cycle()
         ax = axs.ravel()[j] if len(score) > 1 else axs 
         # .unique(level=) might be useful at some point
+
+        # create ls cycle for each name
+        all_name = list(df.index.unique(level='name'))
+        ls_cycles = dict()
+        for n in all_name:
+            ls_cycles[n] = itertools.cycle(["-", '--', ':', '-.'])
+
+        # main plotting
         for m in df.index.unique():
             this_df = df.loc[m,:]
             this_df = this_df.sort_values(xaxis) # sort!
@@ -124,8 +140,11 @@ def plot_stability(base_df, score='val_score', xaxis='lr', sigma=1, cutoff=None,
             
             label = label if j+1 == len(score) else None # avoid duplicate labels in legend
             
-            ax.plot(x,y, c=R.aes.get(name, R.aes['default'])['color'], label=label,
-                    marker=next(R.aes.get(name, R.aes['default']).get('marker_cycle')), 
+            ax.plot(x,y, 
+                    c=R.aes.get(name, R.aes['default'])['color'], 
+                    label=label,
+                    marker="o",
+                    ls=next(ls_cycles[name]),
                     zorder=R.aes.get(name, R.aes['default']).get('zorder')
                     )
             
@@ -330,13 +349,13 @@ elif exp_id == 'cifar10_vgg16':
     plot_step_sizes(R, method='momo', grid=(3,3), start=2, stop=11, save=save)
     plot_step_sizes(R, method='momo-adam', grid=(3,3), start=2, stop=11, save=save)
 elif exp_id == 'mnist_mlp':
-    plot_step_sizes(R, method='momo', grid=(3,4), start=2, stop=None, save=save)
+    plot_step_sizes(R, method='momo', grid=(3,2), start=1, stop=None, save=save)
     plot_step_sizes(R, method='momo-adam', grid=(3,2), start=None, stop=None, save=save)
 elif exp_id == 'cifar100_resnet110':
     plot_step_sizes(R, method='momo', grid=(3,2), start=1, stop=7, save=save)
     plot_step_sizes(R, method='momo-adam', grid=(3,2), start=1, stop=7, save=save)
 elif exp_id == 'cifar10_vit':
-    plot_step_sizes(R, method='momo', grid=(2,2), start=None, stop=None, save=save)
+    plot_step_sizes(R, method='momo', grid=(2,2), start=1, stop=5, save=save)
     plot_step_sizes(R, method='momo-adam', grid=(2,2), start=None, stop=None, save=save)
 
 
