@@ -247,16 +247,14 @@ class Base:
         timings_model = list()
         timings_dataloader = list()
 
-        start = torch.cuda.Event(enable_timing=True)
-        end = torch.cuda.Event(enable_timing=True) 
-        end.record() 
+        t0 = time.time()
 
         for batch in pbar:
             # Move batch to device
             data, targets = batch['data'].pin_memory().to(device=self.device), batch['targets'].pin_memory().to(device=self.device)
             
             # Forward and Backward
-            start.record()                                      # model timing starts
+            t1 = time.time()                                        # model timing starts
             self.opt.zero_grad()    
             out = self.model(data).to(device=self.device)
 
@@ -267,17 +265,17 @@ class Base:
             
             # see optim/README.md for explanation 
             if hasattr(self.opt,"prestep"):
-                ind = batch['ind'].to(device=self.device)       # indices of batch members
+                ind = batch['ind'].to(device=self.device)           # indices of batch members
                 self.opt.prestep(out, targets, ind, self.training_loss.name)
             
             # Here the magic happens
             loss_val = self.opt.step(closure=closure) 
             
-            timings_dataloader.append(end.elapsed_time(start)/1000) 
-            end.record()                                        # model timing ends
-            torch.cuda.synchronize()        
-
-            timings_model.append(start.elapsed_time(end)/1000)                 
+            if self.device != 'cpu':
+                torch.cuda.synchronize()
+            timings_dataloader.append(t1-t0) 
+            t0 = time.time()                                        # model timing ends
+            timings_model.append(t0-t1)                 
             
             pbar.set_description(f'Training - loss={loss_val:.3f} - time data: last={timings_dataloader[-1]:.3f},(mean={np.mean(timings_dataloader):.3f}) - time model+step: last={timings_model[-1]:.3f}(mean={np.mean(timings_model):.3f})')
 
@@ -308,26 +306,24 @@ class Base:
         timings_model = list()
         timings_dataloader = list()
              
-        start = torch.cuda.Event(enable_timing=True)
-        end = torch.cuda.Event(enable_timing=True) 
-        end.record() 
+        t0 = time.time()
        
         for batch in pbar:
             # get batch and compute model output
             data, targets = batch['data'].to(device=self.device), batch['targets'].to(device=self.device)
 
-            start.record()     
+            t1 = time.time()
             out = self.model(data)
             
             for _met, _met_fun in metric_dict.items():
                 # metric takes average over batch ==> multiply with batch size
                 score_dict[_met] += _met_fun.compute(out, targets).item() * data.shape[0] 
             
-            timings_dataloader.append(end.elapsed_time(start)/1000) 
-            end.record()                                        
-            torch.cuda.synchronize()        
-
-            timings_model.append(start.elapsed_time(end)/1000)    
+            timings_dataloader.append(t1-t0)                                         
+            if self.device != 'cpu':
+                torch.cuda.synchronize()        
+            t0 = time.time()
+            timings_model.append(t0-t1)    
 
             pbar.set_description(f'Validating {dataset.split}')
             pbar.set_description(f'Validating {dataset.split} - time data: last={timings_dataloader[-1]:.3f}(mean={np.mean(timings_dataloader):.3f}) - time model: last={timings_model[-1]:.3f}(mean={np.mean(timings_model):.3f})')
