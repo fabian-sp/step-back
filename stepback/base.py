@@ -16,15 +16,16 @@ from .optim.main import get_optimizer, get_scheduler
 from .metrics import Loss
 
 from .utils import l2_norm, grad_norm, ridge_opt_value, logreg_opt_value
+from .defaults import DEFAULTS
 
 class Base:
     def __init__(self, name: str, 
                  config: dict, 
-                 device: str='cuda', 
-                 data_dir: str='data/',
-                 num_workers: int=0,
-                 data_parallel: Union[list, None]=None,
-                 verbose: bool=True):
+                 device: str=DEFAULTS.device, 
+                 data_dir: str=DEFAULTS.data_dir,
+                 num_workers: int=DEFAULTS.num_workers,
+                 data_parallel: Union[list, None]=DEFAULTS.data_parallel,
+                 verbose: bool=DEFAULTS.verbose):
         """The main class. Performs one single training run plus evaluation.
 
         Parameters
@@ -45,7 +46,7 @@ class Base:
             If not None, this specifies the device ids for DataParallel mode in Pytorch. By default None.
             See https://pytorch.org/docs/stable/generated/torch.nn.DataParallel.html.
         verbose : bool, optional
-            Verbose mode flag, by default True.
+            Verbose mode flag, by default False.
             If True, prints progress bars, model architecture and other useful information.
         """
         
