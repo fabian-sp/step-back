@@ -9,6 +9,7 @@ import torch
 from stepback.utils import prepare_config, create_exp_list
 from stepback.base import Base
 from stepback.log import Container
+from stepback.config import ConfigManager
 
 from stepback.defaults import DEFAULTS
 
@@ -64,12 +65,8 @@ def run_one(exp_id: str,
     """
     
     # load config
-    with open(config_dir + f'{exp_id}.json') as f:
-        exp_config = json.load(f)
-    
-    # prepare list of configs (cartesian product)
-    exp_config = prepare_config(exp_config)
-    exp_list = create_exp_list(exp_config)
+    Conf = ConfigManager(exp_id=exp_id, config_dir=config_dir)
+    exp_list = Conf.create_config_list()
         
     print(f"Created {len(exp_list)} different configurations.")
     
