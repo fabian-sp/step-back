@@ -6,6 +6,8 @@ import copy
 import os
 import pickle
 
+from .defaults import DEFAULTS
+
 def load_json(file_name, output_dir):
     with open(os.path.join(output_dir, file_name) + '.json', "r") as f:
         d = json.load(f)
@@ -30,7 +32,7 @@ def load_pkl(file_name, output_dir):
     return d
 
 class Container:
-    def __init__(self, name: str, output_dir: str='output/', as_json: bool=True):
+    def __init__(self, name: str, output_dir: str=DEFAULTS.output_dir, as_json: bool=True):
         self.name = name
         self.output_dir = output_dir
         self.as_json = as_json

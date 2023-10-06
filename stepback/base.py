@@ -5,6 +5,8 @@ import copy
 import time
 import datetime
 import warnings
+from typing import Union
+
 
 from torch.utils.data import DataLoader
 
@@ -14,12 +16,47 @@ from .optim.main import get_optimizer, get_scheduler
 from .metrics import Loss
 
 from .utils import l2_norm, grad_norm, ridge_opt_value, logreg_opt_value
+from .defaults import DEFAULTS
 
 class Base:
-    def __init__(self, name: str, config: dict, device: str='cpu', data_dir: str='data/'):
+    def __init__(self, name: str, 
+                 config: dict, 
+                 device: str=DEFAULTS.device, 
+                 data_dir: str=DEFAULTS.data_dir,
+                 num_workers: int=DEFAULTS.num_workers,
+                 data_parallel: Union[list, None]=DEFAULTS.data_parallel,
+                 verbose: bool=DEFAULTS.verbose):
+        """The main class. Performs one single training run plus evaluation.
+
+        Parameters
+        ----------
+        name : str
+            A name for this run. Currently not used later.
+        config : dict
+            A config containing dataset, model, optimizer information.
+            Needs to have the keys ['loss_func', 'score_func', 'opt'].
+        device : str, optional
+            Device string, by default 'cuda'
+            If 'cuda' is specified, but not available on system, it switches to CPU.
+        data_dir : str, optional
+            Directory where datasets can be found, by default 'data/'
+        num_workers : int, optional
+            Number of workers for DataLoader, by default 0
+        data_parallel : Union[list, None], optional
+            If not None, this specifies the device ids for DataParallel mode in Pytorch. By default None.
+            See https://pytorch.org/docs/stable/generated/torch.nn.DataParallel.html.
+        verbose : bool, optional
+            Verbose mode flag, by default False.
+            If True, prints progress bars, model architecture and other useful information.
+        """
+        
         self.name = name
         self.config = copy.deepcopy(config)
         self.data_dir = data_dir
+        self.num_workers = num_workers
+        self.data_parallel = data_parallel
+        self.verbose = verbose
+
 
         print("CUDA available? ", torch.cuda.is_available())
         
@@ -41,6 +78,9 @@ class Base:
         self.results = {'config': self.config,
                         'history': {},
                         'summary': {}}
+        
+        self.results['summary']['num_workers'] = self.num_workers
+        self.results['summary']['data_parallel'] = 'true' if self.data_parallel else 'false'
         
         return
         
@@ -73,7 +113,8 @@ class Base:
         _gen = torch.Generator()
         _gen.manual_seed(self.run_seed)
         self.train_loader = DataLoader(self.train_set, drop_last=True, shuffle=True, generator=_gen,
-                                       batch_size=self.config['batch_size'])
+                                       batch_size=self.config['batch_size'],
+                                       num_workers=self.num_workers)
         
         return
 
@@ -89,6 +130,10 @@ class Base:
         
         self.model.to(self.device)
 
+        if self.data_parallel is not None:
+            devices = [int(d) for d in self.data_parallel]
+            self.model = torch.nn.DataParallel(self.model, device_ids=devices)
+
         return
         
 
@@ -99,7 +144,9 @@ class Base:
                
         #============ Model ================
         self._setup_model()
-        print(self.model)
+        
+        if self.verbose:
+            print(self.model)
 
         #============ Loss function ========
         self.training_loss = Loss(name=self.config['loss_func'], backwards=True)
@@ -136,6 +183,8 @@ class Base:
         
         for epoch in range(self.config['max_epoch']):
             
+            print(f"Epoch {epoch}, current learning rate", self.sched.get_last_lr()[0])
+
             # Record metrics
             score_dict = {'epoch': epoch}
             score_dict['learning_rate'] = self.sched.get_last_lr()[0] # must be stored before sched.step()
@@ -197,32 +246,44 @@ class Base:
         """
                 
         self.model.train()
-        pbar = tqdm.tqdm(self.train_loader)
+        pbar = tqdm.tqdm(self.train_loader, disable=(not self.verbose))
         
+        timings_model = list()
+        timings_dataloader = list()
+
+        t0 = time.time()
+
         for batch in pbar:
-            self.opt.zero_grad()    
-            
-            # get batch and compute model output
+            # Move batch to device
             data, targets = batch['data'].to(device=self.device), batch['targets'].to(device=self.device)
+            
+            # Forward and Backward
+            t1 = time.time()                                        # model timing starts
+            self.opt.zero_grad()    
             out = self.model(data).to(device=self.device)
 
             if len(out.shape) <= 1:
                 warnings.warn(f"Shape of model output is {out.shape}, recommended to have shape [batch_size, ..].")
-               
+            
             closure = lambda: self.training_loss.compute(out, targets)
             
             # see optim/README.md for explanation 
             if hasattr(self.opt,"prestep"):
-                ind = batch['ind'].to(device=self.device) # indices of batch members
+                ind = batch['ind'].to(device=self.device)           # indices of batch members
                 self.opt.prestep(out, targets, ind, self.training_loss.name)
             
             # Here the magic happens
             loss_val = self.opt.step(closure=closure) 
-            pbar.set_description(f'Training - {loss_val:.3f}')
+            
+            if self.device != torch.device('cpu'):
+                torch.cuda.synchronize()
+            timings_dataloader.append(t1-t0) 
+            t0 = time.time()                                        # model timing ends
+            timings_model.append(t0-t1)                 
+            
+            pbar.set_description(f'Training - loss={loss_val:.3f} - time data: last={timings_dataloader[-1]:.3f},(mean={np.mean(timings_dataloader):.3f}) - time model+step: last={timings_model[-1]:.3f}(mean={np.mean(timings_model):.3f})')
 
-        
-        print("Current learning rate", self.sched.get_last_lr()[0])
-        
+
         # update learning rate             
         self.sched.step()       
 
@@ -238,23 +299,39 @@ class Base:
         
         # create temporary DataLoader
         dl = torch.utils.data.DataLoader(dataset, drop_last=False, 
-                                         batch_size=self.config['batch_size'])
-        pbar = tqdm.tqdm(dl)
+                                         batch_size=self.config['batch_size'],
+                                         num_workers=self.num_workers
+                                         )
+        pbar = tqdm.tqdm(dl, disable=(not self.verbose))
         
         self.model.eval()
         score_dict = dict(zip(metric_dict.keys(), np.zeros(len(metric_dict))))
-        
+
+        timings_model = list()
+        timings_dataloader = list()
+             
+        t0 = time.time()
+       
         for batch in pbar:
             # get batch and compute model output
             data, targets = batch['data'].to(device=self.device), batch['targets'].to(device=self.device)
+
+            t1 = time.time()
             out = self.model(data)
             
             for _met, _met_fun in metric_dict.items():
                 # metric takes average over batch ==> multiply with batch size
                 score_dict[_met] += _met_fun.compute(out, targets).item() * data.shape[0] 
-                
-            pbar.set_description(f'Validating {dataset.split}')
+            
+            timings_dataloader.append(t1-t0)                                         
+            if self.device != torch.device('cpu'):
+                torch.cuda.synchronize()        
+            t0 = time.time()
+            timings_model.append(t0-t1)    
 
+            pbar.set_description(f'Validating {dataset.split}')
+            pbar.set_description(f'Validating {dataset.split} - time data: last={timings_dataloader[-1]:.3f}(mean={np.mean(timings_dataloader):.3f}) - time model: last={timings_model[-1]:.3f}(mean={np.mean(timings_model):.3f})')
+        
             
         
         for _met in metric_dict.keys():
@@ -292,10 +369,10 @@ class Base:
                                           )
             elif self.config['loss_func'] == 'logistic':
                 opt_val = logreg_opt_value(X=self.train_set.dataset.tensors[0].detach().numpy(),
-                                            y=self.train_set.dataset.tensors[1].detach().numpy().astype(int).reshape(-1),
-                                            lmbda = self.config['opt'].get('weight_decay', 0),
-                                            fit_intercept = False
-                                            )
+                                           y=self.train_set.dataset.tensors[1].detach().numpy().astype(int).reshape(-1),
+                                           lmbda = self.config['opt'].get('weight_decay', 0),
+                                           fit_intercept = False
+                                           )
             else:
                 opt_val = None
         else:

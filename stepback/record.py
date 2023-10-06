@@ -5,13 +5,13 @@ import pandas as pd
 import numpy as np
 import copy
 import itertools
+import os
 from typing import Union
 import warnings
 from pandas.api.types import is_numeric_dtype
 
 from .log import Container
-
-#%%
+from .defaults import DEFAULTS
 
 score_names = {'train_loss': 'Training loss', 
                'val_loss': 'Validation loss', 
@@ -36,26 +36,23 @@ aes = {'sgd': {'color': '#7fb285', 'markevery': 15, 'zorder': 7},
         'adabound': {'color': '#4f9d69', 'markevery': 10, 'zorder': 5},
         'default': {'color': 'grey', 'markevery': 3, 'zorder': 1},
         }
+
 # more colors:
 #F7CE5B
 #4FB0C6
 #648381
 #F7B801
-#
 #7ea2aa
 
 ALL_MARKER = ('o', 'v', 'H', 's', '>', '<' , '^', 'D', 'x')
-
-
-#%%
-
 _USE_UNDERSCORE = False # whether to add underscore to column names in id_df?
 
 class Record:
     def __init__(self, 
                  exp_id: Union[str, list], 
-                 output_dir='output/', 
-                 as_json=True):
+                 output_dir: str=DEFAULTS.output_dir, 
+                 as_json: bool=True
+                 ):
         
         self.exp_id = exp_id
         self.aes = copy.deepcopy(aes)
