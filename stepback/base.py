@@ -79,6 +79,9 @@ class Base:
                         'history': {},
                         'summary': {}}
         
+        self.results['summary']['num_workers'] = self.num_workers
+        self.results['summary']['data_parallel'] = 'true' if self.data_parallel else 'false'
+        
         return
         
     def check_config(self):

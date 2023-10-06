@@ -15,15 +15,15 @@ from stepback.defaults import DEFAULTS
 
 parser = argparse.ArgumentParser(description='Run stepback from the terminal.')
 parser.add_argument('-i', '--id', nargs='?', type=str, default='test1', help="The id of the config (its file name).")
-parser.add_argument('-cdir', '--config_dir', nargs='?', type=str, default=DEFAULTS.config_dir, help="The config directory.")
-parser.add_argument('-odir', '--output_dir', nargs='?', type=str, default=DEFAULTS.output_dir, help="The output directory.")
-parser.add_argument('-ddir', '--data_dir', nargs='?', type=str, default=DEFAULTS.data_dir, help="The data directory.")
+parser.add_argument('-cdir', '--config-dir', nargs='?', type=str, default=DEFAULTS.config_dir, help="The config directory.")
+parser.add_argument('-odir', '--output-dir', nargs='?', type=str, default=DEFAULTS.output_dir, help="The output directory.")
+parser.add_argument('-ddir', '--data-dir', nargs='?', type=str, default=DEFAULTS.data_dir, help="The data directory.")
 parser.add_argument('--device', nargs='?', type=str, default=DEFAULTS.device, help="Device to run on.")
 
-parser.add_argument('-nw', '--num_workers', nargs='?', type=int, default=DEFAULTS.num_workers, help="Number of workers for DataLoader.")
-parser.add_argument('--data_parallel', nargs='+', default=DEFAULTS.data_parallel, help='Device list for DataParallel in Pytorch.')
+parser.add_argument('-nw', '--num-workers', nargs='?', type=int, default=DEFAULTS.num_workers, help="Number of workers for DataLoader.")
+parser.add_argument('--data-parallel', nargs='+', default=DEFAULTS.data_parallel, help='Device list for DataParallel in Pytorch.')
 parser.add_argument('--verbose', action="store_true", help="Verbose mode.")
-parser.add_argument('--force_deterministic', action="store_true", help="Use deterministic mode in Pytorch. Might require setting environment variables.")
+parser.add_argument('--force-deterministic', action="store_true", help="Use deterministic mode in Pytorch. Might require setting environment variables.")
 
 def run_one(exp_id: str,
             config_dir: str=DEFAULTS.config_dir, 
@@ -98,6 +98,8 @@ def run_one(exp_id: str,
 
 if __name__ == '__main__':
     args = parser.parse_args()
+
+    print(args)
 
     run_one(args.id,
             config_dir=args.config_dir,
