@@ -6,7 +6,7 @@ from .basic_models import MLP, MatrixFac, MatrixComplete
 from .vgg import get_cifar_vgg
 from .resnet import get_cifar_resnet
 from .kuangliu_resnet import get_kuangliu_resnet
-from .vit import ViT, swin_t
+
 
 def get_num_classes(dataset_name):
     if dataset_name == 'cifar10':
@@ -105,10 +105,14 @@ def get_model(config: dict, input_dim: list, output_dim: list) -> torch.nn.Modul
     
     # ======== Vision transformer =============
     elif name == 'vit':
+        from .vit import ViT    # lazy import because of einops
+
         num_classes = get_num_classes(config['dataset'])
         model = ViT(image_size=32, num_classes=num_classes,**kwargs)   
     
     elif name == 'swint':
+        from .vit import swin_t # lazy import because of einops
+
         num_classes = get_num_classes(config['dataset'])
         model = swin_t(num_classes=num_classes,
                        downscaling_factors=(2,2,2,1),
