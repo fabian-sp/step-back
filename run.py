@@ -6,7 +6,6 @@ from typing import Union
 import argparse
 import torch
 
-from stepback.utils import prepare_config, create_exp_list
 from stepback.base import Base
 from stepback.log import Container
 from stepback.config import ConfigManager
