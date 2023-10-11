@@ -13,28 +13,29 @@ from pandas.api.types import is_numeric_dtype
 from .log import Container
 from .defaults import DEFAULTS
 
-score_names = {'train_loss': 'Training loss', 
+
+
+SCORE_NAMES = {'train_loss': 'Training loss', 
                'val_loss': 'Validation loss', 
-               'train_score': 'Trainingstart score', 
+               'train_score': 'Training score', 
                'val_score': 'Validation score',
                'model_norm': r'$\|x^k\|$',
                'grad_norm': r'$\|g_k\|$',
                'fstar': r'$f_*^k$'
                }
 
-
-aes = {'sgd': {'color': '#7fb285', 'markevery': 15, 'zorder': 7},
-        'sgd-m': {'color': '#de9151', 'markevery': 8, 'zorder': 8},
-        'adam': {'color': '#f34213', 'markevery': 10, 'zorder': 9}, 
-        'adamw': {'color': '#f34213', 'markevery': 10, 'zorder': 9},
-        'momo': {'color': '#023047', 'markevery': 5, 'zorder': 11},
-        'momo-adam': {'color': '#3F88C5', 'markevery': 6, 'zorder': 10},
-        'momo-star': {'color': '#87b37a', 'markevery': 3, 'zorder': 13},
-        'momo-adam-star': {'color': '#648381', 'markevery': 4, 'zorder': 12},
-        'prox-sps': {'color': '#97BF88', 'markevery': 7, 'zorder': 6},
-        'adabelief': {'color': '#FFBF46', 'markevery': 10, 'zorder': 6},
-        'adabound': {'color': '#4f9d69', 'markevery': 10, 'zorder': 5},
-        'default': {'color': 'grey', 'markevery': 3, 'zorder': 1},
+AES = { 'sgd':              {'color': '#7fb285', 'markevery': 15, 'zorder': 7},
+        'sgd-m':            {'color': '#de9151', 'markevery': 8, 'zorder': 8},
+        'adam':             {'color': '#f34213', 'markevery': 10, 'zorder': 9}, 
+        'adamw':            {'color': '#f34213', 'markevery': 10, 'zorder': 9},
+        'momo':             {'color': '#023047', 'markevery': 5, 'zorder': 11},
+        'momo-adam':        {'color': '#3F88C5', 'markevery': 6, 'zorder': 10},
+        'momo-star':        {'color': '#87b37a', 'markevery': 3, 'zorder': 13},
+        'momo-adam-star':   {'color': '#648381', 'markevery': 4, 'zorder': 12},
+        'prox-sps':         {'color': '#97BF88', 'markevery': 7, 'zorder': 6},
+        'adabelief':        {'color': '#FFBF46', 'markevery': 10, 'zorder': 6},
+        'adabound':         {'color': '#4f9d69', 'markevery': 10, 'zorder': 5},
+        'default':          {'color': 'grey','markevery': 3, 'zorder': 1},
         }
 
 # more colors:
@@ -45,7 +46,6 @@ aes = {'sgd': {'color': '#7fb285', 'markevery': 15, 'zorder': 7},
 #7ea2aa
 
 ALL_MARKER = ('o', 'v', 'H', 's', '>', '<' , '^', 'D', 'x')
-_USE_UNDERSCORE = False # whether to add underscore to column names in id_df?
 
 class Record:
     def __init__(self, 
@@ -55,7 +55,7 @@ class Record:
                  ):
         
         self.exp_id = exp_id
-        self.aes = copy.deepcopy(aes)
+        self.aes = copy.deepcopy(AES)
 
         # exp_id can be str or list (if we want to merge multiple output files)
         if isinstance(exp_id, str):
@@ -143,7 +143,7 @@ class Record:
         id_cols = list()
         all_ids = self.raw_df.id.unique()
         for i in all_ids:
-            d = id_to_dict(i, add_underscore=_USE_UNDERSCORE)
+            d = id_to_dict(i)
             id_cols.append(d)
         
         id_df = pd.DataFrame(id_cols, index=all_ids)
@@ -248,7 +248,7 @@ class Record:
             this_df = df[df.id==m]
             x = this_df.loc[:,'epoch']
             y = this_df.loc[:,s]
-            conf = id_to_dict(m, add_underscore=False) 
+            conf = id_to_dict(m) 
             
             # construct label
             label = conf['name'] + ', ' + r'$\alpha_0=$' + conf['lr']
@@ -260,17 +260,19 @@ class Record:
             # plot
             if not y.isna().all():
                 names_legend.append(conf['name'])
-                ax.plot(x, y, 
+                ax.plot(x, 
+                        y, 
                         c=self.aes.get(conf['name'], self.aes['default']).get('color'), 
                         marker=next(self.aes.get(conf['name'], self.aes['default']).get('marker_cycle')) if legend else 'o', 
                         markersize=markersize, 
                         markevery=(self.aes.get(conf['name'], self.aes['default']).get('markevery'), 20), 
                         alpha = alpha,
                         label=label,
-                        zorder=self.aes.get(conf['name'], self.aes['default']).get('zorder'))
+                        zorder=self.aes.get(conf['name'], self.aes['default']).get('zorder')
+                        )
         
         ax.set_xlabel('Epoch')
-        ax.set_ylabel(score_names[s])
+        ax.set_ylabel(SCORE_NAMES[s])
         ax.grid(which='both', lw=0.2, ls='--', zorder=-10)
         
         if log_scale:
@@ -283,18 +285,16 @@ class Record:
             ax.legend(fontsize=8, loc='lower left').set_zorder(100)
         else:
             names_legend = set(names_legend)
-            handles = [Line2D([0], [0], color=aes.get(n, self.aes['default']).get('color'), lw=4) for n in names_legend]
+            handles = [Line2D([0], [0], color=self.aes.get(n, self.aes['default']).get('color'), lw=4) for n in names_legend]
             ax.legend(handles, names_legend, loc='lower left').set_zorder(100)
 
         fig.tight_layout()
         return fig
 
     
-def id_to_dict(id, add_underscore=False):
+def id_to_dict(id):
     """utility for creating a dictionary from the identifier"""
     tmp = id.split(':')
-    if add_underscore:
-        tmp = ['_'+t for t in tmp] # let each column start with _ to indicate that it is added afterwards
     d = dict([j.split('=') for j in tmp])
     return d
 
