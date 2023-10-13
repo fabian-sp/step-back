@@ -4,7 +4,10 @@
      width="600" />
 </h1><br>
 
-Package for running and benchmarking Pytorch optimizers.
+This package is intended for running and benchmarking optimization algorithms in Pytorch. It could be used for 
+
+* retrieving training curves for standard methods (SGD, Adam) on standard benchmark problems (e.g. training Resnets for Cifar),
+* testing new methods 
 
 
 ## Getting started
@@ -52,6 +55,15 @@ There are two ways of specifying a config for `run.py`.
 
 * The config JSON is a list, where each entry is a config for a **single training run**. 
 * This format is intended only when you want to launch multiple runs in parallel. You should first create a dict-type config, and then use utilities for creating temporary list-type configs (see an example [here](configs/README.md#example-for-splitting-up-a-config)).
+
+You can run an experiment with `run.py` or with `run.ipynb`. A minimal example is:
+
+```
+python run.py -i 'test'
+```
+Run `python run.py --help` in the terminal for detailed options.
+
+Once you launch experiments, the output is stored as JSON in `output` if no other directory is specified.
 
 
 ## Output structure
