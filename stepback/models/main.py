@@ -34,8 +34,9 @@ def get_model(config: dict, input_dim: list, output_dim: list) -> torch.nn.Modul
         
         input_size = input_dim[0]
         output_size = config['model_kwargs'].get('output_size', 1)
+        bias = config['model_kwargs'].get('bias', False)
 
-        model = MLP(input_size=input_size, output_size=output_size, hidden_sizes=[], bias=False)
+        model = MLP(input_size=input_size, output_size=output_size, hidden_sizes=[], bias=bias)
     
     #======== MLP with ReLU =============
     elif name == 'mlp':
