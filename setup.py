@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 
 # Package meta-data.
 NAME = 'stepback'
-DESCRIPTION = 'Running optimization experiments in Pytorch'
+DESCRIPTION = 'Deep Learning Optimization Experiments in Pytorch'
 URL = 'https://github.com/fabian-sp/step-back'
 EMAIL = 'fabian.schaipp@gmail.com'
 AUTHOR = 'Fabian Schaipp'

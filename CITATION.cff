@@ -1,0 +1,17 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+authors:
+- family-names: "Schaipp"
+  given-names: "Fabian"
+- family-names: "Eickenberg"
+  given-names: "Michael"
+- family-names: "Gower"
+  given-names: "Robert M."
+- family-names: "Ohana"
+  given-names: "Ruben"
+- family-names: "Mishkin"
+  given-names: "Aaron"  
+title: "step-back: Deep Learning Optimization Experiments in Pytorch"
+version: 0.1.0
+date-released: 2023-10-01
+url: "https://github.com/fabian-sp/step-back"

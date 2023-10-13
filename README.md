@@ -4,7 +4,10 @@
      width="600" />
 </h1><br>
 
-Package for running and benchmarking Pytorch optimizers.
+This package is intended for running and benchmarking optimization algorithms in Pytorch. It could be used for 
+
+* retrieving raining curves for standard methods (SGD, Adam) on standard benchmark problems (e.g. training Resnets for Cifar),
+* testing new methods 
 
 
 ## Getting started
@@ -43,9 +46,14 @@ Any experiment needs a config file, see e.g. `configs/test.json`.
 * Multiple runs can be done using the key `n_runs`. In each run the seed for shuffling the `DataLoader` changes.
 * The name of the config file serves as experiment ID, used later for running and storing the output. 
 
-You can run an experiment with `run.py` or with `run.ipynb`.
+You can run an experiment with `run.py` or with `run.ipynb`. A minimal example is:
 
-The output is stored in `output` if no other directory is specified.
+```
+python run.py -i 'test'
+```
+Run `python run.py --help` in the terminal for detailed options.
+
+Once you launch experiments, the output is stored as JSON in `output` if no other directory is specified.
 
 
 ## Output structure
