@@ -6,7 +6,7 @@
 
 This package is intended for running and benchmarking optimization algorithms in Pytorch. It could be used for 
 
-* retrieving raining curves for standard methods (SGD, Adam) on standard benchmark problems (e.g. training Resnets for Cifar),
+* retrieving training curves for standard methods (SGD, Adam) on standard benchmark problems (e.g. training Resnets for Cifar),
 * testing new methods 
 
 
