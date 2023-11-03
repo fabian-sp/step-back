@@ -12,7 +12,7 @@ from .record import SCORE_NAMES, id_to_dict, create_label
 ###################################
 
 
-def plot_stability(R, score='val_score', xaxis='lr', sigma=1, cutoff=None, legend=None, figsize=(6,5), save=False):
+def plot_stability(R, score='val_score', xaxis='lr', sigma=1, cutoff=None, legend=None, ylim=None, log_scale=True, figsize=(6,5), save=False):
     """
     Generates stability plot.
 
@@ -21,6 +21,9 @@ def plot_stability(R, score='val_score', xaxis='lr', sigma=1, cutoff=None, legen
         xaxis: parameter to group by, for example 'lr' for initial learning rate
         sigma: number of standard deviations to show (in one direction)
         cutoff: if not None, score is aggregated over [cutoff, max_epoch]
+        legend: 'full', None, or a list of keys that are displayed, e.g. ['lr', 'weight_decay']
+        ylim: Set ylim values. By default will be set to [0,1] for <_score> metrics
+        log_scale: Use log-scale for <_loss> metrics. Not used for <_score> metrics
 
     """
     # plot only one score
@@ -97,7 +100,7 @@ def plot_stability(R, score='val_score', xaxis='lr', sigma=1, cutoff=None, legen
                                 zorder=-10)
             
             # mark overall best
-            #if m == best_ind:
+            # if m == best_ind:
             #    ax.scatter(best_x, df[s].max(), s=40, marker='o', c='k', zorder=100)
                 
         if xaxis == 'lr':
@@ -105,20 +108,22 @@ def plot_stability(R, score='val_score', xaxis='lr', sigma=1, cutoff=None, legen
         else:
             ax.set_xlabel(xaxis)
 
-        if s in ['train_score', 'val_score']:
-            ax.set_ylim(0,1)    
-        elif s in ['train_loss', 'val_loss']:
+        if ylim is not None:
+            ax.set_ylim(ylim)
+        elif s in ['train_score', 'val_score']:
+            ax.set_ylim(0,1)
+
+        if (s in ['train_loss', 'val_loss']) and log_scale:
             ax.set_yscale('log')
 
-        ax.set_ylabel(SCORE_NAMES[s])
+        ax.set_ylabel(SCORE_NAMES.get(s, s))
         ax.set_xscale('log')
         ax.grid(axis='y', lw=0.2, ls='--', zorder=-10)
 
-        # xticks only in last row
+        # xlabel only in last row
         if j+1 < len(score):
             ax.set_xlabel('')
-            #ax.set_xticks([])
-    
+            
     if legend is not None:
         # legend has all specific opt arguments
         fig.legend(fontsize=8, loc='upper right')
@@ -139,7 +144,7 @@ def plot_stability(R, score='val_score', xaxis='lr', sigma=1, cutoff=None, legen
     if save:
         fig.savefig('output/plots/' + R.exp_id + f"/stability_{xaxis}_{'_'.join(score)}.pdf")
     
-    return fig
+    return fig, axs
 
 def plot_single_step_sizes(this_df, aes, ax):
     method = this_df.name.iloc[0]
@@ -281,4 +286,4 @@ def plot_step_sizes(R, method='momo', ylim=(1e-5,1e3), xlim = None, grid=(3,3), 
     if save:
         fig.savefig('output/plots/'+ R.exp_id + f'/step_sizes_'+method+'.png', dpi=500)
 
-    return fig
+    return fig, axs

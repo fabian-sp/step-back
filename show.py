@@ -45,7 +45,7 @@ R.filter(keep={'lr_schedule': 'constant'})                          # only show 
 base_df = R.base_df                                 # base dataframe for all plots
 id_df = R.id_df                                     # dataframe with the optimizer setups that were run
 
-#fig = R.plot_metric(s='val_score', log_scale=False, legend=True)
+# _ = R.plot_metric(s='val_score', log_scale=False, legend=True)
 
 #%% plot training curves for a subset of runs:
 
@@ -57,12 +57,12 @@ df1 = base_df.loc[base_df.id.isin(ixx),:]
 
 y0 = 0.3 if exp_id=='cifar100_resnet110' else 0.4 if exp_id=='cifar10_vit' else 0.6
 
-fig = R.plot_metric(df=df1, s='val_score', ylim=(y0, 1.05*df1.val_score.max()), log_scale=False, figsize=(4,3.5), legend=False)
+fig, ax = R.plot_metric(df=df1, s='val_score', ylim=(y0, 1.05*df1.val_score.max()), log_scale=False, figsize=(4,3.5), legend=False)
 fig.subplots_adjust(top=0.975,bottom=0.16,left=0.16,right=0.975)
 if save:
     fig.savefig('output/plots/' + exp_id + f'/all_val_score.pdf')
 
-fig = R.plot_metric(df=df1, s='train_loss', log_scale=True, figsize=(4,3.5), legend=False)
+fig, ax = R.plot_metric(df=df1, s='train_loss', log_scale=True, figsize=(4,3.5), legend=False)
 fig.subplots_adjust(top=0.975,bottom=0.16,left=0.17,right=0.975)
 if save:
     fig.savefig('output/plots/' + exp_id + f'/all_train_loss.pdf')
@@ -72,10 +72,9 @@ if save:
 
 FIGSIZE = (4.8,3.2)
 
-fig = plot_stability(R, score='val_score', xaxis='lr', sigma=1, legend=None, cutoff=None, figsize=FIGSIZE, save=save)
-fig = plot_stability(R, score='train_loss', xaxis='lr', sigma=1, legend=None, cutoff=None, figsize=FIGSIZE, save=save)
-
-fig = plot_stability(R, score=['train_loss', 'val_score'], xaxis='lr', sigma=1, legend=None, cutoff=None, figsize=(4.8,6.4), save=save)
+fig, axs = plot_stability(R, score='val_score', xaxis='lr', sigma=1, legend=None, cutoff=None, figsize=FIGSIZE, save=save)
+fig, axs = plot_stability(R, score='train_loss', xaxis='lr', sigma=1, legend=None, cutoff=None, figsize=FIGSIZE, save=save)
+fig, axs = plot_stability(R, score=['train_loss', 'val_score'], xaxis='lr', sigma=1, legend=None, cutoff=None, figsize=(4.8,6.4), save=save)
 
 
 #%% plots the adaptive step size
@@ -83,20 +82,20 @@ fig = plot_stability(R, score=['train_loss', 'val_score'], xaxis='lr', sigma=1, 
 ###################################
 
 if exp_id == 'cifar10_resnet20':
-    plot_step_sizes(R, method='momo', grid=(3,3), start=None, stop=None, save=save)
-    plot_step_sizes(R, method='momo-adam', grid=(3,2), start=1, stop=None, save=save)
+    _ = plot_step_sizes(R, method='momo', grid=(3,3), start=None, stop=None, save=save)
+    _ = plot_step_sizes(R, method='momo-adam', grid=(3,2), start=1, stop=None, save=save)
 elif exp_id == 'cifar10_vgg16':
-    plot_step_sizes(R, method='momo', grid=(3,3), start=2, stop=11, save=save)
-    plot_step_sizes(R, method='momo-adam', grid=(3,3), start=2, stop=11, save=save)
+    _ = plot_step_sizes(R, method='momo', grid=(3,3), start=2, stop=11, save=save)
+    _ = plot_step_sizes(R, method='momo-adam', grid=(3,3), start=2, stop=11, save=save)
 elif exp_id == 'mnist_mlp':
-    plot_step_sizes(R, method='momo', grid=(3,2), start=1, stop=None, save=save)
-    plot_step_sizes(R, method='momo-adam', grid=(3,2), start=None, stop=None, save=save)
+    _ = plot_step_sizes(R, method='momo', grid=(3,2), start=1, stop=None, save=save)
+    _ = plot_step_sizes(R, method='momo-adam', grid=(3,2), start=None, stop=None, save=save)
 elif exp_id == 'cifar100_resnet110':
-    plot_step_sizes(R, method='momo', grid=(3,2), start=1, stop=7, save=save)
-    plot_step_sizes(R, method='momo-adam', grid=(3,2), start=1, stop=7, save=save)
+    _ = plot_step_sizes(R, method='momo', grid=(3,2), start=1, stop=7, save=save)
+    _ = plot_step_sizes(R, method='momo-adam', grid=(3,2), start=1, stop=7, save=save)
 elif exp_id == 'cifar10_vit':
-    plot_step_sizes(R, method='momo', grid=(2,2), start=1, stop=5, save=save)
-    plot_step_sizes(R, method='momo-adam', grid=(2,2), start=None, stop=None, save=save)
+    _ = plot_step_sizes(R, method='momo', grid=(2,2), start=1, stop=5, save=save)
+    _ = plot_step_sizes(R, method='momo-adam', grid=(2,2), start=None, stop=None, save=save)
 
 
 # %%
