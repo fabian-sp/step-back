@@ -165,8 +165,8 @@ def plot_single_step_sizes(this_df, aes, ax):
     _id = this_df.id.iloc[0]
 
     iter_per_epoch = len(this_df['step_size_list'].iloc[0])
-    upsampled = np.linspace(this_df.epoch.values[0], 
-                            this_df.epoch.values[-1],
+    upsampled = np.linspace(this_df.epoch.values.min(), 
+                            this_df.epoch.values.max(),
                             len(this_df)*iter_per_epoch)
     
     if method in ['momo', 'momo-star']:
@@ -198,7 +198,8 @@ def plot_single_step_sizes(this_df, aes, ax):
     
     markevery = (5,7) if this_df.epoch.max() <= 100 else (5,20)
     
-    ax.plot(this_df.epoch, 
+    # plot median markers, shift by 1/2 to get in middle of epoch
+    ax.plot(this_df.epoch + 0.5, 
             all_s_median, 
             c='gainsboro', 
             marker='o', 
@@ -209,11 +210,14 @@ def plot_single_step_sizes(this_df, aes, ax):
             label=r"$\zeta_k$")
     
     # plot LR
+    y = np.repeat(this_df.learning_rate, iter_per_epoch)
     if rho is not None:
-        y = np.repeat(this_df.learning_rate, iter_per_epoch) / rho
-        ax.plot(upsampled, y, c='silver', lw=2.5, label=r"$\alpha_k/\rho_k$")
+        y =  y/rho
+        label = r"$\alpha_k/\rho_k$"
     else:
-        ax.plot(this_df.epoch, this_df.learning_rate, c='silver', lw=2.5, label=r"$\alpha_k$")
+        label = r"$\alpha_k$"
+    
+    ax.plot(upsampled, y, c='silver', lw=2.5, label=label)
     
     return ax
 
