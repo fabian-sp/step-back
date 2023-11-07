@@ -6,7 +6,7 @@ import pandas as pd
 import numpy as np
 import argparse
 
-from stepback.record import Record, SCORE_NAMES
+from stepback.record import Record
 from stepback.utils import get_output_filenames
 from stepback.plotting import plot_stability, plot_step_sizes
 
