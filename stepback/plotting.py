@@ -12,7 +12,18 @@ from .record import SCORE_NAMES, id_to_dict, create_label
 ###################################
 
 
-def plot_stability(R, score='val_score', xaxis='lr', sigma=1, cutoff=None, legend=None, ylim=None, log_scale=True, figsize=(6,5), save=False):
+def plot_stability(R, 
+                   score='val_score', 
+                   xaxis='lr', 
+                   sigma=1, 
+                   cutoff=None,
+                   ignore_columns=list(), 
+                   legend=None, 
+                   ylim=None, 
+                   log_scale=True, 
+                   figsize=(6,5), 
+                   save=False
+                   ):
     """
     Generates stability plot.
 
@@ -21,6 +32,7 @@ def plot_stability(R, score='val_score', xaxis='lr', sigma=1, cutoff=None, legen
         xaxis: parameter to group by, for example 'lr' for initial learning rate
         sigma: number of standard deviations to show (in one direction)
         cutoff: if not None, score is aggregated over [cutoff, max_epoch]
+        ignore_columns: columns from id_df that are ignored for grouping. For example, useful when xaxis=lr but weight_decay is also different for each lr.
         legend: 'full', None, or a list of keys that are displayed, e.g. ['lr', 'weight_decay']
         ylim: Set ylim values. By default will be set to [0,1] for <_score> metrics
         log_scale: Use log-scale for <_loss> metrics. Not used for <_score> metrics
@@ -47,8 +59,10 @@ def plot_stability(R, score='val_score', xaxis='lr', sigma=1, cutoff=None, legen
     for j, s in enumerate(score):
         # filter epochs
         sub_df = base_df[(base_df.epoch >= cutoff_epoch[0]) & (base_df.epoch <= cutoff_epoch[1])] 
+        # select the columns to group by
+        grouping_cols = [c for c in id_df.columns if c not in ignore_columns]
         # group by all id_cols 
-        df = sub_df.groupby(list(id_df.columns))[[s, s+'_std']].mean() # use dropna=False if we would have nan values
+        df = sub_df.groupby(grouping_cols)[[s, s+'_std']].mean() # use dropna=False if we would have nan values
         # move xaxis out of grouping
         df = df.reset_index(level=xaxis)
         # make xaxis float

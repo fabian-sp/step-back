@@ -115,6 +115,13 @@ def merge_output_files(exp_id_list, fname, output_dir='output/', merged_dir=None
     for _e in exp_id_list:
         C = Container(name=_e, output_dir=output_dir, as_json=as_json)
         C.load() # load data
+        
+        # if stored as single dict ouput, make list of length one
+        if isinstance(C.data, dict):
+            for key in ["config", "summary", "history"]:
+                assert key in C.data.keys()
+            C.data = [C.data]
+
         merged.data += C.data # append
 
     all_model = set([d['config']['model'] for d in merged.data])
