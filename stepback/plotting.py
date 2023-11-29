@@ -12,7 +12,18 @@ from .record import SCORE_NAMES, id_to_dict, create_label
 ###################################
 
 
-def plot_stability(R, score='val_score', xaxis='lr', sigma=1, cutoff=None, legend=None, figsize=(6,5), save=False):
+def plot_stability(R, 
+                   score='val_score', 
+                   xaxis='lr', 
+                   sigma=1, 
+                   cutoff=None,
+                   ignore_columns=list(), 
+                   legend=None, 
+                   ylim=None, 
+                   log_scale=True, 
+                   figsize=(6,5), 
+                   save=False
+                   ):
     """
     Generates stability plot.
 
@@ -21,6 +32,10 @@ def plot_stability(R, score='val_score', xaxis='lr', sigma=1, cutoff=None, legen
         xaxis: parameter to group by, for example 'lr' for initial learning rate
         sigma: number of standard deviations to show (in one direction)
         cutoff: if not None, score is aggregated over [cutoff, max_epoch]
+        ignore_columns: columns from id_df that are ignored for grouping. For example, useful when xaxis=lr but weight_decay is also different for each lr.
+        legend: 'full', None, or a list of keys that are displayed, e.g. ['lr', 'weight_decay']
+        ylim: Set ylim values. By default will be set to [0,1] for <_score> metrics
+        log_scale: Use log-scale for <_loss> metrics. Not used for <_score> metrics
 
     """
     # plot only one score
@@ -44,8 +59,10 @@ def plot_stability(R, score='val_score', xaxis='lr', sigma=1, cutoff=None, legen
     for j, s in enumerate(score):
         # filter epochs
         sub_df = base_df[(base_df.epoch >= cutoff_epoch[0]) & (base_df.epoch <= cutoff_epoch[1])] 
+        # select the columns to group by
+        grouping_cols = [c for c in id_df.columns if c not in ignore_columns]
         # group by all id_cols 
-        df = sub_df.groupby(list(id_df.columns))[[s, s+'_std']].mean() # use dropna=False if we would have nan values
+        df = sub_df.groupby(grouping_cols)[[s, s+'_std']].mean() # use dropna=False if we would have nan values
         # move xaxis out of grouping
         df = df.reset_index(level=xaxis)
         # make xaxis float
@@ -97,7 +114,7 @@ def plot_stability(R, score='val_score', xaxis='lr', sigma=1, cutoff=None, legen
                                 zorder=-10)
             
             # mark overall best
-            #if m == best_ind:
+            # if m == best_ind:
             #    ax.scatter(best_x, df[s].max(), s=40, marker='o', c='k', zorder=100)
                 
         if xaxis == 'lr':
@@ -105,20 +122,22 @@ def plot_stability(R, score='val_score', xaxis='lr', sigma=1, cutoff=None, legen
         else:
             ax.set_xlabel(xaxis)
 
-        if s in ['train_score', 'val_score']:
-            ax.set_ylim(0,1)    
-        elif s in ['train_loss', 'val_loss']:
+        if ylim is not None:
+            ax.set_ylim(ylim)
+        elif s in ['train_score', 'val_score']:
+            ax.set_ylim(0,1)
+
+        if (s in ['train_loss', 'val_loss']) and log_scale:
             ax.set_yscale('log')
 
-        ax.set_ylabel(SCORE_NAMES[s])
+        ax.set_ylabel(SCORE_NAMES.get(s, s))
         ax.set_xscale('log')
         ax.grid(axis='y', lw=0.2, ls='--', zorder=-10)
 
-        # xticks only in last row
+        # xlabel only in last row
         if j+1 < len(score):
             ax.set_xlabel('')
-            #ax.set_xticks([])
-    
+            
     if legend is not None:
         # legend has all specific opt arguments
         fig.legend(fontsize=8, loc='upper right')
@@ -139,15 +158,15 @@ def plot_stability(R, score='val_score', xaxis='lr', sigma=1, cutoff=None, legen
     if save:
         fig.savefig('output/plots/' + R.exp_id + f"/stability_{xaxis}_{'_'.join(score)}.pdf")
     
-    return fig
+    return fig, axs
 
 def plot_single_step_sizes(this_df, aes, ax):
     method = this_df.name.iloc[0]
     _id = this_df.id.iloc[0]
 
     iter_per_epoch = len(this_df['step_size_list'].iloc[0])
-    upsampled = np.linspace(this_df.epoch.values[0], 
-                            this_df.epoch.values[-1],
+    upsampled = np.linspace(this_df.epoch.values.min(), 
+                            this_df.epoch.values.max(),
                             len(this_df)*iter_per_epoch)
     
     if method in ['momo', 'momo-star']:
@@ -179,7 +198,8 @@ def plot_single_step_sizes(this_df, aes, ax):
     
     markevery = (5,7) if this_df.epoch.max() <= 100 else (5,20)
     
-    ax.plot(this_df.epoch, 
+    # plot median markers, shift by 1/2 to get in middle of epoch
+    ax.plot(this_df.epoch + 0.5, 
             all_s_median, 
             c='gainsboro', 
             marker='o', 
@@ -190,11 +210,14 @@ def plot_single_step_sizes(this_df, aes, ax):
             label=r"$\zeta_k$")
     
     # plot LR
+    y = np.repeat(this_df.learning_rate, iter_per_epoch)
     if rho is not None:
-        y = np.repeat(this_df.learning_rate, iter_per_epoch) / rho
-        ax.plot(upsampled, y, c='silver', lw=2.5, label=r"$\alpha_k/\rho_k$")
+        y =  y/rho
+        label = r"$\alpha_k/\rho_k$"
     else:
-        ax.plot(this_df.epoch, this_df.learning_rate, c='silver', lw=2.5, label=r"$\alpha_k$")
+        label = r"$\alpha_k$"
+    
+    ax.plot(upsampled, y, c='silver', lw=2.5, label=label)
     
     return ax
 
@@ -281,4 +304,4 @@ def plot_step_sizes(R, method='momo', ylim=(1e-5,1e3), xlim = None, grid=(3,3), 
     if save:
         fig.savefig('output/plots/'+ R.exp_id + f'/step_sizes_'+method+'.png', dpi=500)
 
-    return fig
+    return fig, axs

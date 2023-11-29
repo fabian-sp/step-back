@@ -155,7 +155,7 @@ class Record:
         raw_df = self.raw_df.copy()
         
         # compute mean for each id and(!) epoch
-        if agg in ['mean', 'median']:
+        if agg == 'mean':
             # if column numeric, take mean else take first
             nan_mean_fun = lambda x: x.mean(skipna=False)
             agg_dict = dict([(c, nan_mean_fun) if is_numeric_dtype(raw_df[c]) else (c, 'first') for c in raw_df.columns])
@@ -272,7 +272,7 @@ class Record:
                         )
         
         ax.set_xlabel('Epoch')
-        ax.set_ylabel(SCORE_NAMES[s])
+        ax.set_ylabel(SCORE_NAMES.get(s, s))
         ax.grid(which='both', lw=0.2, ls='--', zorder=-10)
         
         if log_scale:
@@ -289,7 +289,7 @@ class Record:
             ax.legend(handles, names_legend, loc='lower left').set_zorder(100)
 
         fig.tight_layout()
-        return fig
+        return fig, ax
 
     
 def id_to_dict(id):

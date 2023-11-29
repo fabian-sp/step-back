@@ -94,21 +94,37 @@ def filter_output_file(exp_id, exp_filter=dict(), opt_filter=dict(), drop_keys=l
 def merge_subfolder(folder_name, fname='merged', output_dir='output/'):
     """Merges all output files from output_dir/folder_name """
     dir = os.path.join(output_dir, folder_name)
+    
+    if not os.path.exists(dir):
+        raise OSError("Folder directory does not exist.")
+    
     all_files = os.listdir(dir)
     all_files = [f[:-5] for f in all_files if f[-5:]=='.json']
 
-    merge_output_files(all_files, fname, output_dir=dir, as_json=True)
+    # save new file in parent directory of subfolder
+    merge_output_files(all_files, fname, output_dir=dir, merged_dir=output_dir, as_json=True)
 
     return
 
 
-def merge_output_files(exp_id_list, fname, output_dir='output/', as_json=True):
+def merge_output_files(exp_id_list, fname, output_dir='output/', merged_dir=None, as_json=True):
     """ Merges output files from a list of exp_id into a new file (with name fname)."""
-    merged = Container(name=fname, output_dir=output_dir, as_json=as_json)
+
+    if merged_dir is None:
+        merged_dir = output_dir
+
+    merged = Container(name=fname, output_dir=merged_dir, as_json=as_json)
 
     for _e in exp_id_list:
         C = Container(name=_e, output_dir=output_dir, as_json=as_json)
         C.load() # load data
+        
+        # if stored as single dict ouput, make list of length one
+        if isinstance(C.data, dict):
+            for key in ["config", "summary", "history"]:
+                assert key in C.data.keys()
+            C.data = [C.data]
+
         merged.data += C.data # append
 
     all_model = set([d['config']['model'] for d in merged.data])
