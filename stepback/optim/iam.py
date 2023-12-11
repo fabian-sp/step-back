@@ -1,7 +1,7 @@
 """
 Implements the IAM algorithm.
 
-Authors: Fabian Schaipp
+Authors: Fabian Schaipp, Robert Gower
 """
 
 import torch
@@ -113,6 +113,7 @@ class IAM(torch.optim.Optimizer):
         for group in self.param_groups:
             lr = group['lr']
             lmbda = lr*self.lmbda0*self._number_steps
+            lmbda_p = lr*self.lmbda0*(self._number_steps+1)
             
             ### Compute adaptive step size
             t1 = loss.item() - self.lb - lmbda*_dot
@@ -125,8 +126,9 @@ class IAM(torch.optim.Optimizer):
                 state = self.state[p]
 
                 z = state['z']
-                z.add_(grad, alpha=-eta)          
-                p.data.mul_(lmbda/(1+lmbda)).add_(other=z, alpha=1/(1+lmbda))
+                z.add_(grad, alpha=-eta)  
+                   
+                p.data.mul_(lmbda_p/(1+lmbda_p)).add_(other=z, alpha=1/(1+lmbda_p))
                             
         ############################################################
         self.state['step_size_list'].append(eta)
