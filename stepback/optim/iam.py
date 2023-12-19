@@ -108,10 +108,10 @@ class IAM(torch.optim.Optimizer):
                     state['z'] = p.detach().clone().to(p.device)
                         
                 pm1 = state['pm1']
-                print("p.data")
-                print(p.data)
-                print("p t-1")
-                print(state['pm1'])
+                # print("p.data")
+                # print(p.data)
+                # print("p t-1")
+                # print(state['pm1'])
 
                 _dot += torch.sum(torch.mul(grad, pm1-p.data))
                 _norm += torch.sum(torch.mul(grad, grad))
