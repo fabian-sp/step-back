@@ -1,7 +1,6 @@
 """
 Implements the IAM algorithm.
 
-Authors: Fabian Schaipp, Robert Gower
 """
 
 import torch
@@ -13,7 +12,8 @@ from ..types import Params, LossClosure, OptFloat
 class IAM(torch.optim.Optimizer):
     def __init__(self, 
                  params: Params, 
-                 lr: float=1e-1,
+                 lr: float=1,
+                 lmbda: float=9,
                  weight_decay: float=0,
                  lb: float=0,
                  ) -> None:
@@ -25,7 +25,9 @@ class IAM(torch.optim.Optimizer):
         params : Params
             Model parameters.
         lr : float, optional
-            Learning rate, by default 1e-1.
+            Learning rate cap, by default 1.
+        lmbda : float, optional
+            Lambda_k from paper, by default 9.
         weight_decay : float, optional
             Weight decay parameter, by default 0.
         lb : float, optional
@@ -36,15 +38,17 @@ class IAM(torch.optim.Optimizer):
         
         if lr < 0.0:
             raise ValueError("Invalid learning rate: {}".format(lr))
+        if lmbda < 0.0:
+            raise ValueError("Invalid lambda value: {}".format(lmbda))
         if weight_decay < 0.0:
             raise ValueError("Invalid weight decay: {}".format(weight_decay))
         
         
-        defaults = dict(lr=lr, weight_decay=weight_decay)
+        defaults = dict(lr=lr, lmbda=lmbda, weight_decay=weight_decay)
         
         super(IAM, self).__init__(params, defaults)
         
-        self.lmbda0 = 1
+        self.lmbda0 = lmbda
         self.lb = lb
         self._initial_lb = lb
         
@@ -104,31 +108,39 @@ class IAM(torch.optim.Optimizer):
                     state['z'] = p.detach().clone().to(p.device)
                         
                 pm1 = state['pm1']
+                print("p.data")
+                print(p.data)
+                print("p t-1")
+                print(state['pm1'])
 
                 _dot += torch.sum(torch.mul(grad, pm1-p.data))
                 _norm += torch.sum(torch.mul(grad, grad))
+
+                state['pm1'] = p.data.clone().to(p.device)      # set this to be old iterate in next step
+                            
 
         #################   
         # Update
         for group in self.param_groups:
             lr = group['lr']
-            lmbda = lr*self.lmbda0*self._number_steps
-            lmbda_p = lr*self.lmbda0*(self._number_steps+1)
+            lmbda = group['lmbda'] # lr*self.lmbda0*self._number_steps
+            # lmbda_p = lr*self.lmbda0*(self._number_steps+1)
             
             ### Compute adaptive step size
             t1 = loss.item() - self.lb - lmbda*_dot
             eta = max(t1,0) / _norm
             eta = eta.item() # make scalar
-            
+            tau = min(lr, eta)
+
             ### Update params
             for p in group['params']:   
                 grad = p.grad.data.detach()
                 state = self.state[p]
 
                 z = state['z']
-                z.add_(grad, alpha=-eta)  
+                z.add_(grad, alpha=-tau)  
                    
-                p.data.mul_(lmbda_p/(1+lmbda_p)).add_(other=z, alpha=1/(1+lmbda_p))
+                p.data.mul_(lmbda/(1+lmbda)).add_(other=z, alpha=1/(1+lmbda))
                             
         ############################################################
         self.state['step_size_list'].append(eta)

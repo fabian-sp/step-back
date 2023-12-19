@@ -140,6 +140,7 @@ def get_optimizer(opt_config: dict) -> Tuple[torch.optim.Optimizer, dict]:
     elif name == 'iam':
         opt_obj = IAM
         hyperp = {'lr': opt_config.get('lr', 1e-3),
+                  'lmbda': opt_config.get('lmbda', 9.),
                   'weight_decay': opt_config.get('weight_decay', 0),
                   'lb': opt_config.get('lb', 0.)
                   }
