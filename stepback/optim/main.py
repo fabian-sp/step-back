@@ -8,6 +8,7 @@ from .momo_adam import MomoAdam
 from .sps import SPS
 from .adabound import AdaBoundW
 from .adabelief import AdaBelief
+from .alr_smag import AlrSmag
 
 def get_optimizer(opt_config: dict) -> Tuple[torch.optim.Optimizer, dict]:
     """
@@ -135,7 +136,14 @@ def get_optimizer(opt_config: dict) -> Tuple[torch.optim.Optimizer, dict]:
                   'betas': opt_config.get('betas', (0.9, 0.999)),
                   'eps': opt_config.get('eps', 1e-16),
                   }
-
+    elif name =='alr-smag':
+        opt_obj = AlrSmag
+        hyperp = {'lr': opt_config.get('lr', 1e-3),
+                  'weight_decay': opt_config.get('weight_decay', 0),
+                  'beta': opt_config.get('beta', 0.9),
+                  'lb': opt_config.get('lb', 0.),
+                  'c': opt_config.get('c', 1.)
+                  }
     else:
         raise KeyError(f"Unknown optimizer name {name}.")
         
