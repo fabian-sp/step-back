@@ -39,12 +39,22 @@ For each experiment, the exact config can also be found under `configs/` where t
 
 ## How to use
 
-Any experiment needs a config file, see e.g. `configs/test.json`.
+The main runner functions are `run.py` (or `run.ipynb` if you prefer notebooks). Any experiment needs a config file, see e.g. `configs/test.json`.
+In general, the name of the config file serves as experiment ID; it is used later for storing the output, plotting etc. 
 
-* In the config you can specify at each key a list or a single entry. For every list entry, a cartesian product will be run.
-* The same is true for the hypeprparameters of each entry in the `opt` key of the config file.
-* Multiple runs can be done using the key `n_runs`. In each run the seed for shuffling the `DataLoader` changes.
-* The name of the config file serves as experiment ID, used later for running and storing the output. 
+There are two ways of specifying a config for `run.py`. 
+
+1) *dict-type* configs
+
+* Here, the config JSON is a dictionary where you can specify at each key a list or a single entry. 
+* The same is true for the hyperparameters of each entry in the `opt` key of the config file.
+* A cartesian product of all lists entrys will be run (ie. potentially many single training runs in sequence).
+* Multiple repetitions can be done using the key `n_runs`. This will use different seeds for shuffling the `DataLoader`.
+
+2) *list-type* configs
+
+* The config JSON is a list, where each entry is a config for a **single training run**. 
+* This format is intended only when you want to launch multiple runs in parallel. You should first create a dict-type config, and then use utilities for creating temporary list-type configs (see an example [here](configs/README.md#example-for-splitting-up-a-config)).
 
 You can run an experiment with `run.py` or with `run.ipynb`. A minimal example is:
 
@@ -74,3 +84,5 @@ For the entries in `history`, the following keys are important:
 * `val_loss`: loss function value over validation set
 * `train_score`: score function (eg accuracy) over training set
 * `val_score`: score function (eg accuracy) over validation set
+
+In [`stepback.utils.py`](stepback/utils.py) you can find several helper functions for merging or filtering output files.
