@@ -287,7 +287,7 @@ def logreg_opt_value(X, y, lmbda, fit_intercept=False):
     if lmbda > 0:
         sk = LogisticRegression(C=1/(n_samples*lmbda), penalty='l2', fit_intercept=False, tol=1e-10, random_state=1234)
     else:
-        sk = LogisticRegression(penalty='none', fit_intercept=False, tol=1e-10, random_state=1234)
+        sk = LogisticRegression(penalty=None, fit_intercept=False, tol=1e-10, random_state=1234)
         
     sk.fit(X,y)
     sol = sk.coef_.squeeze()
