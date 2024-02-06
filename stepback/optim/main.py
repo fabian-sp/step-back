@@ -8,6 +8,7 @@ from .momo_adam import MomoAdam
 from .sps import SPS
 from .adabound import AdaBoundW
 from .adabelief import AdaBelief
+from .adamw_lh import AdamLH
 
 def get_optimizer(opt_config: dict) -> Tuple[torch.optim.Optimizer, dict]:
     """
@@ -134,6 +135,14 @@ def get_optimizer(opt_config: dict) -> Tuple[torch.optim.Optimizer, dict]:
                   'weight_decay': opt_config.get('weight_decay', 0),
                   'betas': opt_config.get('betas', (0.9, 0.999)),
                   'eps': opt_config.get('eps', 1e-16),
+                  }
+    
+    elif name == 'adamw-lh':
+        opt_obj = AdamLH
+        hyperp = {'lr': opt_config.get('lr', 1e-3),
+                  'weight_decay': opt_config.get('weight_decay', 0),
+                  'betas': opt_config.get('betas', (0.9, 0.999)),
+                  'eps': opt_config.get('eps', 1e-8)
                   }
 
     else:

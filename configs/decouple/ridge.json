@@ -1,0 +1,12 @@
+{   "dataset": "synthetic_linear",
+    "dataset_kwargs": {"p": 1000, "n_samples": 200},
+    "model": "linear",
+    "loss_func": "squared",
+    "score_func": "squared",
+    "opt": [{"name": "adamw-lh", "lr": [0.00001,0.000032,0.0001,0.00032,0.001,0.0032,0.01,0.032,0.1], "weight_decay": [0.00001,0.000032,0.0001,0.00032,0.001,0.0032,0.01,0.032,0.1], "lr_schedule": "constant"},
+            {"name": "adamw", "lr": [0.00001,0.000032,0.0001,0.00032,0.001,0.0032,0.01,0.032,0.1],"weight_decay": [0.0001,0.00032,0.001,0.0032,0.01,0.032,0.1,0.32,1], "lr_schedule": "constant"}
+            ],
+    "batch_size": 20,
+    "max_epoch": 20,
+    "n_runs": 3
+}
