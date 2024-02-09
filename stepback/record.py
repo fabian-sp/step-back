@@ -35,7 +35,9 @@ AES = { 'sgd':              {'color': '#7fb285', 'markevery': 15, 'zorder': 7},
         'prox-sps':         {'color': '#97BF88', 'markevery': 7, 'zorder': 6},
         'adabelief':        {'color': '#FFBF46', 'markevery': 10, 'zorder': 6},
         'adabound':         {'color': '#4f9d69', 'markevery': 10, 'zorder': 5},
-        'adamw-lh':         {'color': '#FFBF46', 'markevery': 10, 'zorder': 6},
+
+        'adamw-pt':            {'color': '#f34213', 'markevery': 10, 'zorder': 9},
+        'adamw-lh':         {'color': '#4f9d69', 'markevery': 10, 'zorder': 5},
         'default':          {'color': 'grey','markevery': 3, 'zorder': 1},
         }
 
