@@ -104,31 +104,24 @@ class IAM(torch.optim.Optimizer):
 
                 # Initialize Averaging Variables
                 if self._number_steps == 1:
-                    state['pm1'] = p.detach().clone().to(p.device)
                     state['z'] = p.detach().clone().to(p.device)
                         
-                pm1 = state['pm1']
-                # print("p.data")
-                # print(p.data)
-                # print("p t-1")
-                # print(state['pm1'])
+                z = state['z']
 
-                _dot += torch.sum(torch.mul(grad, pm1-p.data))
+                _dot += torch.sum(torch.mul(grad, z-p.data))
                 _norm += torch.sum(torch.mul(grad, grad))
 
-                state['pm1'] = p.data.clone().to(p.device)      # set this to be old iterate in next step
                             
 
         #################   
         # Update
         for group in self.param_groups:
             lr = group['lr']
-            lmbda = group['lmbda'] # lr*self.lmbda0*self._number_steps
-            # lmbda_p = lr*self.lmbda0*(self._number_steps+1)
+            lmbda = group['lmbda'] 
             
             ### Compute adaptive step size
-            t1 = loss.item() - self.lb - lmbda*_dot
-            eta = max(t1,0) / _norm
+            t1 = loss.item() - self.lb + _dot
+            eta = max(t1, 0) / _norm
             eta = eta.item() # make scalar
             tau = min(lr, eta)
 
