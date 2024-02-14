@@ -7,10 +7,13 @@ import torch
 import itertools
 import copy
 import os
+import warnings
+import json
 
 from sklearn.linear_model import Ridge, LogisticRegression
 
 from .log import Container
+from .config import ConfigManager
 
 #%%
 """
@@ -134,81 +137,91 @@ def merge_output_files(exp_id_list, fname, output_dir='output/', merged_dir=None
     merged.store()
 
     return
-
 #%%
 """
-Utility functions for Experiments.
+Utility functions for Config files.
 """
 
-def prepare_config(exp_config: dict) -> dict:
-    """
-    Given an experiment config, we do the following preparations:
-        
-        * Convert n_runs to a list of run_id (integer values)
-        * Convert each element of opt to a list of opt configs.
-    """
-    c = copy.deepcopy(exp_config)
-    
-    c['run_id'] = list(range(c['n_runs']))
-    del c['n_runs']
-    
-    
-    assert isinstance(c['opt'], list), f"The value of 'opt' needs to be a list, but is given as {c['opt']}."
-    
-    all_opt = list()
-    for this_opt in c['opt']:
-        
-        # make every value a list
-        for k in this_opt.keys():
-            if not isinstance(this_opt[k], list):
-                this_opt[k] = [this_opt[k]]
-        
-        # cartesian product
-        all_opt += [dict(zip(this_opt.keys(), v)) for v in itertools.product(*this_opt.values())]
-         
-    c['opt'] = all_opt
-    
-    return c
+def split_config(exp_id: str, job_name: str, config_dir: str, splits: int=None, only_new: bool=False, output_dir: str='output/'):
+    """Splits a dict-type config into parts.
 
-def create_exp_list(exp_config: dict):
-    """
-    This function was adapted from: https://github.com/haven-ai/haven-ai/blob/master/haven/haven_utils/exp_utils.py
-    
-    Creates a cartesian product of a experiment config.
-    
-    Each value of exp_config should be a single entry or a list.
-    For list values, every entry of the list defines a single realization.
-    
     Parameters
     ----------
-    exp_config : dict
- 
-    Returns
-    -------
-    exp_list: list
-        A list of configs, each defining a single run.
+    exp_id : str
+        The name of the dict-type config.
+    job_name : str
+        Folder name where the temporary config files will be stored.
+    config_dir : str
+        Directory where ``exp_id.json```is stored. Temporary configs will be created in this directory as well.
+    splits : int, optional
+        How many parts (of roughtly equal size) you want to split, by default None.
+        If not specified, then one single config per file.
+    only_new : bool, optional
+        Whether to only create configs which have not been run, by default False.
+
+        Use this option with caution. We will look up all files that start with ``exp_id-`` (or are ``exp_id``) in the output directory specified.
+        Any config that can be found in those files will be disregarded.
+    output_dir : str, optional
+        Directory of output files, by default 'output'.
+        Only relevant if ``only_new=True``.
     """
-    exp_config_copy = copy.deepcopy(exp_config)
 
-    # Make sure each value is a list
-    for k, v in exp_config_copy.items():
-        if not isinstance(exp_config_copy[k], list):
-            exp_config_copy[k] = [v]
+    if os.path.exists(os.path.join(config_dir, job_name)):
+        warnings.warn("A folder with the same job__name already exists, files will be overwritten.")
+    else:
+        os.mkdir(os.path.join(config_dir, job_name))
 
-    # Create the cartesian product
-    exp_list_raw = (
-        dict(zip(exp_config_copy.keys(), v)) for v in itertools.product(*exp_config_copy.values())
-    )
+    # Load config_list
+    Conf = ConfigManager(exp_id=exp_id, config_dir=config_dir)
+    config_list = Conf.create_config_list()
+    assert Conf.dict_type, "For splitting a config, it should be of dict-type"
+    print(f"Initial config contains {len(config_list)} elements.")
 
-    # Convert into a list
-    exp_list = []
-    for exp_dict in exp_list_raw:
-        exp_list += [exp_dict]
+    # If only new, load output files and keep only the ones that have not been run yet
+    # Check all output files which start with 'exp_id-'
+    if only_new:
+        print("Screening for existing runs...")
+        existing_files = get_output_filenames(exp_id, output_dir=output_dir)
+        existing_configs = list()
 
-    return exp_list
+        for _e in existing_files:
+            print(f"Looking in output data from {output_dir+_e}")
+            C = Container(name=_e, output_dir=output_dir, as_json=True)
+            C.load() # load data
+            existing_configs += [copy.deepcopy(_d['config']) for _d in C.data]
+            del C
 
+        to_remove = list()
+        for _conf in config_list:
+            
+            # Base adds empty kwargs if not specified; we do this here to ensure correct comparison
+            if 'dataset_kwargs' not in _conf.keys():
+                _conf['dataset_kwargs'] = dict()
 
+            if 'model_kwargs' not in _conf.keys():
+                _conf['model_kwargs'] = dict()
 
+            # Check if exists --> remove
+            if _conf in existing_configs:
+                to_remove.append(_conf)
+            else:
+                pass
+
+        config_list = [_conf for _conf in config_list if _conf not in to_remove]        # remove all existing runs
+        print(f"Screening ended: {len(config_list)} elements remaining.")
+
+    # Split config_list evenly
+    if splits is None:
+        splits = len(config_list)
+
+    list_of_config_lists = [list(a) for a in np.array_split(config_list, splits)]
+
+    # store
+    for j, _this_list in enumerate(list_of_config_lists):
+        with open(os.path.join(config_dir, job_name, exp_id) + f'-{j:02d}.json', "w") as f:
+            json.dump(_this_list, f, indent=4, sort_keys=True)
+
+    return
 
 #%% 
 """
