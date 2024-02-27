@@ -95,8 +95,8 @@ class NeHa(torch.optim.Optimizer):
                 state = self.state[p]
                 grad = p.grad.data.detach()
                 p.data.add_(other=grad, alpha=-lr)  
-                xH = state['xH']      
-                xH.add_(grad, alpha=-0.5*lr)
+                # xH = state['xH']      
+                # xH.add_(grad, alpha=-0.5*lr)
 
         # gradient = torch.autograd.grad(loss, model.parameters())
         with torch.enable_grad():
@@ -110,7 +110,7 @@ class NeHa(torch.optim.Optimizer):
             lr = group['lr']
             for p in group['params']:
                 state = self.state[p]
-                grad = p.grad.data.detach()
+                grad = p.grad.data.detach() #NOTE: because we didn't zero gradient, this has the sum of both gradients!
                 xH = state['xH']      
                 xH.add_(grad, alpha=-0.5*lr)
                 delta += ((xH-p.data)**2).sum()
