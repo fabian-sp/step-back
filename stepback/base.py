@@ -260,13 +260,12 @@ class Base:
             # Forward and Backward
             t1 = time.time()                                        # model timing starts
             self.opt.zero_grad()    
-            out = self.model(data).to(device=self.device)
 
-            if len(out.shape) <= 1:
-                warnings.warn(f"Shape of model output is {out.shape}, recommended to have shape [batch_size, ..].")
-            
-            closure = lambda: self.training_loss.compute(out, targets)
-            
+            # if len(out.shape) <= 1:
+            #     warnings.warn(f"Shape of model output is {out.shape}, recommended to have shape [batch_size, ..].")
+            closure = lambda: self.training_loss.compute(self.model(data).to(device=self.device), targets)
+
+            out = self.model(data).to(device=self.device)
             # see optim/README.md for explanation 
             if hasattr(self.opt,"prestep"):
                 ind = batch['ind'].to(device=self.device)           # indices of batch members
@@ -274,7 +273,7 @@ class Base:
             
             # Here the magic happens
             loss_val = self.opt.step(closure=closure) 
-            
+
             if self.device != torch.device('cpu'):
                 torch.cuda.synchronize()
             timings_dataloader.append(t1-t0) 

@@ -3,6 +3,7 @@ from torch.optim.lr_scheduler import LambdaLR, StepLR
 import warnings
 from typing import Tuple
 
+from .neha import NeHa
 from .momo import Momo
 from .momo_adam import MomoAdam
 from .sps import SPS
@@ -67,7 +68,15 @@ def get_optimizer(opt_config: dict) -> Tuple[torch.optim.Optimizer, dict]:
                   'betas': opt_config.get('betas', (0.9, 0.999)),
                   'eps': opt_config.get('eps', 1e-8)
                   }
-    
+    elif name == 'neha':
+        opt_obj = NeHa
+        hyperp = {'lr': opt_config.get('lr', 1e-3),
+                  'r': opt_config.get('r', 0.5),
+                  'weight_decay': opt_config.get('weight_decay', 0),
+                  'theta': opt_config.get('theta', 1.0),
+                  'lr_max': opt_config.get('lr_max', 1.0),
+                  'lr_min': opt_config.get('lr_min', 1e-6),
+                  }  
     elif name == 'momo':
         opt_obj = Momo
         hyperp = {'lr': opt_config.get('lr', 1e-3),
@@ -76,8 +85,7 @@ def get_optimizer(opt_config: dict) -> Tuple[torch.optim.Optimizer, dict]:
                   'lb': opt_config.get('lb', 0.),
                   'bias_correction': opt_config.get('bias_correction', False),
                   'use_fstar': False
-                  }
-    
+                  }   
     elif name == 'momo-adam':
         opt_obj = MomoAdam
         hyperp = {'lr': opt_config.get('lr', 1e-3),
