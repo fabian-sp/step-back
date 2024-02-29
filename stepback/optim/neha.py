@@ -78,46 +78,34 @@ class NeHa(torch.optim.Optimizer):
         # NOTE: we could implement the "proximal version" similar to AdamW?
         reg = self.add_weightdecay()
         loss.add_(reg)  # Adding l2-norm directly to loss
-
-        # Initializing the high order iterate
-        if self._number_steps == 1:
-            for group in self.param_groups:
-                for p in group['params']:
-                    state = self.state[p]
-                    x = p.data.detach()
-                    state['xH'] = x.clone() #torch.clone(p.data, memory_format=torch.preserve_format).detach()      
         ############################################################
         # First pass through parameters to compute SGD update
         for group in self.param_groups:
             lr = group['lr']
-            # lmbda = group['weight_decay']
             for p in group['params']:
                 state = self.state[p]
                 grad = p.grad.data.detach()
                 p.data.add_(other=grad, alpha=-lr)  
-                # xH = state['xH']      
-                # xH.add_(grad, alpha=-0.5*lr)
 
-        # gradient = torch.autograd.grad(loss, model.parameters())
         with torch.enable_grad():
             loss = closure()
         reg = self.add_weightdecay()
         loss.add_(reg)  # Adding l2-norm directly to loss
-        # loss.backward(retain_graph=True)  # Compute new gradient? NOTE: Doesn't work!!!
         # Second pass to finish computing high-order update and next stepsize
         delta =0
         for group in self.param_groups:
             lr = group['lr']
             for p in group['params']:
                 state = self.state[p]
-                grad = p.grad.data.detach() #NOTE: because we didn't zero gradient, this has the sum of both gradients!
-                xH = state['xH']      
+                x = p.data.detach()
+                xH = x.clone() 
+                grad = p.grad.data.detach() #NOTE: because we didn't zero gradient, this has the sum of both gradients!   
                 xH.add_(grad, alpha=-0.5*lr)
                 delta += ((xH-p.data)**2).sum()
 
         # Update learning rate
         for group in self.param_groups:
-            group['lr'] = group['lr'] * (self.r/torch.sqrt(delta))**(self.theta)
+            group['lr'] = group['lr'] * ((self.r/torch.sqrt(delta))**(self.theta)).item()
         ############################################################       
         # update state with metrics
         self.state['step_size_list'].append(lr) # works only if one param_group!
