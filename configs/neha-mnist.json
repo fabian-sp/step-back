@@ -1,0 +1,15 @@
+{
+    "dataset": "mnist",
+    "dataset_kwargs": {"as_image": false},
+    "model": "mlp",
+    "model_kwargs": {"output_size": 10, "hidden_sizes": [100,100], "bias": true},
+    "loss_func": "cross_entropy",
+    "score_func": "cross_entropy_accuracy",
+    "opt": [
+        {"name": "neha", "lr": [ 0.1, 0.5, 1], "weight_decay": 0},
+        {"name": "sgd-m", "lr": [ 0.1, 0.5,  1], "weight_decay": 0, "momentum": 0.9, "dampening": 0.9, "lr_schedule": "exponential_9_0.5"}
+    ],
+    "batch_size": 128,
+    "max_epoch": 20,
+    "n_runs": 5
+    }
