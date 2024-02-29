@@ -6,8 +6,9 @@
     "loss_func": "cross_entropy",
     "score_func": "cross_entropy_accuracy",
     "opt": [
-        {"name": "neha", "lr": [ 0.1, 0.5, 1], "weight_decay": 0},
-        {"name": "sgd-m", "lr": [ 0.1, 0.5,  1], "weight_decay": 0, "momentum": 0.9, "dampening": 0.9, "lr_schedule": "exponential_9_0.5"}
+        {"name": "neha", "lr": [ 0.1, 0.5, 1], "weight_decay": 0, "r" : 0.5, "theta": 1.0},
+        {"name": "sgd-m", "lr": [ 0.1, 0.5,  1], "weight_decay": 0, "momentum": 0.9, "dampening": 0.9, "lr_schedule": "exponential_9_0.5"},
+        {"name": "sgd-m", "lr": [ 0.1, 0.5,  1], "weight_decay": 0, "momentum": 0.9, "dampening": 0.9, "lr_schedule": "constant"}
     ],
     "batch_size": 128,
     "max_epoch": 20,
