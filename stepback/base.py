@@ -360,6 +360,9 @@ class Base:
         if self.config['model'] == 'linear':
             
             fit_intercept = (self.model[0].bias is not None)
+
+            if fit_intercept and self.config['opt'].get('weight_decay', 0) > 0:
+                warnings.warn("Using bias and weight decay. Note that the implementation her will also penalize the bias.")
             
             if self.config['loss_func'] == 'squared':
                 opt_val = ridge_opt_value(X=self.train_set.dataset.tensors[0].detach().numpy(),
