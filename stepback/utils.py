@@ -267,16 +267,19 @@ Compute optimal value for convex problems.
 
 def ridge_opt_value(X, y, lmbda, fit_intercept=False):
     n_samples = len(y)
-    sk = Ridge(alpha=n_samples * lmbda/2, fit_intercept=fit_intercept, tol=1e-10, solver='auto', random_state=1234)
     
+    # Caution: in scikit-learn, the intercept is not penalized, but in the Pytorch default layout it is.
+    # To account for this, we add a column of ones, and penalize the intercept.
+    if fit_intercept:
+        X = np.hstack((X, np.ones((n_samples,1))))
+
+    # We account for intercept with column of ones, see above
+    sk = Ridge(alpha=n_samples * lmbda/2, fit_intercept=False, tol=1e-10, solver='auto', random_state=1234)
+        
     sk.fit(X,y)
     sol = sk.coef_
     
-    if fit_intercept:
-        t2 = ((X@sol + sk.intercept_ - y)**2).mean()
-    else:
-        t2 = ((X@sol - y)**2).mean()
-        
+    t2 = ((X@sol - y)**2).mean()    
     t1 = lmbda/2 * np.linalg.norm(sol)**2
     
     return t1+t2
@@ -284,18 +287,21 @@ def ridge_opt_value(X, y, lmbda, fit_intercept=False):
 def logreg_opt_value(X, y, lmbda, fit_intercept=False):
     n_samples = len(y)
     
+    # Caution: in scikit-learn, the intercept is not penalized, but in the Pytorch default layout it is.
+    # To account for this, we add a column of ones, and penalize the intercept.
+    if fit_intercept:
+        X = np.hstack((X, np.ones((n_samples,1))))
+
+    # We account for intercept with column of ones, see above
     if lmbda > 0:
         sk = LogisticRegression(C=1/(n_samples*lmbda), penalty='l2', fit_intercept=False, tol=1e-10, random_state=1234)
     else:
-        sk = LogisticRegression(penalty='none', fit_intercept=False, tol=1e-10, random_state=1234)
+        sk = LogisticRegression(penalty=None, fit_intercept=False, tol=1e-10, random_state=1234)
         
     sk.fit(X,y)
     sol = sk.coef_.squeeze()
     
-    if fit_intercept:
-        t2 = np.log(1+np.exp(-y*(X@sol + sk.intercept_))).mean()
-    else:
-        t2 = np.log(1+np.exp(-y*(X@sol))).mean()
-        
+    t2 = np.log(1+np.exp(-y*(X@sol))).mean()    
     t1 = lmbda/2 * np.linalg.norm(sol)**2
+
     return t1+t2

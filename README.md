@@ -18,7 +18,7 @@ Install via
 
 or in order to install in developer mode via
 
-    python setup.py clean --all develop clean --all
+    python -m pip install --editable .
 
 ## Results
 
