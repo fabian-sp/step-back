@@ -17,7 +17,7 @@ def get_synthetic_matrix_fac(p: int, q: int, n_samples: int, noise: float=0, con
     rng1 = np.random.RandomState(_BASE_SEED)
             
     # this is the same as multiplying D@B where B is random and D is diagonal with values as below:
-    Atrue = np.logspace(1, np.log10(condition_number), q).reshape(-1, 1) * rng1.rand(q, p)
+    Atrue = np.logspace(0, np.log10(condition_number), q).reshape(-1, 1) * rng1.rand(q, p)
     
     # perturb train set
     if split == 'train' and noise>0:

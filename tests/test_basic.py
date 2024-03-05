@@ -76,3 +76,53 @@ def test_ridge():
     assert_almost_equal(f1, f2)
 
     return
+
+config_ridge_bias = {"dataset": 'synthetic_linear',
+                    "dataset_kwargs": {'p': 10, 'n_samples': 100},
+                    "model": 'linear',
+                    "model_kwargs": {"bias": True},
+                    "loss_func": 'squared',
+                    "score_func": 'squared',
+                    "opt": {'name': 'sgd', 'lr': 1e-1, 'weight_decay': 1e-3, 'lr_schedule': 'constant'},
+                    "batch_size": 100,
+                    "max_epoch": 1000,
+                    "run_id": 0}
+
+def test_ridge_bias():
+    """Solve Ridge regerssion with Gradient Descent."""
+    B = Base(name,config_ridge_bias, device)
+    B.setup()
+    B.run()
+    
+    lam = B.config['opt']['weight_decay']
+    f1 = B.results['history'][-1]['train_loss'] + (lam/2) * B.results['history'][-1]['model_norm']**2
+    f2 = B.results['summary']['opt_val']
+        
+    assert_almost_equal(f1, f2)
+
+    return
+
+config_logreg_bias = {"dataset": 'synthetic_linear',
+                    "dataset_kwargs": {'p': 5, 'n_samples': 100},
+                    "model": 'linear',
+                    "model_kwargs": {"bias": True},
+                    "loss_func": 'logistic',
+                    "score_func": 'logistic_accuracy',
+                    "opt": {'name': 'sgd', 'lr': 1., 'weight_decay': 1e-2, 'lr_schedule': 'constant'},
+                    "batch_size": 100,
+                    "max_epoch": 300,
+                    "run_id": 0}
+
+def test_logreg_bias():
+    """Solve Logistic regression with Gradient Descent."""
+    B = Base(name, config_logreg_bias, device)
+    B.setup()
+    B.run()
+    
+    lam = B.config['opt']['weight_decay']
+    f1 = B.results['history'][-1]['train_loss'] + (lam/2) * B.results['history'][-1]['model_norm']**2
+    f2 = B.results['summary']['opt_val']
+    
+    assert_almost_equal(f1, f2, decimal=3)
+
+    return
