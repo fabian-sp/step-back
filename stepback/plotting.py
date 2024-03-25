@@ -4,6 +4,7 @@ import pandas as pd
 import numpy as np
 import itertools
 from ast import literal_eval as make_tuple
+import copy
 
 from .record import SCORE_NAMES, id_to_dict, create_label
 
@@ -39,9 +40,10 @@ def plot_stability(R,
 
     """
     # plot only one score
+    score = copy.deepcopy(score)
     if isinstance(score, str):
         score = [score]
-
+    
     base_df = R.base_df.copy()
     id_df = R.id_df.copy()
 
@@ -156,7 +158,7 @@ def plot_stability(R,
             fig.subplots_adjust(top=0.855,bottom=0.155,left=0.145,right=0.98)
     
     if save:
-        fig.savefig('output/plots/' + R.exp_id + f"/stability_{xaxis}_{'_'.join(score)}.pdf")
+        fig.savefig('output/plots/' + R.exp_id_str + f"/stability_{xaxis}_" + f"{'_'.join(score)}.pdf")
     
     return fig, axs
 
@@ -302,6 +304,6 @@ def plot_step_sizes(R, method='momo', ylim=(1e-5,1e3), xlim = None, grid=(3,3), 
     fig.tight_layout()
 
     if save:
-        fig.savefig('output/plots/'+ R.exp_id + f'/step_sizes_'+method+'.png', dpi=500)
+        fig.savefig('output/plots/'+ R.exp_id_str + f'/step_sizes_'+method+'.png', dpi=500)
 
     return fig, axs
