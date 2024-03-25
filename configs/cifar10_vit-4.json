@@ -1,0 +1,10 @@
+{   "dataset": "cifar10",        
+    "model": "vit",
+    "model_kwargs": {"patch_size": 4, "dim": 512, "depth": 6, "heads": 8, "mlp_dim": 512, "dropout": 0.1, "emb_dropout": 0.1},
+    "loss_func": "cross_entropy",
+    "score_func": "cross_entropy_accuracy",
+    "opt": [{"name": "lion", "lr": [1e-5,3.16e-5,1e-4,3.16e-4], "weight_decay": 0, "lr_schedule": "constant"}],
+    "batch_size": 512,
+    "max_epoch": 200,
+    "n_runs": 3
+    }

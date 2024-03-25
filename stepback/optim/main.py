@@ -8,8 +8,12 @@ from .momo_adam import MomoAdam
 from .sps import SPS
 from .adabound import AdaBoundW
 from .adabelief import AdaBelief
+<<<<<<< HEAD
 from .iam import IAM
 from .alr_smag import AlrSmag
+=======
+from .lion import Lion
+>>>>>>> f-add-lion
 
 def get_optimizer(opt_config: dict) -> Tuple[torch.optim.Optimizer, dict]:
     """
@@ -154,6 +158,13 @@ def get_optimizer(opt_config: dict) -> Tuple[torch.optim.Optimizer, dict]:
                   'lb': opt_config.get('lb', 0.),
                   'c': opt_config.get('c', 1.)
                 }
+        
+    elif name == 'lion':
+        opt_obj = Lion
+        hyperp = {'lr': opt_config.get('lr', 1e-3),
+                  'weight_decay': opt_config.get('weight_decay', 0),
+                  'betas': opt_config.get('betas', (0.9, 0.99)),
+                  }
     else:
         raise KeyError(f"Unknown optimizer name {name}.")
         
