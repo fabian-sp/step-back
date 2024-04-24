@@ -38,7 +38,7 @@ plt.rc('text', usetex=True)
 R = Record(output_names)
 
 R.filter(drop={'name': ['momo-adam-star', 'momo-star']})
-R.filter(drop={'name': ['adabelief', 'adabound', 'prox-sps']}) 
+R.filter(drop={'name': ['adabelief', 'adabound', 'lion', 'prox-sps']}) 
 R.filter(keep={'lr_schedule': 'constant'})                          # only show constant learning rate results
 
 

@@ -35,6 +35,7 @@ AES = { 'sgd':              {'color': '#7fb285', 'markevery': 15, 'zorder': 7},
         'prox-sps':         {'color': '#97BF88', 'markevery': 7, 'zorder': 6},
         'adabelief':        {'color': '#FFBF46', 'markevery': 10, 'zorder': 6},
         'adabound':         {'color': '#4f9d69', 'markevery': 10, 'zorder': 5},
+        'lion':             {'color': '#dbabab', 'markevery': 10, 'zorder': 4},
         'default':          {'color': 'grey','markevery': 3, 'zorder': 1},
         }
 
@@ -62,6 +63,10 @@ class Record:
             exp_id = [exp_id]
         else:
             warnings.warn("Loading from multiple output files. Contents will be merged.")   
+        
+        # TODO: make this safer
+        self.exp_id_str = exp_id[0]
+        print(f"Creating Record with ID {self.exp_id_str}.")
         
         # object to store everything
         self.data = list()
