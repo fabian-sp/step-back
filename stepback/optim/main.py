@@ -60,7 +60,14 @@ def get_optimizer(opt_config: dict) -> Tuple[torch.optim.Optimizer, dict]:
                   'betas': opt_config.get('betas', (0.9, 0.999)),
                   'eps': opt_config.get('eps', 1e-8)
                   }
-    
+    elif name == 'bfgsd':
+        opt_obj = torch.optim.BFGSd
+        hyperp = {'lr': opt_config.get('lr', 1e-3),
+                  'weight_decay': opt_config.get('weight_decay', 0),
+                  'betas': opt_config.get('betas', (0.9, 0.999)),
+                  'lmbda': opt_config.get('lmbda', 10)
+                  }
+           
     elif name == 'adamw':
         opt_obj = torch.optim.AdamW
         hyperp = {'lr': opt_config.get('lr', 1e-3),
