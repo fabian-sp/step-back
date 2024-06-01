@@ -73,6 +73,7 @@ class BFGSd(torch.optim.Optimizer):
         if closure is not None:
             with torch.enable_grad():
                 loss = closure()
+                # loss.backward(retain_graph=True)
         
         if len(self.param_groups) > 1:
             warnings.warn("More than one param group. step_size_list contains adaptive term of last group.")
@@ -128,7 +129,6 @@ class BFGSd(torch.optim.Optimizer):
                 if wd > 0:
                     p.data.mul_(1-wd*lr)
                 # Gradient step  x =x -lr*h*grad
-                import pdb; pdb.set_trace()
                 p.data.addcmul_(grad_avg, h, value=-lr) # x_k - tau*(d_k/D_k)
 
         import pdb; pdb.set_trace()
