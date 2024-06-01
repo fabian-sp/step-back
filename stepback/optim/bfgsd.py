@@ -79,7 +79,8 @@ class BFGSd(torch.optim.Optimizer):
             warnings.warn("More than one param group. step_size_list contains adaptive term of last group.")
             warnings.warn("More than one param group. This might cause issues for the step method.")
 
-        
+        #################   
+        # update iterate and momentum buffer
         for group in self.param_groups:
             beta1, beta2 = group['betas']
         
@@ -106,20 +107,6 @@ class BFGSd(torch.optim.Optimizer):
                 grad_avg.mul_(beta1).add_(grad, alpha=1-beta1)
                 bias_correction1 = 1 - beta1 ** state['step']
                 grad_avg.div_(bias_correction1)
-        #################   
-        # update iterate
-        for group in self.param_groups:
-            lr = group['lr']
-            wd = group['weight_decay']
-            beta1, beta2 = group['betas']
-            
-            ### Update params
-            for p in group['params']:
-                if p.grad is None:
-                    continue   
-                grad = p.grad.data
-                state = self.state[p]
-                grad_avg = state['grad_avg']
                 h = state['h']
                 s = state['s']
                 y = state['y']
@@ -130,7 +117,8 @@ class BFGSd(torch.optim.Optimizer):
                     p.data.mul_(1-wd*lr)
                 # Gradient step  x =x -lr*h*grad
                 p.data.addcmul_(grad_avg, h, value=-lr) # x_k - tau*(d_k/D_k)
-
+                p.grad.data.zero_()
+    
         import pdb; pdb.set_trace()
         #Recompute the gradient at the new iterate, but same batch
         with torch.enable_grad(): 

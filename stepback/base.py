@@ -265,7 +265,9 @@ class Base:
             if len(out.shape) <= 1:
                 warnings.warn(f"Shape of model output is {out.shape}, recommended to have shape [batch_size, ..].")
             
-            closure = lambda: self.training_loss.compute(out, targets)
+            # closure = lambda: self.training_loss.compute(out, targets)
+            # Need to recompute forward pass when calling closure.
+            closure = lambda: self.training_loss.compute(self.model(data).to(device=self.device), targets)
             
             # see optim/README.md for explanation 
             if hasattr(self.opt,"prestep"):
