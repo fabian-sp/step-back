@@ -115,9 +115,10 @@ class BFGSd(torch.optim.Optimizer):
             ### Update params
             for p in group['params']:
                 if p.grad is None:
-                    continue
+                    continue   
                 grad = p.grad.data
                 state = self.state[p]
+                grad_avg = state['grad_avg']
                 h = state['h']
                 s = state['s']
                 y = state['y']
