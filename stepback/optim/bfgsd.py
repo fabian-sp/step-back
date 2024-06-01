@@ -12,7 +12,7 @@ class BFGSd(torch.optim.Optimizer):
                 params: Params, 
                 lr: float=1.0, 
                 betas:tuple=(0.9, 0.999), 
-                lmbda:float=1e-8,
+                lmbda:float=10.0,
                 weight_decay:float=0):
         """
         BFGS lambda diagonal optimizer
@@ -127,6 +127,7 @@ class BFGSd(torch.optim.Optimizer):
                 if wd > 0:
                     p.data.mul_(1-wd*lr)
                 # Gradient step  x =x -lr*h*grad
+                import pdb; pdb.set_trace()
                 p.data.addcmul_(grad_avg, h, value=-lr) # x_k - tau*(d_k/D_k)
 
         import pdb; pdb.set_trace()
@@ -156,7 +157,7 @@ class BFGSd(torch.optim.Optimizer):
                 # h = (sqrt{1+ 4*lmbda  y^2(h+lmbda *s^2)}-1)/(2*lmbda*y^2)
                 s.square_()
                 y.square_()
-                (h.add_(s.add(lmbda))).mul_(y).mul_(4*lmbda).add_(1.0).sqrt_().sub_(-1.0).div_(y.mul_(2.0*lmbda))  
+                h.add_(s.mul_(lmbda)).mul_(y).mul_(4*lmbda).add_(1.0).sqrt_().sub_(-1.0).div_(y.mul_(2.0*lmbda))  
                 # reset for next iteration
                 s.zero_()
                 y.zero_()
