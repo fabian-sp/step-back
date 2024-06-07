@@ -169,8 +169,10 @@ class Record:
 
             df = raw_df.groupby(['id', 'epoch'], sort=False).agg(agg_dict).drop('run_id',axis=1)
             
+            # only compute std for float columns
             # std returns nan if some entrys are nan
-            df2 = raw_df.groupby(['id', 'epoch'], sort=False).std().drop('run_id',axis=1)           
+            std_columns = [c for c in raw_df.columns if is_numeric_dtype(raw_df[c])]
+            df2 = raw_df.groupby(['id', 'epoch'], sort=False)[std_columns].std().drop('run_id',axis=1)           
             df2.columns = [c+'_std' for c in df2.columns]
             
             df = pd.concat([df,df2], axis=1) 
