@@ -36,6 +36,7 @@ AES = { 'sgd':              {'color': '#7fb285', 'markevery': 15, 'zorder': 7},
         'adabelief':        {'color': '#FFBF46', 'markevery': 10, 'zorder': 6},
         'adabound':         {'color': '#4f9d69', 'markevery': 10, 'zorder': 5},
         'lion':             {'color': '#dbabab', 'markevery': 10, 'zorder': 4},
+        'bfgsd':            {'color': '#F7CE5B', 'markevery': 10, 'zorder': 4},
         'default':          {'color': 'grey','markevery': 3, 'zorder': 1},
         }
 
@@ -166,7 +167,9 @@ class Record:
             agg_dict = dict([(c, nan_mean_fun) if is_numeric_dtype(raw_df[c]) else (c, 'first') for c in raw_df.columns])
             agg_dict.pop('id')
             agg_dict.pop('epoch')
-
+            
+            # raw_df.drop(columns=['step_size_list'])
+            
             df = raw_df.groupby(['id', 'epoch'], sort=False).agg(agg_dict).drop('run_id',axis=1)
             
             # only compute std for float columns
@@ -175,6 +178,8 @@ class Record:
             df2 = raw_df.groupby(['id', 'epoch'], sort=False)[std_columns].std().drop('run_id',axis=1)           
             df2.columns = [c+'_std' for c in df2.columns]
             
+
+
             df = pd.concat([df,df2], axis=1) 
             df = df.reset_index(level=-1) # moves epoch out of index
             

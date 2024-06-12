@@ -144,7 +144,6 @@ class Momo(torch.optim.Optimizer):
                 _gamma += grad_dot_w
                 _norm += torch.sum(torch.mul(grad_avg, grad_avg))
 
-        #################   
         # Update
         for group in self.param_groups:
             lr = group['lr']

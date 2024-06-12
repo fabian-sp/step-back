@@ -201,15 +201,17 @@ class MomoAdam(torch.optim.Optimizer):
                 self.lb = max(self.lb, self._initial_lb) # safeguard
                 
             ### Update params
+            num_groups =1
+            DKdiv_mean =0
             for p in group['params']:
                 if p.grad is None:
                     continue
                 
                 state = self.state[p]
                 grad_avg, grad_avg_sq = state['grad_avg'], state['grad_avg_sq']
-
                 Dk = grad_avg_sq.div(bias_correction2).sqrt().add(eps)
-                
+                DKdiv_mean = (DKdiv_mean*(num_groups-1)+(1/Dk).mean().item())/num_groups
+                num_groups = num_groups+1
                 # AdamW-Pytorch way of weight decay
                 if lmbda > 0 and not self.divide:
                     p.data.mul_(1-lmbda*lr)
@@ -227,6 +229,6 @@ class MomoAdam(torch.optim.Optimizer):
             self.state['h'] = h
             self.state['fstar'] = self.lb
         
-        self.state['step_size_list'].append(t1)
+        self.state['step_size_list'].append(DKdiv_mean)
 
         return loss

@@ -65,7 +65,7 @@ def get_optimizer(opt_config: dict) -> Tuple[torch.optim.Optimizer, dict]:
         opt_obj = BFGSd
         hyperp = {'lr': opt_config.get('lr', 1e-3),
                   'weight_decay': opt_config.get('weight_decay', 0),
-                  'betas': opt_config.get('betas', (0.9, 0.999)),
+                  'betas': opt_config.get('betas', (1.0, 0.0)),
                   'lmbda': opt_config.get('lmbda', 10)
                   }
            
