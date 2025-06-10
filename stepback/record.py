@@ -189,6 +189,38 @@ class Record:
         
         return df
     
+    def build_sweep_df(self, score='val_score', xaxis='lr', ignore_columns=list(), cutoff=None):
+
+        base_df = self.base_df.copy()
+        id_df = self.id_df.copy()
+
+        grouped = base_df.groupby(['name', xaxis])
+        max_epoch = grouped['epoch'].max()
+        assert len(max_epoch.unique()) == 1, "It seems that different setups ran for different number of epochs."
+
+        if cutoff is None:
+            cutoff_epoch = (max_epoch[0], max_epoch[0])
+        else:
+            cutoff_epoch = (cutoff, max_epoch[0])
+
+        # filter epochs
+        sub_df = base_df[(base_df.epoch >= cutoff_epoch[0])
+                         &
+                         (base_df.epoch <= cutoff_epoch[1])] 
+        # select the columns to group by
+        grouping_cols = [c for c in id_df.columns if c not in ignore_columns]
+        # group by all id_cols
+        df = sub_df.groupby(grouping_cols)[[score, score+'_std']].mean()
+        # move xaxis out of grouping
+        df = df.reset_index(level=xaxis)
+        # make xaxis float
+        df[xaxis] = df[xaxis].astype('float')
+        
+        # get method and learning rate with best score
+        # best_ind, best_x = df.index[df[s].argmax()], df[xaxis][df[s].argmax()]
+
+        return df
+    
     #============ DATABASE =================================
     #=======================================================
 
