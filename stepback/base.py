@@ -172,14 +172,15 @@ class Base:
         opt_obj, hyperp = get_optimizer(self.config['opt'])
         
         self._init_opt(opt_obj, hyperp)
-        
-        self.sched = get_scheduler(self.config['opt'], self.opt)
+    
+        self.sched, self._step_scheduler_on_epoch = get_scheduler(self.config['opt'], self.opt)
         
         #============ Results ==============
         opt_val = self._compute_opt_value()
         
         # Store useful information as summary
         self.results['summary']['num_batches_per_epoch'] = len(self.train_loader)
+        self.results['summary']['step_scheduler_on_epoch'] = self._step_scheduler_on_epoch
         if opt_val is not None:
             self.results['summary']['opt_val'] = opt_val
 
@@ -276,6 +277,8 @@ class Base:
         # Reset logging dictionaries
         if self.log_every_k_steps is not None:
             self._log_stepwise = {"loss": {}, "grad_norm": {}}
+            if not self._step_scheduler_on_epoch:
+                self._log_stepwise["lr"] = {}
 
         for step_counter, batch in enumerate(pbar):
             # Move batch to device
@@ -313,9 +316,16 @@ class Base:
                 if step_counter % self.log_every_k_steps == 0:
                     self._log_stepwise["loss"][total_step_counter] = loss_val.item()
                     self._log_stepwise["grad_norm"][total_step_counter] = grad_norm(self.model)
+                    if not self._step_scheduler_on_epoch:
+                        self._log_stepwise["lr"][total_step_counter] = self.sched.get_last_lr()[0]
+
+
+            if not self._step_scheduler_on_epoch:
+                self.sched.step()
 
         # update learning rate             
-        self.sched.step()       
+        if self._step_scheduler_on_epoch:
+            self.sched.step()   
 
         return
     

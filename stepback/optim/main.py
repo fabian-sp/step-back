@@ -154,21 +154,21 @@ def get_scheduler(config: dict, opt: torch.optim.Optimizer) -> torch.optim.lr_sc
     """
     # if not specified, use constant step sizes
     name = config.get('lr_schedule', 'constant')
+
+    # default is to step scheduler end of epoch
+    # but with this arg we can step scheduler after each step 
+    step_on_epoch = not config.get('stepwise_schedule')
     
     if name == 'constant':
-        lr_fun = lambda epoch: 1 # this value is multiplied with initial lr
-        scheduler = LambdaLR(opt, lr_lambda=lr_fun)
-    
-    elif name == 'linear':
-        lr_fun = lambda epoch: 1/(epoch+1) # this value is multiplied with initial lr
+        lr_fun = lambda t: 1 # this value is multiplied with initial lr
         scheduler = LambdaLR(opt, lr_lambda=lr_fun)
         
     elif name == 'sqrt':
-        lr_fun = lambda epoch: (epoch+1)**(-1/2) # this value is multiplied with initial lr
+        lr_fun = lambda t: (t+1)**(-1/2) # this value is multiplied with initial lr
         scheduler = LambdaLR(opt, lr_lambda=lr_fun)
         
     elif 'exponential' in name:
-        # use sth like 'exponential_60_0.5': decay by factor 0.5 every 60 epochs
+        # use sth like 'exponential_60_0.5': decay by factor 0.5 every 60 epochs/steps
         step_size = int(name.split('_')[1])
         gamma = float(name.split('_')[2])
         scheduler = StepLR(opt, step_size=step_size, gamma=gamma)
@@ -176,4 +176,4 @@ def get_scheduler(config: dict, opt: torch.optim.Optimizer) -> torch.optim.lr_sc
     else:
         raise ValueError(f"Unknown learning rate schedule name {name}.")
     
-    return scheduler
+    return scheduler, step_on_epoch
