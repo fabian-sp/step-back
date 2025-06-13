@@ -21,6 +21,7 @@ parser.add_argument('--device', nargs='?', type=str, default=DEFAULTS.device, he
 
 parser.add_argument('-nw', '--num-workers', nargs='?', type=int, default=DEFAULTS.num_workers, help="Number of workers for DataLoader.")
 parser.add_argument('--data-parallel', nargs='+', default=DEFAULTS.data_parallel, help='Device list for DataParallel in Pytorch.')
+parser.add_argument('-logk', '--log-every-k-steps', nargs='?', type=int, default=DEFAULTS.log_every_k_steps, help="Stepwise logging.")
 parser.add_argument('--verbose', action="store_true", help="Verbose mode.")
 parser.add_argument('--force-deterministic', action="store_true", help="Use deterministic mode in Pytorch. Might require setting environment variables.")
 
@@ -31,6 +32,7 @@ def run_one(exp_id: str,
             device: str=DEFAULTS.device, 
             num_workers: int=DEFAULTS.num_workers,
             data_parallel: Union[list, None]=DEFAULTS.data_parallel,
+            log_every_k_steps: Union[int, None]=DEFAULTS.log_every_k_steps,
             verbose: bool=DEFAULTS.verbose,
             force_deterministic: bool=DEFAULTS.force_deterministic
             ):
@@ -55,6 +57,9 @@ def run_one(exp_id: str,
     data_parallel : Union[list, None], optional
         If not None, this specifies the device ids for DataParallel mode in Pytorch.
         See https://pytorch.org/docs/stable/generated/torch.nn.DataParallel.html.
+    log_every_k_steps: Union[int, None], optional
+        If not None, log batch loss and grad_norm every k steps. Careful: this results in larger output files.
+        By default None (no stepwise logging).
     verbose : bool, optional
         Verbose mode flag.
         If True, prints progress bars, model architecture and other useful information.
@@ -84,6 +89,7 @@ def run_one(exp_id: str,
                  data_dir=data_dir,
                  num_workers=num_workers,
                  data_parallel=data_parallel,
+                 log_every_k_steps=log_every_k_steps,
                  verbose=verbose)
         
         B.setup()
@@ -107,6 +113,7 @@ if __name__ == '__main__':
             device=args.device,
             num_workers=args.num_workers,
             data_parallel=args.data_parallel,
+            log_every_k_steps=args.log_every_k_steps,
             verbose=args.verbose,
             force_deterministic=args.force_deterministic)
     

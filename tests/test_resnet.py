@@ -23,7 +23,7 @@ run_ids = [0,1]
 def _template_resnet_init(config):
     """test that model initialization is fixed"""
     
-    B = Base('test_resnet', config)
+    B = Base('test_resnet', config, device='cpu')
     B._setup_model() # only load model as we do not want to download dataset
 
     B.model.conv1.weight

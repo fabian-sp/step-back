@@ -11,6 +11,7 @@ _defaults = {'config_dir': 'configs/',
             'device': 'cuda',
             'num_workers': 0,
             'data_parallel': None,
+            'log_every_k_steps': None,
             'verbose': False,
             'force_deterministic': False
             }

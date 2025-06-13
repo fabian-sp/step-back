@@ -47,6 +47,7 @@ AES = { 'sgd':              {'color': '#7fb285', 'markevery': 15, 'zorder': 7},
 #7ea2aa
 
 ALL_MARKER = ('o', 'v', 'H', 's', '>', '<' , '^', 'D', 'x')
+nan_mean_fun = lambda x: x.mean(skipna=False)
 
 class Record:
     def __init__(self, 
@@ -131,12 +132,28 @@ class Record:
                 
             this_df['id'] = ':'.join(id) # identifier given by all opt specifications
             this_df['run_id'] = r['config']['run_id'] # differentiating multiple runs
+
+            # convert step-wise logs to series
+            # pandas has a bug that we cannot insert a series into this_df.loc[row_ix, ..]
+            # but we can insert into row, so we concat the modified rows
+            if 'step_logs' in this_df.columns:
+                self._stepwise_log_columns = list()
+                new_rows = list()
+                for row_ix, row in this_df.iterrows():
+                    for k, v in row['step_logs'].items():
+                        row['stepwise_' + k] = pd.Series(v, name=k)
+                        self._stepwise_log_columns.append('stepwise_' + k)
+                    new_rows.append(row)
+                self._stepwise_log_columns = set(self._stepwise_log_columns)
+                this_df = pd.DataFrame(new_rows)
+                this_df = this_df.drop(columns=['step_logs'])
+
             df_list.append(this_df)
             
-        df = pd.concat(df_list)   
-        df = df.reset_index(drop=True)
+        df = pd.concat(df_list)
         df.insert(0, 'id', df.pop('id')) # move id column to front
-
+        df = df.reset_index(drop=True)
+        
         # raise error if duplicates
         if df.duplicated(subset=['id', 'epoch', 'run_id']).any():
             raise KeyError("There seem to be duplicates (by id, epoch, run_id). Please check the output data.")
@@ -161,11 +178,22 @@ class Record:
         
         # compute mean for each id and(!) epoch
         if agg == 'mean':
-            # if column numeric, take mean else take first
-            nan_mean_fun = lambda x: x.mean(skipna=False)
-            agg_dict = dict([(c, nan_mean_fun) if is_numeric_dtype(raw_df[c]) else (c, 'first') for c in raw_df.columns])
-            agg_dict.pop('id')
-            agg_dict.pop('epoch')
+            # Create an aggregation dictionary first
+            # 1) if column numeric, take mean
+            # 2) for stepwise logs, each element is a series --> use custom function
+            # 3) else take first (e.g. for step_size_list)
+            agg_dict = dict()
+            for c in raw_df.columns:
+                if c in ["id", "epoch"]:
+                    continue
+                if is_numeric_dtype(raw_df[c]):
+                    agg_dict[c] = nan_mean_fun
+                elif isinstance(raw_df[c][0], pd.Series):
+                    agg_dict[c] = average_series_and_wrap
+                else:
+                    agg_dict[c] = "first"
+        
+            self._base_df_agg_dict = agg_dict
 
             df = raw_df.groupby(['id', 'epoch'], sort=False).agg(agg_dict).drop('run_id',axis=1)
             
@@ -175,7 +203,7 @@ class Record:
             df2 = raw_df.groupby(['id', 'epoch'], sort=False)[std_columns].std().drop('run_id',axis=1)           
             df2.columns = [c+'_std' for c in df2.columns]
             
-            df = pd.concat([df,df2], axis=1) 
+            df = pd.concat([df,df2], axis=1)
             df = df.reset_index(level=-1) # moves epoch out of index
             
         elif agg == 'first':
@@ -330,7 +358,28 @@ class Record:
         fig.tight_layout()
         return fig, ax
 
-    
+def average_series_by_index(series_of_series):
+    """
+    Aggregates a Series of Series by averaging values at overlapping indices.
+
+    Args:
+        series_of_series: A pandas Series where each element is itself a pandas Series.
+                          This is what a groupby().agg() operation passes to the function.
+    Returns:
+        A single pandas Series with the aggregated and averaged values.
+    """
+    concatenated_series = pd.concat(list(series_of_series))
+    avg_series = concatenated_series.groupby(concatenated_series.index).mean()
+    return avg_series
+
+def average_series_and_wrap(series_of_series):
+    """
+    This is on ly a trick as .agg() insert a list, and not a Series.
+    Thanks to Gemini.
+    """
+    result_series = average_series_by_index(series_of_series)
+    return [result_series]
+
 def id_to_dict(id):
     """utility for creating a dictionary from the identifier"""
     tmp = id.split(':')
