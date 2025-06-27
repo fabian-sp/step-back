@@ -6,7 +6,7 @@ from .basic_models import MLP, MatrixFac, MatrixComplete
 from .vgg import get_cifar_vgg
 from .resnet import get_cifar_resnet
 from .kuangliu_resnet import get_kuangliu_resnet
-
+from .llama import get_llama
 
 def get_num_classes(dataset_name):
     if dataset_name == 'cifar10':
@@ -117,8 +117,12 @@ def get_model(config: dict, input_dim: list, output_dim: list) -> torch.nn.Modul
         num_classes = get_num_classes(config['dataset'])
         model = swin_t(num_classes=num_classes,
                        downscaling_factors=(2,2,2,1),
-                       **kwargs)   
+                       **kwargs)
     
+    # ======== Llama transformer =============
+    elif name == "llama":
+        model = get_llama(cfg=kwargs)
+
     else:
         raise KeyError(f"Unknown model option {name}.")   
     

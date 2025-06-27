@@ -249,31 +249,3 @@ def get_llama(cfg):
     model = Transformer(model_cfg)
 
     return model
-
-#%% for testing (to be deleted)
-
-# model_kwargs = {"vocab_size": 12,
-#        "dim": 4,
-#        "expand": 4,
-#        "n_layers": 3,
-#        "n_heads": 2,
-#        "mlp": "mlp",
-#        "seq_len": 8,
-#        "random_wrong_kw": 13
-# }
-
-# model = get_llama(model_kwargs)
-# loss = SequenceCrossEntropyLoss()
-# bs = 2
-
-# x = torch.randint(low=0,
-#               high=model_kwargs["vocab_size"],
-#               size=(bs, model_kwargs["seq_len"])
-# )
-
-# model = model.to(device="mps")
-# x = x.to(device="mps")
-# y = model.forward(x)
-
-# L = loss(y, x)
-# L.backward()

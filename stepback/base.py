@@ -8,9 +8,8 @@ import warnings
 from typing import Union
 
 
-from torch.utils.data import DataLoader
-
-from .datasets.main import get_dataset, infer_shapes
+from .datasets.main import get_dataset
+from .datasets.loader import get_loader, infer_shapes
 from .models.main import get_model
 from .optim.main import get_optimizer, get_scheduler
 from .metrics import Loss
@@ -123,14 +122,11 @@ class Base:
         self.results['summary']['input_dim'], self.results['summary']['output_dim'] = infer_shapes(self.train_set)
         
         # construct train loader
-        _gen = torch.Generator()
-        _gen.manual_seed(self.run_seed)
-        self.train_loader = DataLoader(self.train_set,
-                                       drop_last=True,
-                                       shuffle=True,
-                                       generator=_gen,
+        self.train_loader = get_loader(ds=self.train_set,
+                                       seed=self.run_seed,
                                        batch_size=self.config['batch_size'],
-                                       num_workers=self.num_workers
+                                       num_workers=self.num_workers,
+                                       drop_last=True
         )
         
         return
@@ -345,10 +341,11 @@ class Base:
         """
         
         # create temporary DataLoader
-        dl = torch.utils.data.DataLoader(dataset, drop_last=False, 
-                                         batch_size=self.config['batch_size'],
-                                         num_workers=self.num_workers
-                                         )
+        dl = get_loader(ds=dataset,
+                        batch_size=self.config['batch_size'],
+                        num_workers=self.num_workers,
+                        drop_last=False
+        )
         pbar = tqdm.tqdm(dl, disable=(not self.verbose))
         
         self.model.eval()
