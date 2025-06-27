@@ -233,8 +233,8 @@ class Base:
             
                 val_dict = self.evaluate(self.val_set, 
                                          metric_dict = metric_dict,
-                )                     
-                       
+                )
+                      
                 # Record metrics
                 score_dict.update(train_dict)
                 score_dict.update(val_dict)

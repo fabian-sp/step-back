@@ -55,7 +55,12 @@ class Loss:
         elif self.name == 'cross_entropy_accuracy':
             assert not self.backwards, "For accuracy metrics, we never want to do backprop."
             self.criterion = cross_entropy_accuracy
-                  
+        
+        elif self.name == 'sequence_cross_entropy_accuracy':
+            assert not self.backwards, "For accuracy metrics, we never want to do backprop."
+            self._flatten_target = False
+            self.criterion = sequence_cross_entropy_accuracy
+
         elif self.name == 'logistic_accuracy':
             assert not self.backwards, "For accuracy metrics, we never want to do backprop."
             self.criterion = logistic_accuracy
@@ -122,4 +127,13 @@ def logistic_accuracy(out, targets):
 def cross_entropy_accuracy(out, targets):
     pred_labels = out.argmax(dim=1)
     acc = (pred_labels == targets).float().mean()
+    return acc
+
+def sequence_cross_entropy_accuracy(out, targets):
+    """
+    out has shape (b, seq_len, vocab_size)
+    target has shape (b, seq_len)
+    """
+    pred_labels = out.view(-1, out.size(-1)).argmax(dim=1)
+    acc = (pred_labels == targets.view(-1)).float().mean()
     return acc
