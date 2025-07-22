@@ -10,6 +10,9 @@ from .adabound import AdaBoundW
 from .adabelief import AdaBelief
 from .lion import Lion
 
+# only applicable to linear regression
+from .spp import SPP
+
 def get_optimizer(opt_config: dict) -> Tuple[torch.optim.Optimizer, dict]:
     """
     Main function mapping opt configs to an instance of torch.optim.Optimizer and a dict of hyperparameter arguments (lr, weight_decay,..).  
@@ -142,6 +145,12 @@ def get_optimizer(opt_config: dict) -> Tuple[torch.optim.Optimizer, dict]:
         hyperp = {'lr': opt_config.get('lr', 1e-3),
                   'weight_decay': opt_config.get('weight_decay', 0),
                   'betas': opt_config.get('betas', (0.9, 0.99)),
+                  }
+    
+    elif name == 'spp':
+        opt_obj = SPP
+        hyperp = {'lr': opt_config.get('lr', 1e-3),
+                  'weight_decay': opt_config.get('weight_decay', 0)
                   }
     else:
         raise KeyError(f"Unknown optimizer name {name}.")

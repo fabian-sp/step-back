@@ -300,7 +300,7 @@ class Base:
             # see optim/README.md for explanation 
             if hasattr(self.opt, "prestep"):
                 ind = batch['ind'].to(device=self.device)           # indices of batch members
-                self.opt.prestep(out, targets, ind, self.training_loss.name)
+                self.opt.prestep(out, data, targets, ind, self.training_loss.name)
             
             # Here the magic happens
             loss_val = self.opt.step(closure=closure) 
