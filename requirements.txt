@@ -7,3 +7,4 @@ matplotlib
 seaborn
 tqdm
 einops
+requests

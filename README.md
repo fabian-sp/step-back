@@ -6,8 +6,8 @@
 
 This package is intended for running and benchmarking optimization algorithms in Pytorch. It could be used for 
 
-* retrieving training curves for standard methods (SGD, Adam) on standard benchmark problems (e.g. training Resnets for Cifar),
-* testing new methods 
+* retrieving training curves for standard methods (SGD, Adam) on standard benchmark problems (e.g. training a ResNet on CIFAR10/100),
+* testing and benchmarking new optimization algorithms
 
 
 ## Getting started
@@ -22,7 +22,9 @@ or in order to install in developer mode via
 
 ## Results
 
-For the experiments we ran, we provide the code that generated the results (i.e. the model, dataset preprocessing and training setup) as well as the actual scores at the end of each epoch. An overview and all links are given in the table below.
+Currently, the repo implements some standard image classification architectures (ResNet, VGG, ViT) and datasets (MNIST, CIFAR, Imagenet). It also contains a toy language model training setup (character-level Shakespeare dataset).
+
+Below is an overview of experiments for which we provide the code that generated the results (i.e. the model, dataset preprocessing and training setup) as well as the actual scores at the end of each epoch. An overview and all links are given in the table below.
 
 | ID  | Model  | Dataset  | Results  |  
 |-----|--------|----------|----------|

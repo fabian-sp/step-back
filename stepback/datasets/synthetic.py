@@ -32,7 +32,7 @@ def get_synthetic_matrix_fac(p: int, q: int, n_samples: int, noise: float=0, con
 
     return ds
 
-def get_synthetic_linear(p: int, n_samples: int, noise: float=0, condition_number=1e-5, classify: bool=True, split='train', seed=1234):
+def get_synthetic_linear(p: int, n_samples: int, noise: float=0, classify: bool=True, split: str='train', seed: int=1234):
     """
     Generate a synthetic dataset for linear/logistic regression.
     """
