@@ -1,0 +1,12 @@
+{
+    "batch_size": 16,
+    "dataset": "shakespeare",
+    "dataset_kwargs": {},
+    "max_epoch": 10,
+    "model": "llama",
+    "model_kwargs": {"vocab_size": 92, "dim": 384, "expand": 4, "n_layers": 3, "n_heads": 2, "mlp": "mlp", "seq_len": 512},
+    "opt": [{"name": "adam", "lr": [1e-3], "lr_schedule": "constant", "warmup_steps": 100, "stepwise_schedule": true}],
+    "loss_func": "sequence_cross_entropy",
+    "score_func": "sequence_cross_entropy_accuracy",
+    "n_runs": 1
+}

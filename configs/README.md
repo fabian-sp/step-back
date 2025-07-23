@@ -1,3 +1,21 @@
+## Test examples
+
+The simplest example to run is 
+
+```
+python run.py --id test --verbose
+```
+
+To train a Llama-style transformer on the character-level Shakespeare dataset, run
+
+```
+python run.py -i test_shakespeare --device mps --verbose
+```
+
+This config also shows how to use stepwise learning-rate schedulers, for example for warmup.
+
+On Apple M3 Pro, using the ``mps`` device, this should take roughly five minutes, and reach a train loss of around 1.3-1.4 after 10 epochs.
+
 ## Remarks on config management
 
 1) The simple option: Create a dict-type config (e.g. like [test.json](test.json)). The file name (in this example we use ``my_exp.json``) will serve as an identifier ``exp_id`` in the next steps. You can then run all entries of the config with one job.
