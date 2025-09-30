@@ -9,6 +9,7 @@ from .sps import SPS
 from .adabound import AdaBoundW
 from .adabelief import AdaBelief
 from .lion import Lion
+from .ngn import NGN
 
 # only applicable to linear regression
 from .spp import SPP
@@ -152,6 +153,12 @@ def get_optimizer(opt_config: dict) -> Tuple[torch.optim.Optimizer, dict]:
         hyperp = {'lr': opt_config.get('lr', 1e-3),
                   'weight_decay': opt_config.get('weight_decay', 0)
                   }
+        
+    elif name == 'ngn':
+        opt_obj = NGN
+        hyperp = {'lr': opt_config.get('lr', 1e-3),
+                  }
+        
     else:
         raise KeyError(f"Unknown optimizer name {name}.")
         
