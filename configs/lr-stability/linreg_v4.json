@@ -1,0 +1,15 @@
+{
+"dataset": "synthetic_linear",
+"dataset_kwargs": {"p": 10, "n_samples": 50, "noise": 1.0},
+"model": "linear",
+"model_kwargs": {"bias": false},
+"loss_func": "squared",
+"score_func": "squared",
+"opt": [{"name": "sgd", "lr": [0.001, 0.002, 0.005, 0.01, 0.022, 0.046, 0.1, 0.215, 0.464, 1.0, 2.154, 4.642, 10.0, 21.544, 46.416, 100.0], "lr_schedule": "constant"},
+        {"name": "prox-sps", "lr": [0.001, 0.002, 0.005, 0.01, 0.022, 0.046, 0.1, 0.215, 0.464, 1.0, 2.154, 4.642, 10.0, 21.544, 46.416, 100.0], "lr_schedule": "constant"},
+        {"name": "spp", "lr": [0.001, 0.002, 0.005, 0.01, 0.022, 0.046, 0.1, 0.215, 0.464, 1.0, 2.154, 4.642, 10.0, 21.544, 46.416, 100.0], "lr_schedule": "constant"}
+        ],
+"batch_size": 25,
+"max_epoch": 50,
+"n_runs": 5 
+}
