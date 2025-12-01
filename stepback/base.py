@@ -18,14 +18,17 @@ from .utils import l2_norm, grad_norm, ridge_opt_value, logreg_opt_value
 from .defaults import DEFAULTS
 
 class Base:
-    def __init__(self, name: str, 
-                 config: dict, 
-                 device: str=DEFAULTS.device, 
-                 data_dir: str=DEFAULTS.data_dir,
-                 num_workers: int=DEFAULTS.num_workers,
-                 data_parallel: Union[list, None]=DEFAULTS.data_parallel,
-                 log_every_k_steps: Union[int, None]=DEFAULTS.log_every_k_steps,
-                 verbose: bool=DEFAULTS.verbose):
+    def __init__(
+            self,
+            name: str, 
+            config: dict, 
+            device: str=DEFAULTS.device, 
+            data_dir: str=DEFAULTS.data_dir,
+            num_workers: int=DEFAULTS.num_workers,
+            data_parallel: Union[list, None]=DEFAULTS.data_parallel,
+            log_every_k_steps: Union[int, None]=DEFAULTS.log_every_k_steps,
+            verbose: bool=DEFAULTS.verbose
+        ):
         """The main class. Performs one single training run plus evaluation.
 
         Parameters
@@ -87,9 +90,11 @@ class Base:
         self.check_config()
 
         # Create ditionary for results
-        self.results = {'config': self.config,
-                        'history': {},
-                        'summary': {}}
+        self.results = {
+            'config': self.config,
+            'history': {},
+            'summary': {}
+        }
         
         self.results['summary']['num_workers'] = self.num_workers
         self.results['summary']['data_parallel'] = 'true' if self.data_parallel else 'false'
@@ -122,11 +127,12 @@ class Base:
         self.results['summary']['input_dim'], self.results['summary']['output_dim'] = infer_shapes(self.train_set)
         
         # construct train loader
-        self.train_loader = get_loader(ds=self.train_set,
-                                       seed=self.run_seed,
-                                       batch_size=self.config['batch_size'],
-                                       num_workers=self.num_workers,
-                                       drop_last=True
+        self.train_loader = get_loader(
+            ds=self.train_set,
+            seed=self.run_seed,
+            batch_size=self.config['batch_size'],
+            num_workers=self.num_workers,
+            drop_last=True
         )
         
         return
@@ -136,9 +142,10 @@ class Base:
         torch.manual_seed(self.seed) # Reseed to have same initialization   
         torch.cuda.manual_seed_all(self.seed)        
         
-        self.model = get_model(config=self.config, 
-                               input_dim=self.results['summary'].get('input_dim',[]), 
-                               output_dim=self.results['summary'].get('output_dim',[])
+        self.model = get_model(
+            config=self.config, 
+            input_dim=self.results['summary'].get('input_dim',[]), 
+            output_dim=self.results['summary'].get('output_dim',[])
         )
         
         self.model.to(self.device)
@@ -168,8 +175,13 @@ class Base:
         opt_obj, hyperp = get_optimizer(self.config['opt'])
         
         self._init_opt(opt_obj, hyperp)
-    
-        self.sched, self._step_scheduler_on_epoch = get_scheduler(self.config['opt'], self.opt)
+
+        # total number of iters (either in steps or epochs) for LR schedule
+        if self.config['opt'].get('stepwise_schedule', False):
+            num_iter = self.config['max_epoch'] * len(self.train_loader)
+        else:
+            num_iter = self.config['max_epoch']
+        self.sched, self._step_scheduler_on_epoch = get_scheduler(self.config['opt'], num_iter, self.opt)
         
         #============ Results ==============
         opt_val = self._compute_opt_value()
@@ -224,15 +236,19 @@ class Base:
             # Validation
             with torch.no_grad():
                 
-                metric_dict = {'loss': Loss(self.config['loss_func'], backwards=False), 
-                               'score': Loss(self.config['score_func'], backwards=False)}      
+                metric_dict = {
+                    'loss': Loss(self.config['loss_func'], backwards=False), 
+                    'score': Loss(self.config['score_func'], backwards=False)
+                }      
                 
-                train_dict = self.evaluate(self.train_set, 
-                                           metric_dict = metric_dict,
+                train_dict = self.evaluate(
+                    self.train_set, 
+                    metric_dict = metric_dict,
                 )  
             
-                val_dict = self.evaluate(self.val_set, 
-                                         metric_dict = metric_dict,
+                val_dict = self.evaluate(
+                    self.val_set, 
+                    metric_dict = metric_dict,
                 )
                       
                 # Record metrics
@@ -241,8 +257,11 @@ class Base:
                 
                 # Record metrics specific to MoMo methods 
                 if self.opt.state.get('step_size_list'):
-                    score_dict['step_size_list'] = [float(np.format_float_scientific(t,5)) for t in self.opt.state['step_size_list']] 
+                    score_dict['step_size_list'] = [
+                        float(np.format_float_scientific(t,5)) for t in self.opt.state['step_size_list']
+                    ] 
                     self.opt.state['step_size_list'] = list()
+                    print(score_dict['step_size_list'])
                 # fstar estimator (could be zero)
                 if self.opt.state.get('fstar', None) is not None:
                     score_dict['fstar'] = self.opt.state['fstar']
@@ -314,14 +333,13 @@ class Base:
             pbar.set_description(f'Training - loss={loss_val:.3f} - time data: last={timings_dataloader[-1]:.3f},(mean={np.mean(timings_dataloader):.3f}) - time model+step: last={timings_model[-1]:.3f}(mean={np.mean(timings_model):.3f})')
 
             # Log loss_val and grad_norm every k steps
+            total_step_counter = len(self.train_loader) * self._epochs_trained + step_counter
             if self.log_every_k_steps is not None:
-                total_step_counter = len(self.train_loader) * self._epochs_trained + step_counter
                 if step_counter % self.log_every_k_steps == 0:
                     self._log_stepwise["loss"][total_step_counter] = loss_val.item()
                     self._log_stepwise["grad_norm"][total_step_counter] = grad_norm(self.model)
                     if not self._step_scheduler_on_epoch:
                         self._log_stepwise["lr"][total_step_counter] = self.sched.get_last_lr()[0]
-
 
             if not self._step_scheduler_on_epoch:
                 self.sched.step()
@@ -374,7 +392,9 @@ class Base:
             timings_model.append(t0-t1)    
 
             pbar.set_description(f'Validating {dataset.split}')
-            pbar.set_description(f'Validating {dataset.split} - time data: last={timings_dataloader[-1]:.3f}(mean={np.mean(timings_dataloader):.3f}) - time model: last={timings_model[-1]:.3f}(mean={np.mean(timings_model):.3f})')
+            pbar.set_description(
+                f'Validating {dataset.split} - time data: last={timings_dataloader[-1]:.3f}(mean={np.mean(timings_dataloader):.3f}) - time model: last={timings_model[-1]:.3f}(mean={np.mean(timings_model):.3f})'
+            )
         
 
         for _met in metric_dict.keys():
@@ -388,11 +408,13 @@ class Base:
 
     def save_checkpoint(self, path):
         """See https://pytorch.org/tutorials/recipes/recipes/saving_and_loading_a_general_checkpoint.html"""
-        torch.save({'epoch': self._epochs_trained,
-                    'model_state_dict': self.model.state_dict(),
-                    'opt_state_dict': self.opt.state_dict(),
-                    }, 
-                   path + self.name + '.mt')
+        torch.save({
+            'epoch': self._epochs_trained,
+            'model_state_dict': self.model.state_dict(),
+            'opt_state_dict': self.opt.state_dict(),
+            },
+            path + self.name + '.mt'
+        )
 
         return         
 
@@ -415,17 +437,19 @@ class Base:
                 warnings.warn("Using bias and weight decay. Note that the implementation her will also penalize the bias.")
             
             if self.config['loss_func'] == 'squared':
-                opt_val = ridge_opt_value(X=self.train_set.dataset.tensors[0].detach().numpy(),
-                                          y=self.train_set.dataset.tensors[1].detach().numpy(),
-                                          lmbda = self.config['opt'].get('weight_decay', 0),
-                                          fit_intercept = fit_intercept
-                                          )
+                opt_val = ridge_opt_value(
+                    X=self.train_set.dataset.tensors[0].detach().numpy(),
+                    y=self.train_set.dataset.tensors[1].detach().numpy(),
+                    lmbda = self.config['opt'].get('weight_decay', 0),
+                    fit_intercept = fit_intercept
+                )
             elif self.config['loss_func'] == 'logistic':
-                opt_val = logreg_opt_value(X=self.train_set.dataset.tensors[0].detach().numpy(),
-                                           y=self.train_set.dataset.tensors[1].detach().numpy().astype(int).reshape(-1),
-                                           lmbda = self.config['opt'].get('weight_decay', 0),
-                                           fit_intercept = fit_intercept
-                                           )
+                opt_val = logreg_opt_value(
+                    X=self.train_set.dataset.tensors[0].detach().numpy(),
+                    y=self.train_set.dataset.tensors[1].detach().numpy().astype(int).reshape(-1),
+                    lmbda = self.config['opt'].get('weight_decay', 0),
+                    fit_intercept = fit_intercept
+                )
             else:
                 opt_val = None
         else:
