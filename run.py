@@ -25,17 +25,18 @@ parser.add_argument('-logk', '--log-every-k-steps', nargs='?', type=int, default
 parser.add_argument('--verbose', action="store_true", help="Verbose mode.")
 parser.add_argument('--force-deterministic', action="store_true", help="Use deterministic mode in Pytorch. Might require setting environment variables.")
 
-def run_one(exp_id: str,
-            config_dir: str=DEFAULTS.config_dir, 
-            output_dir: str=DEFAULTS.output_dir, 
-            data_dir: str=DEFAULTS.data_dir, 
-            device: str=DEFAULTS.device, 
-            num_workers: int=DEFAULTS.num_workers,
-            data_parallel: Union[list, None]=DEFAULTS.data_parallel,
-            log_every_k_steps: Union[int, None]=DEFAULTS.log_every_k_steps,
-            verbose: bool=DEFAULTS.verbose,
-            force_deterministic: bool=DEFAULTS.force_deterministic
-            ):
+def run_one(
+        exp_id: str,
+        config_dir: str=DEFAULTS.config_dir, 
+        output_dir: str=DEFAULTS.output_dir, 
+        data_dir: str=DEFAULTS.data_dir, 
+        device: str=DEFAULTS.device, 
+        num_workers: int=DEFAULTS.num_workers,
+        data_parallel: Union[list, None]=DEFAULTS.data_parallel,
+        log_every_k_steps: Union[int, None]=DEFAULTS.log_every_k_steps,
+        verbose: bool=DEFAULTS.verbose,
+        force_deterministic: bool=DEFAULTS.force_deterministic
+    ):
     """Function for running all runs from one config file.
     Default values for all arguments can be found in ``stepback/defaults.py``.
 
@@ -83,14 +84,16 @@ def run_one(exp_id: str,
 
     for j, config in enumerate(exp_list): 
         # each run gets id, by position in the list
-        B = Base(name=exp_id + f'_{j}',
-                 config=config, 
-                 device=device,
-                 data_dir=data_dir,
-                 num_workers=num_workers,
-                 data_parallel=data_parallel,
-                 log_every_k_steps=log_every_k_steps,
-                 verbose=verbose)
+        B = Base(
+            name=exp_id + f'_{j}',
+            config=config, 
+            device=device,
+            data_dir=data_dir,
+            num_workers=num_workers,
+            data_parallel=data_parallel,
+            log_every_k_steps=log_every_k_steps,
+            verbose=verbose
+        )
         
         B.setup()
         B.run() # train and validate
@@ -106,15 +109,17 @@ if __name__ == '__main__':
 
     print(args)
 
-    run_one(args.id,
-            config_dir=args.config_dir,
-            output_dir=args.output_dir,
-            data_dir=args.data_dir,
-            device=args.device,
-            num_workers=args.num_workers,
-            data_parallel=args.data_parallel,
-            log_every_k_steps=args.log_every_k_steps,
-            verbose=args.verbose,
-            force_deterministic=args.force_deterministic)
+    run_one(
+        args.id,
+        config_dir=args.config_dir,
+        output_dir=args.output_dir,
+        data_dir=args.data_dir,
+        device=args.device,
+        num_workers=args.num_workers,
+        data_parallel=args.data_parallel,
+        log_every_k_steps=args.log_every_k_steps,
+        verbose=args.verbose,
+        force_deterministic=args.force_deterministic
+    )
     
 

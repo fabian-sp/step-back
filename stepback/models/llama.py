@@ -1,4 +1,4 @@
-""" Adapted from Niccolo Ajroldi: /github.com/Niccolo-Ajroldi/plainLM
+""" Adapted from Niccolo Ajroldi: github.com/Niccolo-Ajroldi/plainLM
 
 Changes:
 

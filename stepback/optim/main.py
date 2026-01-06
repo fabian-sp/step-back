@@ -9,6 +9,7 @@ from .sps import SPS
 from .adabound import AdaBoundW
 from .adabelief import AdaBelief
 from .lion import Lion
+from .ngn import NGN
 
 # only applicable to linear regression
 from .spp import SPP
@@ -152,14 +153,22 @@ def get_optimizer(opt_config: dict) -> Tuple[torch.optim.Optimizer, dict]:
         hyperp = {'lr': opt_config.get('lr', 1e-3),
                   'weight_decay': opt_config.get('weight_decay', 0)
                   }
+        
+    elif name == 'ngn':
+        opt_obj = NGN
+        hyperp = {'lr': opt_config.get('lr', 1e-3),
+                  }
+        
     else:
         raise KeyError(f"Unknown optimizer name {name}.")
         
     return opt_obj, hyperp
 
-def get_scheduler(config: dict, opt: torch.optim.Optimizer) -> torch.optim.lr_scheduler._LRScheduler:
+def get_scheduler(config: dict, num_iter: int, opt: torch.optim.Optimizer) -> torch.optim.lr_scheduler._LRScheduler:
     """
     Main function mapping to a learning rate scheduler.
+
+    num_iter is either number of epochs or steps.
     """
     # if not specified, use constant step sizes
     name = config.get('lr_schedule', 'constant')
@@ -180,7 +189,26 @@ def get_scheduler(config: dict, opt: torch.optim.Optimizer) -> torch.optim.lr_sc
         #lr_fun = lambda t: warmup_lr + (1-warmup_lr)*t/warmup_steps if t < warmup_steps else (t-warmup_steps+1)**(-1/2)
         lr_fun = lambda t: (t+1)**(-1/2)
         scheduler = LambdaLR(opt, lr_lambda=lr_fun)
+    
+    elif name[:3] == 'wsd':
+        # default cooldown is 20%, otherwise specify e.g wsd_0.1 for 10%
+        if name == 'wsd':
+            cd = 0.2
+        else:
+            cd = float(name.split('_')[1])
         
+        cd_start = int((1 - cd) * num_iter)
+
+        # this map is called with t = iter - warmup_steps
+        # but we want to fix the cooldown start independent of warmup
+        # so it reads a bit hacky
+        lr_fun = lambda t: (
+            1 - (t+warmup_steps-cd_start) / (num_iter-cd_start)
+            if t + warmup_steps >= cd_start
+            else 1.0
+        )
+        scheduler = LambdaLR(opt, lr_lambda=lr_fun)
+
     elif 'exponential' in name:
         # use sth like 'exponential_60_0.5': decay by factor 0.5 every 60 epochs/steps
         step_size = int(name.split('_')[1])
