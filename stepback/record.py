@@ -14,28 +14,30 @@ from .log import Container
 from .defaults import DEFAULTS
 
 
-SCORE_NAMES = {'train_loss': 'Training loss', 
-               'val_loss': 'Validation loss', 
-               'train_score': 'Training score', 
-               'val_score': 'Validation score',
-               'model_norm': r'$\|x^k\|$',
-               'grad_norm': r'$\|g_k\|$',
-               'fstar': r'$f_*^k$'
+SCORE_NAMES = {
+    'train_loss': 'Training loss', 
+    'val_loss': 'Validation loss', 
+    'train_score': 'Training score', 
+    'val_score': 'Validation score',
+    'model_norm': r'$\|x^k\|$',
+    'grad_norm': r'$\|g_k\|$',
+    'fstar': r'$f_*^k$'
 }
 
-AES = { 'sgd':              {'color': "#f68427", 'markevery': 15, 'zorder': 7},
-        'sgd-m':            {'color': '#de9151', 'markevery': 8, 'zorder': 8},
-        'adam':             {'color': '#f34213', 'markevery': 10, 'zorder': 9}, 
-        'adamw':            {'color': '#f34213', 'markevery': 10, 'zorder': 9},
-        'momo':             {'color': '#023047', 'markevery': 5, 'zorder': 11},
-        'momo-adam':        {'color': '#3F88C5', 'markevery': 6, 'zorder': 10},
-        'momo-star':        {'color': '#87b37a', 'markevery': 3, 'zorder': 13},
-        'momo-adam-star':   {'color': '#648381', 'markevery': 4, 'zorder': 12},
-        'prox-sps':         {'color': '#97BF88', 'markevery': 7, 'zorder': 6},
-        'adabelief':        {'color': '#FFBF46', 'markevery': 10, 'zorder': 6},
-        'adabound':         {'color': '#4f9d69', 'markevery': 10, 'zorder': 5},
-        'lion':             {'color': '#dbabab', 'markevery': 10, 'zorder': 4},
-        'default':          {'color': 'grey','markevery': 3, 'zorder': 1},
+AES = {
+    'sgd':              {'color': "#f68427", 'markevery': 15, 'zorder': 7},
+    'sgd-m':            {'color': '#de9151', 'markevery': 8, 'zorder': 8},
+    'adam':             {'color': '#f34213', 'markevery': 10, 'zorder': 9}, 
+    'adamw':            {'color': '#f34213', 'markevery': 10, 'zorder': 9},
+    'momo':             {'color': '#023047', 'markevery': 5, 'zorder': 11},
+    'momo-adam':        {'color': '#3F88C5', 'markevery': 6, 'zorder': 10},
+    'momo-star':        {'color': '#87b37a', 'markevery': 3, 'zorder': 13},
+    'momo-adam-star':   {'color': '#648381', 'markevery': 4, 'zorder': 12},
+    'prox-sps':         {'color': '#97BF88', 'markevery': 7, 'zorder': 6},
+    'adabelief':        {'color': '#FFBF46', 'markevery': 10, 'zorder': 6},
+    'adabound':         {'color': '#4f9d69', 'markevery': 10, 'zorder': 5},
+    'lion':             {'color': '#dbabab', 'markevery': 10, 'zorder': 4},
+    'default':          {'color': 'grey','markevery': 3, 'zorder': 1},
 }
 
 # more colors:
@@ -45,11 +47,12 @@ ALL_MARKER = ('o', 'v', 'H', 's', '>', '<' , '^', 'D', 'x')
 nan_mean_fun = lambda x: x.mean(skipna=False)
 
 class Record:
-    def __init__(self, 
-                 exp_id: Union[str, list], 
-                 output_dir: str=DEFAULTS.output_dir, 
-                 as_json: bool=True
-                 ):
+    def __init__(
+            self, 
+            exp_id: Union[str, list], 
+            output_dir: str=DEFAULTS.output_dir, 
+            as_json: bool=True
+        ):
         
         self.exp_id = exp_id
         self.aes = copy.deepcopy(AES)
@@ -314,7 +317,17 @@ class Record:
             self.aes[m]['marker_cycle'] = itertools.cycle(ALL_MARKER)  
         return
     
-    def plot_metric(self, s, df=None, log_scale=False, ylim=None, legend=True, figsize=(4,4), ax=None):
+    def plot_metric(
+            self,
+            s,
+            df=None,
+            log_scale=False,
+            ylim=None,
+            legend=True,
+            figsize=(4,4),
+            color_dict=None,
+            ax=None
+        ):
         
         if df is None:
             df = self.base_df.copy()
@@ -352,16 +365,21 @@ class Record:
             # plot
             if not y.isna().all():
                 names_legend.append(conf['name'])
-                ax.plot(x, 
-                        y, 
-                        c=self.aes.get(conf['name'], self.aes['default']).get('color'), 
-                        marker=next(self.aes.get(conf['name'], self.aes['default']).get('marker_cycle')) if legend else 'o', 
-                        markersize=markersize, 
-                        markevery=(self.aes.get(conf['name'], self.aes['default']).get('markevery'), 20), 
-                        alpha = alpha,
-                        label=label,
-                        zorder=self.aes.get(conf['name'], self.aes['default']).get('zorder')
-                        )
+                if color_dict is not None:
+                    this_col = color_dict.get(conf['name'], self.aes['default']['color'])
+                else:
+                    this_col = self.aes.get(conf['name'], self.aes['default']).get('color')
+                ax.plot(
+                    x, 
+                    y, 
+                    c=this_col, 
+                    marker=next(self.aes.get(conf['name'], self.aes['default']).get('marker_cycle')) if legend else 'o', 
+                    markersize=markersize, 
+                    markevery=(self.aes.get(conf['name'], self.aes['default']).get('markevery'), 20), 
+                    alpha = alpha,
+                    label=label,
+                    zorder=self.aes.get(conf['name'], self.aes['default']).get('zorder')
+                )
         
         ax.set_xlabel('Epoch')
         ax.set_ylabel(SCORE_NAMES.get(s, s))
