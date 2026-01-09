@@ -240,6 +240,17 @@ def reset_model_params(model: torch.nn.Module):
     return
 
 @torch.no_grad()
+def l2_norm_diff(model1: torch.nn.Module, model2: torch.nn.Module):
+    """
+    computes D = ||model1 - model2||_2
+    """
+    D2 = 0.0
+    for p, q in zip(model1.parameters(), model2.parameters()):
+        D2 += ((p.data - q.data)**2).sum()
+    
+    return torch.sqrt(D2).item()
+
+@torch.no_grad()
 def l2_norm(model: torch.nn.Module):
     """
     compute l2 norm of a Pytorch model.

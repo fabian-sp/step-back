@@ -14,7 +14,7 @@ from .models.main import get_model
 from .optim.main import get_optimizer, get_scheduler
 from .metrics import Loss
 
-from .utils import l2_norm, grad_norm, ridge_opt_value, logreg_opt_value
+from .utils import l2_norm, grad_norm, l2_norm_diff, ridge_opt_value, logreg_opt_value
 from .defaults import DEFAULTS
 
 class Base:
@@ -207,11 +207,10 @@ class Base:
         score_list = []   
         self._epochs_trained = 0
 
-        _init_model_norm = l2_norm(self.model)
+        _init_model = copy.deepcopy(self.model)
+        _init_model_norm = l2_norm(_init_model)
         self.results['summary']['init_model_norm'] = _init_model_norm
-        if self.verbose:
-            print(f"Initial model L2-norm: ", _init_model_norm)
-
+        
         for epoch in range(self.config['max_epoch']):
             
             print(f"Epoch {epoch}, current learning rate", self.sched.get_last_lr()[0])
@@ -261,7 +260,7 @@ class Base:
                         float(np.format_float_scientific(t,5)) for t in self.opt.state['step_size_list']
                     ] 
                     self.opt.state['step_size_list'] = list()
-                    print(score_dict['step_size_list'])
+                    # print(score_dict['step_size_list'])
                 # fstar estimator (could be zero)
                 if self.opt.state.get('fstar', None) is not None:
                     score_dict['fstar'] = self.opt.state['fstar']
@@ -280,6 +279,7 @@ class Base:
         self.results['summary']['start_time'] = start_time
         self.results['summary']['end_time'] = end_time
         self.results['summary']['final_model_norm'] = l2_norm(self.model)
+        self.results['summary']['diff_model_norm'] = l2_norm_diff(self.model, _init_model)
         
         return
 

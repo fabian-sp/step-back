@@ -12,15 +12,18 @@ LIBSVM_BINARY_URL = "https://www.csie.ntu.edu.tw/~cjlin/libsvmtools/datasets/bin
 LIBSVM_MULTICLASS_URL = "https://www.csie.ntu.edu.tw/~cjlin/libsvmtools/datasets/multiclass/"
 
 # mapping libsvm names to download links
-MULTICLASS_NAME_MAP = {"dna": "dna.scale",
-                       "wine": "wine.scale"
+MULTICLASS_NAME_MAP = {
+    "dna"           : "dna.scale",
+    "wine"          : "wine.scale",
+    "vowel"         : "vowel.scale",
 }
 
-BINARY_NAME_MAP = {"rcv1"           : "rcv1_train.binary.bz2",
-                    "mushrooms"     : "mushrooms",
-                    "a1a"           : "a1a",
-                    "ijcnn"         : "ijcnn1.tr.bz2", 
-                    "breast-cancer" : "breast-cancer_scale"
+BINARY_NAME_MAP = {
+    "rcv1"          : "rcv1_train.binary.bz2",
+    "mushrooms"     : "mushrooms",
+    "a1a"           : "a1a",
+    "ijcnn"         : "ijcnn1.tr.bz2", 
+    "breast-cancer" : "breast-cancer_scale",
 }
 LIBSVM_NAMES = list(MULTICLASS_NAME_MAP.keys()) + list(BINARY_NAME_MAP.keys())
 
@@ -57,11 +60,12 @@ def get_libsvm(split, name, path, train_size=0.8):
     print(f"Dataset labels (before split): {unique_labels}")
 
     # use fixed seed for train/val split
-    X_train, X_test, Y_train, Y_test = train_test_split(X,
-                                                        y, 
-                                                        train_size=train_size, 
-                                                        shuffle=True, 
-                                                        random_state=SPLIT_SEED
+    X_train, X_test, Y_train, Y_test = train_test_split(
+        X,
+        y, 
+        train_size=train_size, 
+        shuffle=True, 
+        random_state=SPLIT_SEED
     )
 
     # for multiclass, we need Long Tensors
